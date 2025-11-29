@@ -46,7 +46,7 @@ export default function App(){
       <About />
       <FAQ />
       <IdeaGenerator />
-      <button className="order-fixed" onClick={openChat}>Сделать заказ</button>
+      <button className="order-fixed" onClick={openChat}>Оформить Заказ</button>
       <div className="footer muted">© {new Date().getFullYear()} Rivaldsg — All rights reserved</div>
     </div>
   )
