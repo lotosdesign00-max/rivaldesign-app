@@ -25,103 +25,136 @@ const CONTACT_TG = "Rivaldsg";
 function App() {
   const [activeTab, setActiveTab] = useState(TABS.GALLERY);
   const [theme, setTheme] = useState("dark"); // dark | alt
+  const [aiIdea, setAiIdea] = useState("");
 
-  const toggleTheme = () =&gt; {
-    setTheme((prev) =&gt; (prev === "dark" ? "alt" : "dark"));
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "alt" : "dark"));
   };
 
-  const handleOrderClick = () =&gt; {
-    window.open(<code>https://t.me/${CONTACT_TG}</code>, "_blank");
+  const handleOrderClick = () => {
+    window.open(`https://t.me/${CONTACT_TG}`, "_blank");
   };
 
-  const renderContent = () =&gt; {
+  const generateAiIdea = () => {
+    const colors = ["#FF5733", "#33FF57", "#3357FF", "#F3FF33", "#FF33F3"];
+    const categories = ["Скамер", "Доксер", "Криптан", "Абузы", "Осинтер"];
+    const names = ["CryptoFox", "ShadowHunter", "NeoBot", "Abyss", "ZeroOne"];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const category = categories[Math.floor(Math.random() * categories.length)];
+    const name = names[Math.floor(Math.random() * names.length)];
+    const nick = `${name}${Math.floor(Math.random() * 999)}`;
+    setAiIdea(`Категория: ${category}\nИмя: ${nick}\nЦвет: ${color}`);
+  };
+
+  const renderContent = () => {
     switch (activeTab) {
       case TABS.GALLERY:
         return (
-          &lt;section className="card"&gt;
-            &lt;h2 className="section-title"&gt;Галерея работ&lt;/h2&gt;
-            &lt;p className="section-subtitle"&gt;
-              Здесь будут твои работы: логотипы, постеры, баннеры, брендинг и т.д.
-            &lt;/p&gt;
-            &lt;p className="hint-text"&gt;
+          <section className="card">
+            <h2 className="section-title">Галерея работ</h2>
+            <p className="section-subtitle">
+              Здесь будут твои работы: логотипы, постеры, баннеры, брендинг и
+              т.д.
+            </p>
+            <p className="hint-text">
               Позже сюда можно прикрутить свайпы, категории и кнопку "Подробнее".
-            &lt;/p&gt;
-          &lt;/section&gt;
+            </p>
+          </section>
         );
 
       case TABS.REVIEWS:
         return (
-          &lt;section className="card"&gt;
-            &lt;h2 className="section-title"&gt;Отзывы клиентов&lt;/h2&gt;
-            &lt;p className="section-subtitle"&gt;
+          <section className="card">
+            <h2 className="section-title">Отзывы клиентов</h2>
+            <p className="section-subtitle">
               Здесь будут карточки с отзывами, именем и аватаркой.
-            &lt;/p&gt;
-            &lt;button className="secondary-btn"&gt;Оставить отзыв&lt;/button&gt;
-          &lt;/section&gt;
+            </p>
+            <button className="secondary-btn">Оставить отзыв</button>
+          </section>
         );
 
       case TABS.ORDER:
         return (
-          &lt;section className="card"&gt;
-            &lt;h2 className="section-title"&gt;Заказать дизайн&lt;/h2&gt;
-            &lt;p className="section-subtitle"&gt;
+          <section className="card">
+            <h2 className="section-title">Заказать дизайн</h2>
+            <p className="section-subtitle">
               Напиши мне в Telegram, чтобы обсудить проект:
-            &lt;/p&gt;
-            &lt;button className="primary-btn wide" onClick={handleOrderClick}&gt;
+            </p>
+            <button className="primary-btn wide" onClick={handleOrderClick}>
               Написать @{CONTACT_TG}
-            &lt;/button&gt;
-            &lt;p className="hint-text"&gt;
+            </button>
+            <p className="hint-text">
               Укажи тип проекта, сроки, примерный бюджет и пожелания.
-            &lt;/p&gt;
-          &lt;/section&gt;
+            </p>
+          </section>
         );
 
       case TABS.PRICING:
         return (
-          &lt;section className="card"&gt;
-            &lt;h2 className="section-title"&gt;Прайс / Услуги&lt;/h2&gt;
-            &lt;ul className="list"&gt;
-              &lt;li&gt;Логотип — от 𝑋ₓₓₓ грн&lt;/li&gt;
-              &lt;li&gt;Фирменный стиль — от 𝑋ₓₓₓ грн&lt;/li&gt;
-              &lt;li&gt;Оформление соцсетей — от 𝑋ₓₓₓ грн&lt;/li&gt;
-              &lt;li&gt;Рекламные баннеры — от 𝑋ₓₓₓ грн&lt;/li&gt;
-            &lt;/ul&gt;
-          &lt;/section&gt;
+          <section className="card">
+            <h2 className="section-title">Прайс / Услуги</h2>
+            <ul className="list">
+              <li>Логотип — от 𝑋ₓₓₓ грн</li>
+              <li>Фирменный стиль — от 𝑋ₓₓₓ грн</li>
+              <li>Оформление соцсетей — от 𝑋ₓₓₓ грн</li>
+              <li>Рекламные баннеры — от 𝑋ₓₓₓ грн</li>
+            </ul>
+          </section>
         );
 
       case TABS.ABOUT:
         return (
-          &lt;section className="card"&gt;
-            &lt;h2 className="section-title"&gt;Обо мне&lt;/h2&gt;
-            &lt;p className="section-subtitle"&gt;
-              Я Rival, дизайнер. Работаю с брендами, помогаю выделиться в соцсетях и рекламе.
-            &lt;/p&gt;
-            &lt;p className="hint-text"&gt;
-              Здесь можно добавить фото, ссылки на Behance, Instagram, Telegram и т.д.
-            &lt;/p&gt;
-          &lt;/section&gt;
+          <section className="card">
+            <h2 className="section-title">Обо мне</h2>
+            <p className="section-subtitle">
+              Я Rival, дизайнер. Работаю с брендами, помогаю выделиться в
+              соцсетях и рекламе.
+            </p>
+            <p className="hint-text">
+              Здесь можно добавить фото, ссылки на Behance, Instagram, Telegram
+              и т.д.
+            </p>
+          </section>
         );
 
       case TABS.FAQ:
         return (
-          &lt;section className="card"&gt;
-            &lt;h2 className="section-title"&gt;FAQ / Частые вопросы&lt;/h2&gt;
-            &lt;ul className="list"&gt;
-              &lt;li&gt;Как проходит работа?&lt;/li&gt;
-              &lt;li&gt;Какие файлы я получу?&lt;/li&gt;
-              &lt;li&gt;Сколько правок входит в стоимость?&lt;/li&gt;
-            &lt;/ul&gt;
-          &lt;/section&gt;
+          <section className="card">
+            <h2 className="section-title">FAQ / Частые вопросы</h2>
+            <ul className="list">
+              <li>Как проходит работа?</li>
+              <li>Какие файлы я получу?</li>
+              <li>Сколько правок входит в стоимость?</li>
+            </ul>
+          </section>
         );
 
       case TABS.AI:
         return (
-          &lt;section className="card"&gt;
-            &lt;h2 className="section-title"&gt;AI — генератор идей&lt;/h2&gt;
-            &lt;p className="section-subtitle"&gt;
-              Здесь можно сделать блок, где бот предлагает палитры, референсы и концепты.
-            &lt;/p&gt;
-          &lt;/section&gt;
+          <section className="card">
+            <h2 className="section-title">AI — генератор идей</h2>
+            <p className="section-subtitle">
+              Здесь можно сделать блок, где бот предлагает палитры, референсы и
+              концепты.
+            </p>
+            <button className="primary-btn" onClick={generateAiIdea}>
+              Сгенерировать идею
+            </button>
+            {aiIdea && (
+              <pre
+                style={{
+                  marginTop: "10px",
+                  background: "#fff",
+                  color: "#000",
+                  padding: "10px",
+                  borderRadius: "8px",
+                  whiteSpace: "pre-line",
+                }}
+              >
+                {aiIdea}
+              </pre>
+            )}
+          </section>
         );
 
       default:
@@ -130,343 +163,47 @@ function App() {
   };
 
   return (
-    &lt;div className={<code>app-root theme-${theme}</code>}&gt;
-      &lt;div className="app-shell"&gt;
+    <div className={`app-root theme-${theme}`}>
+      <div className="app-shell">
         {/* Верхняя панель */}
-        &lt;div className="top-bar"&gt;
-          &lt;div className="top-bar-left"&gt;
-            &lt;span className="app-title"&gt;Rival App&lt;/span&gt;
-            &lt;span className="app-subtitle"&gt;портфолио дизайнера&lt;/span&gt;
-          &lt;/div&gt;
-          &lt;button className="icon-btn" onClick={toggleTheme}&gt;
+        <div className="top-bar">
+          <div className="top-bar-left">
+            <span className="app-title">Rival App</span>
+            <span className="app-subtitle">портфолио дизайнера</span>
+          </div>
+          <button className="icon-btn" onClick={toggleTheme}>
             🌗
-          &lt;/button&gt;
-        &lt;/div&gt;
+          </button>
+        </div>
 
         {/* Вкладки */}
-        &lt;nav className="tabs"&gt;
-          {Object.values(TABS).map((tabKey) =&gt; (
-            &lt;button
+        <nav className="tabs">
+          {Object.values(TABS).map((tabKey) => (
+            <button
               key={tabKey}
               className={
                 "tab-btn" + (activeTab === tabKey ? " tab-btn-active" : "")
               }
-              onClick={() =&gt; setActiveTab(tabKey)}
-            &gt;
+              onClick={() => setActiveTab(tabKey)}
+            >
               {TAB_LABELS[tabKey]}
-            &lt;/button&gt;
+            </button>
           ))}
-        &lt;/nav&gt;
+        </nav>
 
         {/* Контент вкладки */}
-        &lt;main className="tab-content"&gt;{renderContent()}&lt;/main&gt;
+        <main className="tab-content">{renderContent()}</main>
 
         {/* Фиксированная кнопка заказа снизу */}
-        &lt;button
+        <button
           className="primary-btn fixed-order-btn"
           onClick={handleOrderClick}
-        &gt;
+        >
           Оформить заказ
-        &lt;/button&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
+        </button>
+      </div>
+    </div>
   );
 }
 
 export default App;
-
-styles.css
-:root{
-  --bg:#0b0b0b; /* black primary */
-  --accent:#e11b23; /* red accent for alt theme */
-  --card:#121212;
-  --muted:#9b9b9b;
-  --text:#f5f5f5;
-  --accent-weak:#8a0f12;
-}
-
-/* alt theme variables (red accents) */
-[data-theme="alt"]{
-  --bg: linear-gradient(180deg,#070707 0%, #0b0506 100%);
-  --accent: #e11b23;
-  --card:#160606;
-  --muted:#c1a9a9;
-  --text:#fff;
-  --accent-weak:#9b1216;
-}
-
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background:var(--bg);
-  color:var(--text);
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.app{
-  max-width:920px;
-  margin:12px auto;
-  padding:14px;
-}
-
-.header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
-
-.logo{
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-
-.logo .dot{
-  width:36px;height:36px;border-radius:8px;background:var(--accent);
-}
-
-.h1{font-size:20px;font-weight:700}
-
-.card{
-  background:var(--card);
-  padding:12px;
-  border-radius:12px;
-  margin:12px 0;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-}
-
-/* header top-right controls */
-.controls{display:flex;gap:8px;align-items:center}
-.icon-btn{background:transparent;border:none;color:var(--text);font-size:18px;padding:8px;border-radius:8px;cursor:pointer}
-.icon-btn:hover{background:rgba(255,255,255,0.03)}
-
-/* gallery */
-.swiper {
-  padding: 16px 0;
-}
-.project-img{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-  border-radius:10px;
-}
-
-/* small */
-.row {display:flex;gap:12px;flex-wrap:wrap}
-.btn{
-  background:var(--accent); color:white; border:none; padding:10px 14px; border-radius:10px; cursor:pointer;
-}
-.muted{color:var(--muted);font-size:13px}
-.input, textarea{
-  width:100%; padding:8px; border-radius:8px; border:1px solid #222;background:#0d0d0d;color:var(--text);margin-top:6px;
-}
-.footer{margin-top:20px;text-align:center;color:var(--muted);font-size:13px}
-
-/* social icons row */
-.socials{display:flex;gap:10px;align-items:center;margin-top:8px}
-.social-link{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:8px;color:var(--text);text-decoration:none;font-size:14px}
-
-/* make order fixed button (appears at bottom) */
-.order-fixed{
-  position:fixed;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:18px;
-  z-index:50;
-  background:var(--accent);
-  color:white;
-  border:none;
-  padding:12px 18px;
-  border-radius:999px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-  cursor:pointer;
-}
-
-/* responsive */
-@media(max-width:480px){
-  .project-img{height:180px}
-  .app{padding:10px}
-}
-
-/* Центрируем приложение и фиксируем ширину */
-
-.app-root {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: 8px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, sans-serif;
-}
-
-.theme-dark {
-  background: #050509;
-  color: #f5f5f5;
-}
-
-.theme-alt {
-  background: #1a0004;
-  color: #ffecec;
-}
-
-.app-shell {
-  width: 100%;
-  max-width: 480px;
-  position: relative;
-}
-
-/* Верхняя панель */
-
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.top-bar-left {
-  display: flex;
-  flex-direction: column;
-}
-
-.app-title {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.app-subtitle {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-.icon-btn {
-  border: none;
-  outline: none;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: inherit;
-  cursor: pointer;
-}
-
-/* Вкладки */
-
-.tabs {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 6px 2px 8px;
-  margin-bottom: 8px;
-}
-
-.tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.tab-btn {
-  flex: 0 0 auto;
-  border-radius: 999px;
-  border: none;
-  padding: 6px 12px;
-  font-size: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  color: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-  opacity: 0.7;
-}
-
-.tab-btn-active {
-  background: #ff3040;
-  opacity: 1;
-}
-
-/* Карточки и текст */
-
-.card {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 16px;
-  padding: 14px 14px 16px;
-  margin-bottom: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.section-subtitle {
-  font-size: 13px;
-  opacity: 0.85;
-  margin-bottom: 10px;
-}
-
-.hint-text {
-  font-size: 12px;
-  opacity: 0.7;
-  margin-top: 8px;
-}
-
-.list {
-  font-size: 13px;
-  padding-left: 18px;
-}
-
-.list li {
-  margin-bottom: 4px;
-}
-
-/* Кнопки */
-
-.primary-btn,
-.secondary-btn {
-  border: none;
-  outline: none;
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.primary-btn {
-  background: #ff3040;
-  color: #fff;
-}
-
-.secondary-btn {
-  background: rgba(255, 255, 255, 0.06);
-  color: inherit;
-}
-
-.primary-btn.wide {
-  width: 100%;
-}
-
-/* Контент вкладки + место под кнопку снизу */
-
-.tab-content {
-  padding-bottom: 80px;
-}
-
-/* Фиксированная нижняя кнопка */
-
-.fixed-order-btn {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 10px;
-  width: 100%;
-  max-width: 480px;
-  border-radius: 999px;
-}﷯
-</div>
