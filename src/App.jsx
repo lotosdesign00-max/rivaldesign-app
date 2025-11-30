@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Gallery from "./components/Gallery";
 import Reviews from "./components/Reviews";
 import AI from "./components/AI";
-import "./styles.css";
 
 const TABS = {
   GALLERY: "gallery",
@@ -22,17 +21,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState(TABS.GALLERY);
   const [theme, setTheme] = useState("dark");
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "alt" : "dark"));
-  };
-
-  const handleOrderClick = () => {
-    if (activeTab === TABS.AI) {
-      alert("Генерируем идею!"); // сюда можно подключить реальный генератор
-    } else {
-      window.open(`https://t.me/${CONTACT_TG}`, "_blank");
-    }
-  };
+  const toggleTheme = () => setTheme(prev => (prev === "dark" ? "alt" : "dark"));
 
   const renderContent = () => {
     switch (activeTab) {
@@ -47,6 +36,14 @@ export default function App() {
     }
   };
 
+  const handleFixedOrderClick = () => {
+    if (activeTab === TABS.AI) {
+      alert("Сгенерировать идею!");
+    } else {
+      window.open(`https://t.me/${CONTACT_TG}`, "_blank");
+    }
+  };
+
   return (
     <div className={`app-root theme-${theme}`}>
       <div className="app-shell">
@@ -56,15 +53,17 @@ export default function App() {
             <span className="app-title">Rival App</span>
             <span className="app-subtitle">портфолио дизайнера</span>
           </div>
-          <div className="controls">
+
+          {/* Кнопки в правом верхнем углу */}
+          <div style={{ display: "flex", gap: "6px" }}>
             <button className="icon-btn" onClick={toggleTheme}>🌗</button>
-            <button className="icon-btn">🌐</button> {/* смена языка / о приложении */}
+            <button className="icon-btn">🌐</button>
           </div>
         </div>
 
         {/* Вкладки */}
         <nav className="tabs">
-          {Object.values(TABS).map((tabKey) => (
+          {Object.values(TABS).map(tabKey => (
             <button
               key={tabKey}
               className={"tab-btn" + (activeTab === tabKey ? " tab-btn-active" : "")}
@@ -78,8 +77,8 @@ export default function App() {
         {/* Контент вкладки */}
         <main className="tab-content">{renderContent()}</main>
 
-        {/* Фиксированная кнопка */}
-        <button className="primary-btn wide fixed-order-btn" onClick={handleOrderClick}>
+        {/* Фиксированная кнопка внизу */}
+        <button className="fixed-order-btn primary-btn" onClick={handleFixedOrderClick}>
           {activeTab === TABS.AI ? "Сгенерировать идею" : "Оформить заказ"}
         </button>
       </div>
