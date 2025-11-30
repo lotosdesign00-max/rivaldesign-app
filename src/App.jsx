@@ -1,12 +1,4 @@
 import React, { useState } from "react";
-import Header from "./Header";
-import Gallery from "./Gallery";
-import FAQ from "./FAQ";
-import Pricing from "./Pricing";
-import About from "./About";
-import IdeaGenerator from "./IdeaGenerator";
-import Reviews from "./Reviews";
-import { CONTACT_TG, SOCIAL_LINKS } from "./config";
 
 const TABS = {
   GALLERY: "gallery",
@@ -28,6 +20,8 @@ const TAB_LABELS = {
   [TABS.AI]: "AI идеи",
 };
 
+const CONTACT_TG = "Rivaldsg";
+
 function App() {
   const [activeTab, setActiveTab] = useState(TABS.GALLERY);
   const [theme, setTheme] = useState("dark"); // dark | alt
@@ -43,10 +37,28 @@ function App() {
   const renderContent = () => {
     switch (activeTab) {
       case TABS.GALLERY:
-        return <Gallery />;
+        return (
+          <section className="card">
+            <h2 className="section-title">Галерея работ</h2>
+            <p className="section-subtitle">
+              Здесь будут твои работы: логотипы, постеры, баннеры, брендинг и т.д.
+            </p>
+            <p className="hint-text">
+              Позже сюда можно прикрутить свайпы, категории и кнопку "Подробнее".
+            </p>
+          </section>
+        );
 
       case TABS.REVIEWS:
-        return <Reviews />;
+        return (
+          <section className="card">
+            <h2 className="section-title">Отзывы клиентов</h2>
+            <p className="section-subtitle">
+              Здесь будут карточки с отзывами, именем и аватаркой.
+            </p>
+            <button className="secondary-btn">Оставить отзыв</button>
+          </section>
+        );
 
       case TABS.ORDER:
         return (
@@ -59,44 +71,61 @@ function App() {
               Написать @{CONTACT_TG}
             </button>
             <p className="hint-text">
-              Укажи тип проекта, сроки, примерный бюджет и пожелания — я отвечу
-              как можно быстрее.
+              Укажи тип проекта, сроки, примерный бюджет и пожелания.
             </p>
           </section>
         );
 
       case TABS.PRICING:
-        return <Pricing />;
+        return (
+          <section className="card">
+            <h2 className="section-title">Прайс / Услуги</h2>
+            <ul className="list">
+              <li>Логотип — от 𝑋ₓₓₓ грн</li>
+              <li>Фирменный стиль — от 𝑋ₓₓₓ грн</li>
+              <li>Оформление соцсетей — от 𝑋ₓₓₓ грн</li>
+              <li>Рекламные баннеры — от 𝑋ₓₓₓ грн</li>
+            </ul>
+          </section>
+        );
 
       case TABS.ABOUT:
         return (
-          <>
-            <About />
-            <section className="card">
-              <h3 className="section-title">Контакты / Соцсети</h3>
-              <div className="social-chips">
-                {SOCIAL_LINKS.map((item) => (
-                  <button
-                    key={item.label}
-                    className="chip"
-                    onClick={() => window.open(item.url, "_blank")}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </section>
-          </>
+          <section className="card">
+            <h2 className="section-title">Обо мне</h2>
+            <p className="section-subtitle">
+              Я Rival, дизайнер. Работаю с брендами, помогаю выделиться в соцсетях и рекламе.
+            </p>
+            <p className="hint-text">
+              Здесь можно добавить фото, ссылки на Behance, Instagram, Telegram и т.д.
+            </p>
+          </section>
         );
 
       case TABS.FAQ:
-        return <FAQ />;
+        return (
+          <section className="card">
+            <h2 className="section-title">FAQ / Частые вопросы</h2>
+            <ul className="list">
+              <li>Как проходит работа?</li>
+              <li>Какие файлы я получу?</li>
+              <li>Сколько правок входит в стоимость?</li>
+            </ul>
+          </section>
+        );
 
       case TABS.AI:
-        return <IdeaGenerator />;
+        return (
+          <section className="card">
+            <h2 className="section-title">AI — генератор идей</h2>
+            <p className="section-subtitle">
+              Здесь можно сделать блок, где бот предлагает палитры, референсы и концепты.
+            </p>
+          </section>
+        );
 
       default:
-        return <Gallery />;
+        return null;
     }
   };
 
@@ -113,9 +142,6 @@ function App() {
             🌗
           </button>
         </div>
-
-        {/* Блок с шапкой профиля */}
-        <Header />
 
         {/* Вкладки */}
         <nav className="tabs">
