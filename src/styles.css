@@ -209,3 +209,100 @@ body{
   border-radius: 999px;
 }
 
+/* Центровка и фиксированная "мобильная" ширина */
+
+/* Внешний контейнер: центрируем по горизонтали */
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+}
+
+/* Внутренний контейнер: фиксируем адекватную ширину приложения */
+.app-shell {
+  width: 100%;
+  max-width: 480px; /* можно 420–520 под себя */
+  position: relative;
+}
+
+/* Верхняя панель */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.top-bar-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.app-subtitle {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.icon-btn {
+  border: none;
+  outline: none;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+
+/* Вкладки */
+.tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 6px 2px 8px;
+  margin-bottom: 8px;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-btn {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  border: none;
+  padding: 6px 12px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  opacity: 0.7;
+}
+
+.tab-btn-active {
+  background: #ff3040;
+  opacity: 1;
+}
+
+/* Контент вкладки + запас под нижнюю кнопку */
+.tab-content {
+  padding-bottom: 80px;
+}
+
+/* Фиксированная нижняя кнопка */
+.fixed-order-btn {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 10px;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 999px;
+}
+
+
