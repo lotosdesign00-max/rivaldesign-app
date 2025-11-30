@@ -276,14 +276,14 @@ const GALLERY_ITEMS = [
     id: "1",
     category: "Аватарки",
     title: "Аватар 1",
-    image: "/images/avatar1.jpg",
+    image: "/images/podborka1.jpg",
     description: "Описание аватарки 1",
   },
   {
     id: "2",
     category: "Превью",
     title: "Превью 1",
-    image: "/images/podborka1.jpg",
+    image: "/images/avatar1.jpg",
     description: "Описание превью 1",
   },
   {
