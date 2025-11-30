@@ -2,11 +2,11 @@ import React from "react";
 
 export default function ProjectCard({ project }) {
   return (
-    <div className="card">
-      <img src={project.img} alt={project.title} className="project-img" />
+    <div className="project-card">
+      <img className="project-img" src={project.image} alt={project.title} />
       <h4>{project.title}</h4>
       <p className="muted">{project.description}</p>
-      <button className="primary-btn wide">Подробнее</button>
+      <p className="muted">Срок: {project.time}</p>
     </div>
   );
 }
