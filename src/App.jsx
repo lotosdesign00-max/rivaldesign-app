@@ -54,7 +54,6 @@ const TAB_LABELS = {
   },
 };
 
-// Тексты для языков
 const TEXTS = {
   ru: {
     appTitle: "Rival App",
@@ -277,7 +276,7 @@ const GALLERY_ITEMS = [
     id: "1",
     category: "Аватарки",
     title: "Аватар 1",
-    image: "/images/podborka1.jpg",
+    image: "/images/avatar1.jpg",
     description: "Описание аватарки 1",
   },
   {
@@ -301,6 +300,14 @@ const GALLERY_ITEMS = [
     image: "/images/avatar2.jpg",
     description: "Описание аватарки 2",
   },
+  // пример твоей своей работы
+  // {
+  //   id: "5",
+  //   category: "Аватарки",
+  //   title: "Rival Avatar",
+  //   image: "/images/my-avatar-1.png",
+  //   description: "Мой фирменный аватар",
+  // },
 ];
 
 const REVIEWS_ITEMS = [
@@ -315,6 +322,9 @@ export default function App() {
   const [language, setLanguage] = useState("ru");
   const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
+
+  // для зума картинки
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const t = TEXTS[language];
   const labels = TAB_LABELS[language];
@@ -332,7 +342,6 @@ export default function App() {
       alert(t.aiAlert);
     } else {
       alert(t.orderAlert);
-      // потом можно сделать:
       // window.open("https://t.me/Rivaldsg", "_blank");
     }
   };
@@ -364,9 +373,27 @@ export default function App() {
               {GALLERY_ITEMS.filter(
                 (p) => p.category === activeCategory
               ).map((p) => (
-                <SwiperSlide key={p.id} style={{ width: 320 }}>
-                  <img src={p.image} alt={p.title} className="project-img" />
-                  <p className="hint-text">{p.description}</p>
+                <SwiperSlide key={p.id} style={{ width: 220 }}>
+                  <div
+                    className="project-card"
+                    onClick={() => setSelectedImage(p)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div className="project-thumb-wrapper">
+                      <img
+                        src={p.image}
+                        alt={p.title}
+                        className="project-thumb-img"
+                      />
+                    </div>
+                    <div className="project-info">
+                      <div className="project-title">{p.title}</div>
+                      <p className="hint-text">{p.description}</p>
+                      <span className="hint-text">
+                        🔍 нажми, чтобы увеличить
+                      </span>
+                    </div>
+                  </div>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -452,15 +479,6 @@ export default function App() {
     }
   };
 
-  // красивое отображение текущего языка (краткий лейбл на кнопке можно не трогать)
-  const currentLangLabel = {
-    ru: "RU",
-    en: "EN",
-    ua: "UA",
-    kz: "KZ",
-    by: "BY",
-  }[language];
-
   return (
     <div className={`app-root theme-${theme}`}>
       <div className="app-shell">
@@ -477,12 +495,10 @@ export default function App() {
             </button>
 
             <div style={{ position: "relative" }}>
-              {/* Кнопка с планетой */}
               <button className="icon-btn" onClick={toggleLangMenu}>
                 🌐
               </button>
 
-              {/* Выпадающее мини-меню языков */}
               {showLangMenu && (
                 <div
                   style={{
@@ -586,6 +602,35 @@ export default function App() {
           {activeTab === TABS.AI ? t.bottomGenerate : t.bottomOrder}
         </button>
       </div>
+
+      {/* Модальное окно для увеличенной картинки */}
+      {selectedImage && (
+        <div
+          className="image-modal-backdrop"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div
+            className="image-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="icon-btn image-modal-close"
+              onClick={() => setSelectedImage(null)}
+            >
+              ✖
+            </button>
+            <img
+              src={selectedImage.image}
+              alt={selectedImage.title}
+              className="image-modal-img"
+            />
+            <div className="image-modal-text">
+              <h3>{selectedImage.title}</h3>
+              <p>{selectedImage.description}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
