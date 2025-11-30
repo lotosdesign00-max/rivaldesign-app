@@ -1,121 +1,76 @@
-.category-tabs {
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.nav {
   display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  margin: 10px 0;
+  gap: 20px;
+  padding: 10px;
+  background: #222;
 }
 
-.category-tabs::-webkit-scrollbar {
-  display: none;
+.nav a {
+  color: #fff;
+  text-decoration: none;
 }
 
-.tab-btn {
-  flex: 0 0 auto;
-  border-radius: 999px;
-  border: none;
-  padding: 6px 12px;
-  font-size: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  color: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-  opacity: 0.7;
+.nav a.active {
+  font-weight: bold;
+  border-bottom: 2px solid #fff;
 }
 
-.tab-btn-active {
-  background: #ff3040;
-  opacity: 1;
+.content {
+  padding: 20px;
 }
 
-/* Ограничиваем ширину приложения и центрируем */
-.app-root {
-  min-height: 100vh;
+.gallery-buttons {
+  margin-bottom: 10px;
+}
+
+.gallery-buttons button {
+  margin-right: 10px;
+}
+
+.gallery-grid {
   display: flex;
-  justify-content: center;
-  padding: 8px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.app-shell {
-  width: 100%;
-  max-width: 520px; /* чтобы и в растянутом виде смотрелось как аккуратный мобильный макет */
-  position: relative;
+.gallery-item img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
 }
 
-/* Верхняя панель */
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.top-bar-left {
+.reviews-grid {
   display: flex;
   flex-direction: column;
+  gap: 15px;
 }
 
-.app-title {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.app-subtitle {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-.icon-btn {
-  border: none;
-  outline: none;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  cursor: pointer;
-}
-
-/* Вкладки */
-.tabs {
+.review-item {
   display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 6px 2px 8px;
-  margin-bottom: 8px;
+  align-items: center;
+  gap: 10px;
 }
 
-.tabs::-webkit-scrollbar {
-  display: none;
+.avatar {
+  width: 50px;
+  height: 50px;
+  background: #666;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border-radius: 50%;
 }
 
-.tab-btn {
-  flex: 0 0 auto;
-  border-radius: 999px;
-  border: none;
-  padding: 6px 12px;
-  font-size: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  color: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-  opacity: 0.7;
-}
-
-.tab-btn-active {
-  background: #ff3040;
-  opacity: 1;
-}
-
-/* Контент вкладки */
-.tab-content {
-  padding-bottom: 72px; /* запас под нижнюю кнопку */
-}
-
-/* Фиксированная нижняя кнопка заказа */
-.fixed-order-btn {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 10px;
-  width: 100%;
-  max-width: 520px;
-  border-radius: 999px;
+.generated-idea {
+  margin-top: 15px;
+  font-size: 18px;
+  font-weight: bold;
 }
