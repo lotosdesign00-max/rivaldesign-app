@@ -1,26 +1,32 @@
-import React, {useState} from 'react'
-import reviews from '../data/reviews.json'
+import React from "react";
+import reviews from "../data/reviews.json";
 
-export default function Reviews(){
-  const [list] = useState(reviews)
+export default function Reviews() {
   return (
     <div className="card">
-      <h3>Отзывы</h3>
-      <div className="muted">Короткие карточки клиентов</div>
-      <div style={{display:'flex', gap:12, overflowX:'auto', paddingTop:12}}>
-        {list.map(r => (
-          <div key={r.id} style={{minWidth:220}} className="card">
-            <div style={{display:'flex',gap:10,alignItems:'center'}}>
-              <img src={r.avatar} style={{width:48,height:48,borderRadius:24,objectFit:'cover'}} />
-              <div>
-                <div style={{fontWeight:700}}>{r.name}</div>
-                <div className="muted" style={{fontSize:12}}>{r.role || ''}</div>
-              </div>
-            </div>
-            <p style={{marginTop:8}}>{r.text}</p>
+      <h3>Отзывы клиентов</h3>
+      {reviews.map((r, idx) => (
+        <div key={idx} style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}>
+          <div style={{
+            width: 36,
+            height: 36,
+            borderRadius: "50%",
+            background: "#ff3040",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#fff",
+            fontWeight: 700,
+            marginRight: 8
+          }}>
+            {r.name[0].toUpperCase()}
           </div>
-        ))}
-      </div>
+          <div>
+            <div style={{ fontWeight: 600 }}>{r.name}</div>
+            <div className="muted">{r.comment}</div>
+          </div>
+        </div>
+      ))}
     </div>
-  )
+  );
 }
