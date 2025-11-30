@@ -55,15 +55,23 @@ const TAB_LABELS = {
 };
 
 const TEXTS = {
-const TEXTS = {
   ru: {
-    // ...
+    appTitle: "Rival App",
+    appSubtitle: "портфолио дизайнера",
+
+    galleryTitle: "Галерея работ",
+    gallerySubtitle: "Аватарки, превью, баннеры и другие проекты.",
+    galleryHint: "Выбери категорию сверху и листай работы свайпом.",
+
+    reviewsTitle: "Отзывы клиентов",
+    reviewsSubtitle: "Настоящие отзывы твоих клиентов.",
+    reviewsAddButton: "Оставить отзыв",
+
     pricingTitle: "Прайс / Услуги",
     pricingItems: [
       "Аватарка — 500 грн",
       "Превью — 400 грн",
       "Баннер — 600 грн",
-      "Концепт — 1000 грн",
     ],
 
     aboutTitle: "Обо мне",
@@ -104,9 +112,8 @@ const TEXTS = {
     pricingTitle: "Pricing / Services",
     pricingItems: [
       "Avatar — from 200 UAH",
-      "Brand identity — from X UAH",
-      "Social media design — from X UAH",
-      "Ad banners — from X UAH",
+      "Preview — from 150 UAH",
+      "Banner — from 250 UAH",
     ],
 
     aboutTitle: "About me",
@@ -145,9 +152,9 @@ const TEXTS = {
 
     pricingTitle: "Прайс / Послуги",
     pricingItems: [
-      "Aватар — 200 грн",
-      "Прев'ю — 200 грн",
-      "Баннер — 200 грн",
+      "Аватарка — 500 грн",
+      "Прев’ю — 400 грн",
+      "Баннер — 600 грн",
     ],
 
     aboutTitle: "Про мене",
@@ -186,8 +193,8 @@ const TEXTS = {
 
     pricingTitle: "Прайс / Қызметтер",
     pricingItems: [
-      "Аватар — X теңгеден",
-      "Алдын ала қарау — X теңгеден",
+      "Аватарка — X теңгеден",
+      "Превью — X теңгеден",
       "Баннер — X теңгеден",
     ],
 
@@ -228,9 +235,9 @@ const TEXTS = {
 
     pricingTitle: "Прайс / Паслугі",
     pricingItems: [
-      "аватар — ад X BYN",
-      "Лагатып — ад X BYN",
-      "банэр — ад X BYN",
+      "Аватарка — ад X BYN",
+      "Превью — ад X BYN",
+      "Баннер — ад X BYN",
     ],
 
     aboutTitle: "Пра мяне",
@@ -257,12 +264,12 @@ const TEXTS = {
   },
 };
 
-const GALLERY_CATEGORIES = ["Аватарки", "Превью", "Баннеры"];
+const GALLERY_CATEGORIES = ["Аватарка", "Превью", "Баннер"];
 
 const GALLERY_ITEMS = [
   {
     id: "1",
-    category: "Аватарки",
+    category: "Аватарка",
     title: "Аватар 1",
     image: "/images/podborka1.jpg",
     description: "Описание аватарки 1",
@@ -276,26 +283,18 @@ const GALLERY_ITEMS = [
   },
   {
     id: "3",
-    category: "Баннеры",
+    category: "Баннер",
     title: "Баннер 1",
     image: "/images/banner1.jpg",
     description: "Описание баннера 1",
   },
   {
     id: "4",
-    category: "Аватарки",
+    category: "Аватарка",
     title: "Аватар 2",
     image: "/images/avatar2.jpg",
     description: "Описание аватарки 2",
   },
-  // пример твоей своей работы
-  // {
-  //   id: "5",
-  //   category: "Аватарки",
-  //   title: "Rival Avatar",
-  //   image: "/images/my-avatar-1.png",
-  //   description: "Мой фирменный аватар",
-  // },
 ];
 
 const REVIEWS_ITEMS = [
@@ -310,8 +309,6 @@ export default function App() {
   const [language, setLanguage] = useState("ru");
   const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
-
-  // для зума картинки
   const [selectedImage, setSelectedImage] = useState(null);
 
   const t = TEXTS[language];
@@ -330,7 +327,6 @@ export default function App() {
       alert(t.aiAlert);
     } else {
       alert(t.orderAlert);
-      // window.open("https://t.me/Rivaldsg", "_blank");
     }
   };
 
@@ -470,7 +466,6 @@ export default function App() {
   return (
     <div className={`app-root theme-${theme}`}>
       <div className="app-shell">
-        {/* Верхняя панель */}
         <div className="top-bar">
           <div className="top-bar-left">
             <span className="app-title">{t.appTitle}</span>
@@ -527,98 +522,4 @@ export default function App() {
                   </button>
                   <button
                     className="tab-btn"
-                    onClick={() => handleLangChange("en")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇬🇧 English
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("kz")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇰🇿 Қазақша
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("by")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇧🇾 Беларуская
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Основные вкладки */}
-        <nav className="tabs">
-          {Object.values(TABS).map((tab) => (
-            <button
-              key={tab}
-              className={
-                "tab-btn" + (activeTab === tab ? " tab-btn-active" : "")
-              }
-              onClick={() => setActiveTab(tab)}
-            >
-              {labels[tab]}
-            </button>
-          ))}
-        </nav>
-
-        {/* Контент */}
-        <main className="tab-content">{renderContent()}</main>
-
-        {/* Нижняя кнопка */}
-        <button
-          className="primary-btn fixed-order-btn"
-          onClick={handleBottomButton}
-        >
-          {activeTab === TABS.AI ? t.bottomGenerate : t.bottomOrder}
-        </button>
-      </div>
-
-      {/* Модальное окно для увеличенной картинки */}
-      {selectedImage && (
-        <div
-          className="image-modal-backdrop"
-          onClick={() => setSelectedImage(null)}
-        >
-          <div
-            className="image-modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="icon-btn image-modal-close"
-              onClick={() => setSelectedImage(null)}
-            >
-              ✖
-            </button>
-            <img
-              src={selectedImage.image}
-              alt={selectedImage.title}
-              className="image-modal-img"
-            />
-            <div className="image-modal-text">
-              <h3>{selectedImage.title}</h3>
-              <p>{selectedImage.description}</p>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+                    onClick={() => handleLangChange("en
