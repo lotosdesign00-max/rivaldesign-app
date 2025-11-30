@@ -1,33 +1,28 @@
-/* Верхний правый угол для кнопок темы и языка */
-.top-bar-right {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-/* Категории внутри галереи */
 .category-tabs {
   display: flex;
   gap: 6px;
-  margin: 8px 0;
   overflow-x: auto;
+  margin: 10px 0;
 }
 
 .category-tabs::-webkit-scrollbar {
   display: none;
 }
 
-.category-tabs .tab-btn {
+.tab-btn {
   flex: 0 0 auto;
+  border-radius: 999px;
+  border: none;
   padding: 6px 12px;
   font-size: 12px;
-  border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
+  color: inherit;
   cursor: pointer;
+  white-space: nowrap;
   opacity: 0.7;
 }
 
-.category-tabs .tab-btn.tab-btn-active {
+.tab-btn-active {
   background: #ff3040;
   opacity: 1;
 }
