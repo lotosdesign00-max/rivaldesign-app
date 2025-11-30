@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-// === Константы вкладок ===
+// Константы вкладок
 const TABS = {
   GALLERY: "gallery",
   REVIEWS: "reviews",
@@ -10,6 +10,7 @@ const TABS = {
   AI: "ai",
 };
 
+// Метки вкладок
 const TAB_LABELS = {
   [TABS.GALLERY]: "Галерея",
   [TABS.REVIEWS]: "Отзывы",
@@ -19,84 +20,82 @@ const TAB_LABELS = {
   [TABS.AI]: "AI идеи",
 };
 
-// Галерея по категориям
-const GALLERY_CATEGORIES = ["Аватарки", "Превью", "Баннеры"];
+// Telegram для контакта
+const CONTACT_TG = "Rivaldsg";
+
+// Галерея
 const galleryData = {
-  "Аватарки": [
-    { img: "avatars/avatar1.png", text: "Аватарка 1" },
-    { img: "avatars/avatar2.png", text: "Аватарка 2" },
+  avatars: [
+    { src: "/avatars/avatar1.png", text: "Аватарка 1" },
+    { src: "/avatars/avatar2.png", text: "Аватарка 2" },
   ],
-  "Превью": [
-    { img: "previews/preview1.png", text: "Превью 1" },
-    { img: "previews/preview2.png", text: "Превью 2" },
+  previews: [
+    { src: "/previews/preview1.png", text: "Превью 1" },
+    { src: "/previews/preview2.png", text: "Превью 2" },
   ],
-  "Баннеры": [
-    { img: "banners/banner1.png", text: "Баннер 1" },
-    { img: "banners/banner2.png", text: "Баннер 2" },
+  banners: [
+    { src: "/banners/banner1.png", text: "Баннер 1" },
+    { src: "/banners/banner2.png", text: "Баннер 2" },
   ],
 };
 
-// Отзывы
+// Пример отзывов
 const reviewsData = [
-  { nickname: "Rival", text: "Очень крутая работа, спасибо!" },
-  { nickname: "Gamer123", text: "Супер, рекомендую!" },
+  { nick: "Gamer1", text: "Отличная работа!" },
+  { nick: "PixelPro", text: "Очень доволен дизайном." },
+  { nick: "ArtFan", text: "Супер быстро и красиво!" },
 ];
-
-// Контакты
-const CONTACT_TG = "Rivaldsg";
 
 function App() {
   const [activeTab, setActiveTab] = useState(TABS.GALLERY);
-  const [theme, setTheme] = useState("dark");
-  const [activeGallery, setActiveGallery] = useState(GALLERY_CATEGORIES[0]);
+  const [theme, setTheme] = useState("dark"); // dark | alt
+
+  // Для галереи
+  const [galleryCategory, setGalleryCategory] = useState("avatars");
   const [galleryIndex, setGalleryIndex] = useState(0);
 
-  const toggleTheme = () => setTheme(prev => (prev === "dark" ? "alt" : "dark"));
+  // Смена темы
+  const toggleTheme = () => setTheme((prev) => (prev === "dark" ? "alt" : "dark"));
 
-  const handleOrderClick = () => {
-    if (activeTab === TABS.AI) {
-      alert("Запуск генерации AI идеи!");
-    } else {
-      window.open(`https://t.me/${CONTACT_TG}`, "_blank");
-    }
+  // Галерея листание
+  const nextItem = () => {
+    const items = galleryData[galleryCategory];
+    setGalleryIndex((prev) => (prev + 1) % items.length);
+  };
+  const prevItem = () => {
+    const items = galleryData[galleryCategory];
+    setGalleryIndex((prev) => (prev - 1 + items.length) % items.length);
   };
 
-  const nextGalleryItem = () => {
-    const items = galleryData[activeGallery];
-    setGalleryIndex((galleryIndex + 1) % items.length);
-  };
-
-  const prevGalleryItem = () => {
-    const items = galleryData[activeGallery];
-    setGalleryIndex((galleryIndex - 1 + items.length) % items.length);
-  };
-
+  // Контент вкладок
   const renderContent = () => {
     switch (activeTab) {
       case TABS.GALLERY:
-        const items = galleryData[activeGallery];
-        const item = items[galleryIndex];
         return (
-          <section className="card">
-            <h2 className="section-title">Галерея: {activeGallery}</h2>
-            <div className="gallery-controls">
-              {GALLERY_CATEGORIES.map(cat => (
+          <section className="card gallery-card">
+            <h2 className="section-title">Галерея — {galleryCategory}</h2>
+
+            {/* Категории галереи */}
+            <div className="category-tabs">
+              {Object.keys(galleryData).map((cat) => (
                 <button
                   key={cat}
-                  className={`tab-btn ${activeGallery === cat ? "tab-btn-active" : ""}`}
-                  onClick={() => { setActiveGallery(cat); setGalleryIndex(0); }}
+                  className={galleryCategory === cat ? "tab-btn-active" : ""}
+                  onClick={() => { setGalleryCategory(cat); setGalleryIndex(0); }}
                 >
-                  {cat}
+                  {cat[0].toUpperCase() + cat.slice(1)}
                 </button>
               ))}
             </div>
-            <div className="gallery-item">
-              <img src={item.img} alt={item.text} className="gallery-img" />
-              <p className="gallery-text">{item.text}</p>
-              <div className="gallery-nav">
-                <button onClick={prevGalleryItem}>◀</button>
-                <button onClick={nextGalleryItem}>▶</button>
+
+            {/* Карусель */}
+            <div className="gallery-slider">
+              <button onClick={prevItem}>◀</button>
+              <div className="gallery-item">
+                <img src={galleryData[galleryCategory][galleryIndex].src} />
+                <p>{galleryData[galleryCategory][galleryIndex].text}</p>
               </div>
+              <button onClick={nextItem}>▶</button>
             </div>
           </section>
         );
@@ -105,15 +104,17 @@ function App() {
         return (
           <section className="card">
             <h2 className="section-title">Отзывы клиентов</h2>
-            {reviewsData.map((r, idx) => (
-              <div key={idx} className="review-card">
-                <div className="review-avatar">{r.nickname[0]}</div>
-                <div className="review-text">
-                  <strong>{r.nickname}</strong>
-                  <p>{r.text}</p>
+            <div className="reviews-list">
+              {reviewsData.map((r, idx) => (
+                <div key={idx} className="review-card">
+                  <div className="review-avatar">{r.nick[0].toUpperCase()}</div>
+                  <div className="review-text">
+                    <strong>{r.nick}</strong>
+                    <p>{r.text}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </section>
         );
 
@@ -137,6 +138,7 @@ function App() {
             <p className="section-subtitle">
               Я Rival, дизайнер. Работаю с брендами, помогаю выделиться в соцсетях и рекламе.
             </p>
+            <p className="hint-text">Фото, ссылки на Behance, Instagram, Telegram и т.д.</p>
           </section>
         );
 
@@ -156,9 +158,7 @@ function App() {
         return (
           <section className="card">
             <h2 className="section-title">AI — генератор идей</h2>
-            <p className="section-subtitle">
-              Здесь бот предлагает палитры, референсы и концепты.
-            </p>
+            <p className="section-subtitle">Бот предлагает палитры, референсы и концепты.</p>
           </section>
         );
 
@@ -176,15 +176,17 @@ function App() {
             <span className="app-title">Rival App</span>
             <span className="app-subtitle">портфолио дизайнера</span>
           </div>
+
+          {/* Кнопки темы и инфо */}
           <div className="top-bar-right">
             <button className="icon-btn" onClick={toggleTheme}>🌗</button>
-            <button className="icon-btn">🌐</button> {/* смена языка */}
+            <button className="icon-btn">ℹ️</button>
           </div>
         </div>
 
         {/* Вкладки */}
         <nav className="tabs">
-          {Object.values(TABS).map(tabKey => (
+          {Object.values(TABS).map((tabKey) => (
             <button
               key={tabKey}
               className={"tab-btn" + (activeTab === tabKey ? " tab-btn-active" : "")}
@@ -198,11 +200,18 @@ function App() {
         {/* Контент вкладки */}
         <main className="tab-content">{renderContent()}</main>
 
-        {/* Статичная кнопка внизу */}
-        <div className="bottom-btn-container">
-          <button className="primary-btn bottom-btn" onClick={handleOrderClick}>
-            {activeTab === TABS.AI ? "Сгенерировать идею" : "Оформить заказ"}
-          </button>
+        {/* Кнопка заказа / генерации AI */}
+        <div className="fixed-bottom-btn">
+          {activeTab === TABS.AI ? (
+            <button className="primary-btn wide">Сгенерировать идею</button>
+          ) : (
+            <button
+              className="primary-btn wide"
+              onClick={() => window.open(`https://t.me/${CONTACT_TG}`, "_blank")}
+            >
+              Оформить заказ
+            </button>
+          )}
         </div>
       </div>
     </div>
