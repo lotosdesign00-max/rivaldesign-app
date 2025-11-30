@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 
 const TABS = {
   GALLERY: "gallery",
@@ -12,137 +10,135 @@ const TABS = {
 };
 
 const TAB_LABELS = {
-  [TABS.GALLERY]: "Галерея",
-  [TABS.REVIEWS]: "Отзывы",
-  [TABS.PRICING]: "Прайс",
-  [TABS.ABOUT]: "Обо мне",
-  [TABS.FAQ]: "FAQ",
-  [TABS.AI]: "AI идеи",
+  en: {
+    [TABS.GALLERY]: "Gallery",
+    [TABS.REVIEWS]: "Reviews",
+    [TABS.PRICING]: "Pricing",
+    [TABS.ABOUT]: "About",
+    [TABS.FAQ]: "FAQ",
+    [TABS.AI]: "AI Ideas",
+  },
+  ru: {
+    [TABS.GALLERY]: "Галерея",
+    [TABS.REVIEWS]: "Отзывы",
+    [TABS.PRICING]: "Прайс",
+    [TABS.ABOUT]: "Обо мне",
+    [TABS.FAQ]: "FAQ",
+    [TABS.AI]: "AI идеи",
+  },
+};
+
+const CONTENT = {
+  en: {
+    [TABS.GALLERY]: {
+      title: "Gallery of Works",
+      subtitle: "Here will be your works: logos, posters, banners, branding, etc.",
+    },
+    [TABS.REVIEWS]: {
+      title: "Customer Reviews",
+      subtitle: "Here will be review cards with name and avatar.",
+    },
+    [TABS.PRICING]: {
+      title: "Pricing / Services",
+    },
+    [TABS.ABOUT]: {
+      title: "About Me",
+      subtitle: "I am Rival, designer. I help brands stand out on social media.",
+    },
+    [TABS.FAQ]: {
+      title: "FAQ / Frequently Asked",
+    },
+    [TABS.AI]: {
+      title: "AI Idea Generator",
+      subtitle: "Here the bot can suggest palettes, references, and concepts.",
+    },
+  },
+  ru: {
+    [TABS.GALLERY]: {
+      title: "Галерея работ",
+      subtitle: "Здесь будут твои работы: логотипы, постеры, баннеры, брендинг и т.д.",
+    },
+    [TABS.REVIEWS]: {
+      title: "Отзывы клиентов",
+      subtitle: "Здесь будут карточки с отзывами, именем и аватаркой.",
+    },
+    [TABS.PRICING]: {
+      title: "Прайс / Услуги",
+    },
+    [TABS.ABOUT]: {
+      title: "Обо мне",
+      subtitle: "Я Rival, дизайнер. Работаю с брендами, помогаю выделиться в соцсетях и рекламе.",
+    },
+    [TABS.FAQ]: {
+      title: "FAQ / Частые вопросы",
+    },
+    [TABS.AI]: {
+      title: "AI — генератор идей",
+      subtitle: "Здесь можно сделать блок, где бот предлагает палитры, референсы и концепты.",
+    },
+  },
 };
 
 const CONTACT_TG = "Rivaldsg";
 
-const MOCK_GALLERY = [
-  { id: "1", category: "Аватарки", title: "Аватар 1", image: "/images/avatar1.jpg", description: "Описание аватарки 1" },
-  { id: "2", category: "Превью", title: "Превью 1", image: "/images/preview1.jpg", description: "Описание превью 1" },
-  { id: "3", category: "Баннеры", title: "Баннер 1", image: "/images/banner1.jpg", description: "Описание баннера 1" },
-];
-
-const MOCK_REVIEWS = [
-  { id: "r1", name: "Alice", text: "Отличная работа!", avatar: "A" },
-  { id: "r2", name: "Bob", text: "Очень доволен.", avatar: "B" },
-  { id: "r3", name: "Charlie", text: "Рекомендую!", avatar: "C" },
-];
-
-export default function App() {
+function App() {
   const [activeTab, setActiveTab] = useState(TABS.GALLERY);
   const [theme, setTheme] = useState("dark");
-  const [galleryFilter, setGalleryFilter] = useState("Аватарки");
+  const [lang, setLang] = useState("ru");
 
-  const toggleTheme = () => setTheme(theme === "dark" ? "alt" : "dark");
+  const toggleTheme = () => setTheme(prev => (prev === "dark" ? "alt" : "dark"));
+  const toggleLang = () => setLang(prev => (prev === "ru" ? "en" : "ru"));
 
   const handleOrderClick = () => {
-    if (activeTab === TABS.AI) {
-      alert("Генерируем идею...");
-    } else {
-      window.open(`https://t.me/${CONTACT_TG}`, "_blank");
-    }
+    window.open(`https://t.me/${CONTACT_TG}`, "_blank");
   };
-
-  const renderGallery = () => {
-    const filtered = MOCK_GALLERY.filter(item => item.category === galleryFilter);
-    return (
-      <section className="card">
-        <h2 className="section-title">Галерея работ</h2>
-        <div className="row" style={{marginBottom:"8px"}}>
-          {["Аватарки","Превью","Баннеры"].map(cat => (
-            <button
-              key={cat}
-              className={`tab-btn${galleryFilter===cat ? " tab-btn-active" : ""}`}
-              onClick={()=>setGalleryFilter(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-        <Swiper spaceBetween={12} slidesPerView={"auto"}>
-          {filtered.map(item => (
-            <SwiperSlide key={item.id} style={{width:300}}>
-              <img src={item.image} alt={item.title} className="project-img"/>
-              <div style={{marginTop:"6px", fontSize:"13px"}}>{item.title}</div>
-              <div style={{fontSize:"12px", opacity:0.7}}>{item.description}</div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </section>
-    );
-  };
-
-  const renderReviews = () => (
-    <section className="card">
-      <h2 className="section-title">Отзывы клиентов</h2>
-      <Swiper spaceBetween={12} slidesPerView={"auto"}>
-        {MOCK_REVIEWS.map(r => (
-          <SwiperSlide key={r.id} style={{width:250}}>
-            <div style={{fontSize:"14px", fontWeight:600, marginBottom:"4px"}}>
-              <span style={{
-                display:"inline-block",
-                width:32,
-                height:32,
-                borderRadius:"50%",
-                background:"#ff3040",
-                color:"#fff",
-                textAlign:"center",
-                lineHeight:"32px",
-                marginRight:"6px"
-              }}>{r.avatar}</span>
-              {r.name}
-            </div>
-            <div style={{fontSize:"12px"}}>{r.text}</div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </section>
-  );
 
   const renderContent = () => {
-    switch(activeTab){
-      case TABS.GALLERY: return renderGallery();
-      case TABS.REVIEWS: return renderReviews();
-      case TABS.PRICING: return (
-        <section className="card">
-          <h2 className="section-title">Прайс / Услуги</h2>
-          <ul className="list">
-            <li>Логотип — от X грн</li>
-            <li>Фирменный стиль — от X грн</li>
-            <li>Оформление соцсетей — от X грн</li>
-            <li>Рекламные баннеры — от X грн</li>
-          </ul>
-        </section>
-      );
-      case TABS.ABOUT: return (
-        <section className="card">
-          <h2 className="section-title">Обо мне</h2>
-          <p>Я Rival, дизайнер. Работаю с брендами и соцсетями.</p>
-        </section>
-      );
-      case TABS.FAQ: return (
-        <section className="card">
-          <h2 className="section-title">FAQ</h2>
-          <ul className="list">
-            <li>Как проходит работа?</li>
-            <li>Какие файлы я получу?</li>
-            <li>Сколько правок входит в стоимость?</li>
-          </ul>
-        </section>
-      );
-      case TABS.AI: return (
-        <section className="card">
-          <h2 className="section-title">AI — генератор идей</h2>
-          <p>Выбирай идеи и вдохновляйся.</p>
-        </section>
-      );
-      default: return null;
+    const content = CONTENT[lang][activeTab];
+    switch (activeTab) {
+      case TABS.GALLERY:
+        return (
+          <section className="card">
+            <h2 className="section-title">{content.title}</h2>
+            <p className="section-subtitle">{content.subtitle}</p>
+          </section>
+        );
+      case TABS.REVIEWS:
+        return (
+          <section className="card">
+            <h2 className="section-title">{content.title}</h2>
+            <p className="section-subtitle">{content.subtitle}</p>
+            <button className="secondary-btn">Оставить отзыв</button>
+          </section>
+        );
+      case TABS.PRICING:
+        return (
+          <section className="card">
+            <h2 className="section-title">{content.title}</h2>
+          </section>
+        );
+      case TABS.ABOUT:
+        return (
+          <section className="card">
+            <h2 className="section-title">{content.title}</h2>
+            <p className="section-subtitle">{content.subtitle}</p>
+          </section>
+        );
+      case TABS.FAQ:
+        return (
+          <section className="card">
+            <h2 className="section-title">{content.title}</h2>
+          </section>
+        );
+      case TABS.AI:
+        return (
+          <section className="card">
+            <h2 className="section-title">{content.title}</h2>
+            <p className="section-subtitle">{content.subtitle}</p>
+          </section>
+        );
+      default:
+        return null;
     }
   };
 
@@ -156,18 +152,18 @@ export default function App() {
           </div>
           <div className="controls">
             <button className="icon-btn" onClick={toggleTheme}>🌗</button>
-            <button className="icon-btn">🌐</button>
+            <button className="icon-btn" onClick={toggleLang}>{lang.toUpperCase()}</button>
           </div>
         </div>
 
         <nav className="tabs">
-          {Object.values(TABS).map(tabKey=>(
+          {Object.values(TABS).map(tabKey => (
             <button
               key={tabKey}
-              className={"tab-btn"+(activeTab===tabKey?" tab-btn-active":"")}
-              onClick={()=>setActiveTab(tabKey)}
+              className={"tab-btn" + (activeTab === tabKey ? " tab-btn-active" : "")}
+              onClick={() => setActiveTab(tabKey)}
             >
-              {TAB_LABELS[tabKey]}
+              {TAB_LABELS[lang][tabKey]}
             </button>
           ))}
         </nav>
@@ -178,9 +174,11 @@ export default function App() {
           className="primary-btn fixed-order-btn"
           onClick={handleOrderClick}
         >
-          {activeTab===TABS.AI ? "Сгенерировать идею" : "Оформить заказ"}
+          {activeTab === TABS.AI ? (lang === "ru" ? "Сгенерировать" : "Generate") : (lang === "ru" ? "Оформить заказ" : "Order")}
         </button>
       </div>
     </div>
   );
 }
+
+export default App;
