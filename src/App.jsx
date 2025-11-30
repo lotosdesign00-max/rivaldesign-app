@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 
 const TABS = {
   GALLERY: "gallery",
   REVIEWS: "reviews",
+  ORDER: "order",
   PRICING: "pricing",
   ABOUT: "about",
   FAQ: "faq",
@@ -12,108 +11,131 @@ const TABS = {
 };
 
 const TAB_LABELS = {
-  ru: {
-    [TABS.GALLERY]: "Галерея",
-    [TABS.REVIEWS]: "Отзывы",
-    [TABS.PRICING]: "Прайс",
-    [TABS.ABOUT]: "Обо мне",
-    [TABS.FAQ]: "FAQ",
-    [TABS.AI]: "AI идеи",
-  },
-  // Можно добавить другие языки...
+  [TABS.GALLERY]: "Галерея",
+  [TABS.REVIEWS]: "Отзывы",
+  [TABS.ORDER]: "Заказать",
+  [TABS.PRICING]: "Прайс",
+  [TABS.ABOUT]: "Обо мне",
+  [TABS.FAQ]: "FAQ",
+  [TABS.AI]: "AI идеи",
 };
 
-const TEXTS = {
-  ru: {
-    aiTitle: "AI идеи",
-    aiSubtitle: "Генератор идей для палитр, референсов и концептов (в разработке).",
-    bottomGenerate: "Сгенерировать идею",
-    aiAlert: "Скоро здесь будет генератор идей на AI 🚀",
-  },
-};
+const CONTACT_TG = "Rivaldsg";
 
-const GALLERY_CATEGORIES = ["Аватарки", "Превью", "Баннеры"];
-const GALLERY_ITEMS = [
-  { id: "1", category: "Аватарки", title: "Аватар 1", image: "/images/podborka1.jpg", description: "Описание аватарки 1" },
-  { id: "2", category: "Превью", title: "Превью 1", image: "/images/avatar1.jpg", description: "Описание превью 1" },
-  { id: "3", category: "Баннеры", title: "Баннер 1", image: "/images/banner1.jpg", description: "Описание баннера 1" },
-];
-
-export default function App() {
+function App() {
   const [activeTab, setActiveTab] = useState(TABS.GALLERY);
-  const [theme, setTheme] = useState("dark");
-  const [language, setLanguage] = useState("ru");
-  const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [showLangMenu, setShowLangMenu] = useState(false);
+  const [theme, setTheme] = useState("dark"); // dark | alt
   const [aiIdea, setAiIdea] = useState("");
 
-  const t = TEXTS[language];
-  const labels = TAB_LABELS[language];
-
-  const toggleTheme = () => setTheme(prev => (prev === "dark" ? "alt" : "dark"));
-  const toggleLangMenu = () => setShowLangMenu(prev => !prev);
-  const handleLangChange = (lang) => {
-    setLanguage(lang);
-    setShowLangMenu(false);
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "alt" : "dark"));
   };
 
-  const handleBottomButton = () => {
-    if (activeTab === TABS.AI) {
-      alert(t.aiAlert);
-    } else {
-      alert("Скоро тут будет переход к твоему Telegram для оформления заказа 😉");
-    }
+  const handleOrderClick = () => {
+    window.open(`https://t.me/${CONTACT_TG}`, "_blank");
+  };
+
+  const generateAiIdea = () => {
+    const colors = ["#FF5733", "#33FF57", "#3357FF", "#F3FF33", "#FF33F3"];
+    const categories = ["Скамер", "Доксер", "Криптан", "Абузы", "Осинтер"];
+    const names = ["CryptoFox", "ShadowHunter", "NeoBot", "Abyss", "ZeroOne"];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const category = categories[Math.floor(Math.random() * categories.length)];
+    const name = names[Math.floor(Math.random() * names.length)];
+    const nick = `${name}${Math.floor(Math.random() * 999)}`;
+    setAiIdea(`Категория: ${category}\nИмя: ${nick}\nЦвет: ${color}`);
   };
 
   const renderContent = () => {
     switch (activeTab) {
       case TABS.GALLERY:
         return (
-          <div className="card">
-            <h2 className="section-title">Галерея</h2>
-            <Swiper spaceBetween={12} slidesPerView={"auto"}>
-              {GALLERY_ITEMS.filter(p => p.category === activeCategory).map(p => (
-                <SwiperSlide key={p.id} style={{ width: 220 }}>
-                  <div className="project-card" onClick={() => setSelectedImage(p)} style={{ cursor: "pointer" }}>
-                    <div className="project-thumb-wrapper">
-                      <img src={p.image} alt={p.title} className="project-thumb-img" />
-                    </div>
-                    <div className="project-info">
-                      <div className="project-title">{p.title}</div>
-                      <p className="hint-text">{p.description}</p>
-                      <span className="hint-text">🔍 нажми, чтобы увеличить</span>
-                    </div>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
+          <section className="card">
+            <h2 className="section-title">Галерея работ</h2>
+            <p className="section-subtitle">
+              Здесь будут твои работы: логотипы, постеры, баннеры, брендинг и т.д.
+            </p>
+            <p className="hint-text">
+              Позже сюда можно прикрутить свайпы, категории и кнопку "Подробнее".
+            </p>
+          </section>
+        );
+
+      case TABS.REVIEWS:
+        return (
+          <section className="card">
+            <h2 className="section-title">Отзывы клиентов</h2>
+            <p className="section-subtitle">
+              Здесь будут карточки с отзывами, именем и аватаркой.
+            </p>
+            <button className="secondary-btn">Оставить отзыв</button>
+          </section>
+        );
+
+      case TABS.ORDER:
+        return (
+          <section className="card">
+            <h2 className="section-title">Заказать дизайн</h2>
+            <p className="section-subtitle">
+              Напиши мне в Telegram, чтобы обсудить проект:
+            </p>
+            <button className="primary-btn wide" onClick={handleOrderClick}>
+              Написать @{CONTACT_TG}
+            </button>
+            <p className="hint-text">
+              Укажи тип проекта, сроки, примерный бюджет и пожелания.
+            </p>
+          </section>
+        );
+
+      case TABS.PRICING:
+        return (
+          <section className="card">
+            <h2 className="section-title">Прайс / Услуги</h2>
+            <ul className="list">
+              <li>Логотип — от 𝑋ₓₓₓ грн</li>
+              <li>Фирменный стиль — от 𝑋ₓₓₓ грн</li>
+              <li>Оформление соцсетей — от 𝑋ₓₓₓ грн</li>
+              <li>Рекламные баннеры — от 𝑋ₓₓₓ грн</li>
+            </ul>
+          </section>
+        );
+
+      case TABS.ABOUT:
+        return (
+          <section className="card">
+            <h2 className="section-title">Обо мне</h2>
+            <p className="section-subtitle">
+              Я Rival, дизайнер. Работаю с брендами, помогаю выделиться в соцсетях и рекламе.
+            </p>
+            <p className="hint-text">
+              Здесь можно добавить фото, ссылки на Behance, Instagram, Telegram и т.д.
+            </p>
+          </section>
+        );
+
+      case TABS.FAQ:
+        return (
+          <section className="card">
+            <h2 className="section-title">FAQ / Частые вопросы</h2>
+            <ul className="list">
+              <li>Как проходит работа?</li>
+              <li>Какие файлы я получу?</li>
+              <li>Сколько правок входит в стоимость?</li>
+            </ul>
+          </section>
         );
 
       case TABS.AI:
         return (
-          <div className="card">
-            <h2 className="section-title">{t.aiTitle}</h2>
-            <p className="section-subtitle">{t.aiSubtitle}</p>
-
-            <button
-              className="primary-btn"
-              style={{ marginTop: 10 }}
-              onClick={() => {
-                const colors = ["#FF5733", "#33FF57", "#3357FF", "#F3FF33", "#FF33F3"];
-                const categories = ["Скамер", "Доксер", "Криптан", "Абузы", "Осинтер"];
-                const names = ["CryptoFox", "ShadowHunter", "NeoBot", "Abyss", "ZeroOne"];
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const category = categories[Math.floor(Math.random() * categories.length)];
-                const name = names[Math.floor(Math.random() * names.length)];
-                const nick = `${name}${Math.floor(Math.random() * 999)}`;
-                setAiIdea(`Категория: ${category}\nИмя: ${nick}\nЦвет: ${color}`);
-              }}
-            >
-              {t.bottomGenerate}
+          <section className="card">
+            <h2 className="section-title">AI — генератор идей</h2>
+            <p className="section-subtitle">
+              Здесь можно сделать блок, где бот предлагает палитры, референсы и концепты.
+            </p>
+            <button className="primary-btn" onClick={generateAiIdea}>
+              Сгенерировать идею
             </button>
-
             {aiIdea && (
               <pre
                 style={{
@@ -128,11 +150,11 @@ export default function App() {
                 {aiIdea}
               </pre>
             )}
-          </div>
+          </section>
         );
 
       default:
-        return <div>Контент для других вкладок</div>;
+        return null;
     }
   };
 
@@ -145,74 +167,39 @@ export default function App() {
             <span className="app-title">Rival App</span>
             <span className="app-subtitle">портфолио дизайнера</span>
           </div>
-
-          <div style={{ display: "flex", gap: "8px" }}>
-            <button className="icon-btn" onClick={toggleTheme}>🌗</button>
-
-            <div style={{ position: "relative" }}>
-              <button className="icon-btn" onClick={toggleLangMenu}>🌐</button>
-              {showLangMenu && (
-                <div style={{
-                  position: "absolute",
-                  top: "30px",
-                  right: 0,
-                  background: "#222",
-                  borderRadius: "10px",
-                  padding: "6px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "4px",
-                  zIndex: 10
-                }}>
-                  {["ru"].map(lang => (
-                    <button key={lang} className="tab-btn" onClick={() => handleLangChange(lang)}>
-                      {lang.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+          <button className="icon-btn" onClick={toggleTheme}>
+            🌗
+          </button>
         </div>
 
-        {/* Основные вкладки */}
+        {/* Вкладки */}
         <nav className="tabs">
-          {Object.values(TABS).map(tab => (
+          {Object.values(TABS).map((tabKey) => (
             <button
-              key={tab}
-              className={"tab-btn" + (activeTab === tab ? " tab-btn-active" : "")}
-              onClick={() => setActiveTab(tab)}
+              key={tabKey}
+              className={
+                "tab-btn" + (activeTab === tabKey ? " tab-btn-active" : "")
+              }
+              onClick={() => setActiveTab(tabKey)}
             >
-              {labels[tab]}
+              {TAB_LABELS[tabKey]}
             </button>
           ))}
         </nav>
 
-        {/* Контент */}
+        {/* Контент вкладки */}
         <main className="tab-content">{renderContent()}</main>
 
-        {/* Нижняя кнопка */}
+        {/* Фиксированная кнопка заказа снизу */}
         <button
           className="primary-btn fixed-order-btn"
-          onClick={handleBottomButton}
+          onClick={handleOrderClick}
         >
-          {activeTab === TABS.AI ? t.bottomGenerate : "Оформить заказ"}
+          Оформить заказ
         </button>
       </div>
-
-      {/* Модальное окно увеличенной картинки */}
-      {selectedImage && (
-        <div className="image-modal-backdrop" onClick={() => setSelectedImage(null)}>
-          <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="icon-btn image-modal-close" onClick={() => setSelectedImage(null)}>✖</button>
-            <img src={selectedImage.image} alt={selectedImage.title} className="image-modal-img" />
-            <div className="image-modal-text">
-              <h3>{selectedImage.title}</h3>
-              <p>{selectedImage.description}</p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
+
+export default App;
