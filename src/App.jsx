@@ -55,25 +55,55 @@ const TAB_LABELS = {
 };
 
 const TEXTS = {
+const TEXTS = {
   ru: {
-    appTitle: "Rival App",
-    appSubtitle: "портфолио дизайнера",
-
-    galleryTitle: "Галерея работ",
-    gallerySubtitle: "Аватарки, превью, баннеры и другие проекты.",
-    galleryHint: "Выбери категорию сверху и листай работы свайпом.",
-
-    reviewsTitle: "Отзывы клиентов",
-    reviewsSubtitle: "Настоящие отзывы твоих клиентов.",
-    reviewsAddButton: "Оставить отзыв",
-
+    // ...
     pricingTitle: "Прайс / Услуги",
     pricingItems: [
-      "Логотип — от X грн",
-      "Фирменный стиль — от X грн",
-      "Оформление соцсетей — от X грн",
-      "Рекламные баннеры — от X грн",
+      "Аватарка — 500 грн",
+      "Превью — 400 грн",
+      "Баннер — 600 грн",
+      "Концепт — 1000 грн",
     ],
+    // ...
+  },
+  en: {
+    pricingTitle: "Pricing / Services",
+    pricingItems: [
+      "Avatar — $20",
+      "Preview — $15",
+      "Banner — $25",
+      "Concept — $50",
+    ],
+  },
+  ua: {
+    pricingTitle: "Прайс / Послуги",
+    pricingItems: [
+      "Аватарка — 500 грн",
+      "Прев’ю — 400 грн",
+      "Банер — 600 грн",
+      "Концепт — 1000 грн",
+    ],
+  },
+  kz: {
+    pricingTitle: "Прайс / Қызметтер",
+    pricingItems: [
+      "Аватар — 500 ₸",
+      "Превью — 400 ₸",
+      "Баннер — 600 ₸",
+      "Концепт — 1000 ₸",
+    ],
+  },
+  by: {
+    pricingTitle: "Прайс / Паслугі",
+    pricingItems: [
+      "Аватарка — 500 BYN",
+      "Прэв’ю — 400 BYN",
+      "Банер — 600 BYN",
+      "Канцэпт — 1000 BYN",
+    ],
+  },
+};
 
     aboutTitle: "Обо мне",
     aboutSubtitle:
