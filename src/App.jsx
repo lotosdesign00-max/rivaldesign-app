@@ -136,7 +136,10 @@ function App() {
         <main className="tab-content">{renderContent()}</main>
 
         {/* Фиксированная кнопка заказа снизу */}
-        <button className="primary-btn fixed-order-btn" onClick={handleOrderClick}>
+        <button
+          className="primary-btn fixed-order-btn"
+          onClick={handleOrderClick}
+        >
           Оформить заказ
         </button>
       </div>
@@ -145,4 +148,3 @@ function App() {
 }
 
 export default App;
-
