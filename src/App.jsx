@@ -272,61 +272,12 @@ const TEXTS = {
 const GALLERY_CATEGORIES = ["Аватарки", "Превью", "Баннеры"];
 
 const GALLERY_ITEMS = [
-  {
-    id: "1",
-    category: "Аватарки",
-    title: "Аватар 1",
-    image: "/images/podborka1.jpg",
-    description: "Описание аватарки 1",
-  },
-  
-  {
-    id: "2",
-    category: "Превью",
-    title: "Превью 1",
-    image: "/images/avatar1.jpg",
-    description: "Описание превью 1",
-  },
-
-  {
-    id: "88",
-    category: "Превью",
-    title: "Превью 2",
-    image: "/images/avatar1.jpg",
-    description: "Описание превью 1",
-  },
-  
-  {
-    id: "3",
-    category: "Баннеры",
-    title: "Баннер 1",
-    image: "/images/banner1.jpg",
-    description: "Описание баннера 1",
-  },
-
-  {
-    id: "9",
-    category: "Баннеры",
-    title: "Баннер 2",
-    image: "/images/banner1.jpg",
-    description: "Описание баннера 1",
-  },
-  
-  {
-    id: "4",
-    category: "Аватарки",
-    title: "Аватар 2",
-    image: "/images/avatar2.jpg",
-    description: "Описание аватарки 2",
-  },
-  // пример твоей своей работы
-  // {
-  //   id: "5",
-  //   category: "Аватарки",
-  //   title: "Rival Avatar",
-  //   image: "/images/my-avatar-1.png",
-  //   description: "Мой фирменный аватар",
-  // },
+  { id: "1", category: "Аватарки", title: "Аватар 1", image: "/images/podborka1.jpg", description: "Описание аватарки 1" },
+  { id: "2", category: "Превью", title: "Превью 1", image: "/images/avatar1.jpg", description: "Описание превью 1" },
+  { id: "88", category: "Превью", title: "Превью 2", image: "/images/avatar1.jpg", description: "Описание превью 1" },
+  { id: "3", category: "Баннеры", title: "Баннер 1", image: "/images/banner1.jpg", description: "Описание баннера 1" },
+  { id: "9", category: "Баннеры", title: "Баннер 2", image: "/images/banner1.jpg", description: "Описание баннера 1" },
+  { id: "4", category: "Аватарки", title: "Аватар 2", image: "/images/avatar2.jpg", description: "Описание аватарки 2" },
 ];
 
 const REVIEWS_ITEMS = [
@@ -341,9 +292,28 @@ export default function App() {
   const [language, setLanguage] = useState("ru");
   const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
-
-  // для зума картинки
   const [selectedImage, setSelectedImage] = useState(null);
+
+  // AI генератор
+  const [aiIdea, setAiIdea] = useState("");
+
+  const COLORS = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#F3FF33"];
+  const TEXTS_RANDOM = ["Shadow", "CryptoKing", "Phantom", "HackerX", "Ghost"];
+  const CATEGORIES = ["Скамер", "Доксер", "Криптан", "Абузы", "Осинтеры"];
+  const CHARACTERS = ["Ворон", "Лис", "Волк", "Кот", "Робот"];
+
+  function getRandomItem(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function generateAiIdea() {
+    const color = getRandomItem(COLORS);
+    const text = getRandomItem(TEXTS_RANDOM);
+    const category = getRandomItem(CATEGORIES);
+    const character = getRandomItem(CHARACTERS);
+
+    return `Ник: ${text}, Цвет: ${color}, Тематика: ${category}, Персонаж: ${character}`;
+  }
 
   const t = TEXTS[language];
   const labels = TAB_LABELS[language];
@@ -377,10 +347,7 @@ export default function App() {
               {GALLERY_CATEGORIES.map((cat) => (
                 <button
                   key={cat}
-                  className={
-                    "tab-btn" +
-                    (cat === activeCategory ? " tab-btn-active" : "")
-                  }
+                  className={"tab-btn" + (cat === activeCategory ? " tab-btn-active" : "")}
                   onClick={() => setActiveCategory(cat)}
                 >
                   {cat}
@@ -389,28 +356,16 @@ export default function App() {
             </div>
 
             <Swiper spaceBetween={12} slidesPerView={"auto"}>
-              {GALLERY_ITEMS.filter(
-                (p) => p.category === activeCategory
-              ).map((p) => (
+              {GALLERY_ITEMS.filter((p) => p.category === activeCategory).map((p) => (
                 <SwiperSlide key={p.id} style={{ width: 220 }}>
-                  <div
-                    className="project-card"
-                    onClick={() => setSelectedImage(p)}
-                    style={{ cursor: "pointer" }}
-                  >
+                  <div className="project-card" onClick={() => setSelectedImage(p)} style={{ cursor: "pointer" }}>
                     <div className="project-thumb-wrapper">
-                      <img
-                        src={p.image}
-                        alt={p.title}
-                        className="project-thumb-img"
-                      />
+                      <img src={p.image} alt={p.title} className="project-thumb-img" />
                     </div>
                     <div className="project-info">
                       <div className="project-title">{p.title}</div>
                       <p className="hint-text">{p.description}</p>
-                      <span className="hint-text">
-                        🔍 нажми, чтобы увеличить
-                      </span>
+                      <span className="hint-text">🔍 нажми, чтобы увеличить</span>
                     </div>
                   </div>
                 </SwiperSlide>
@@ -431,13 +386,7 @@ export default function App() {
               {REVIEWS_ITEMS.map((r) => (
                 <SwiperSlide key={r.id} style={{ width: 250 }}>
                   <div className="card">
-                    <div
-                      style={{
-                        fontWeight: "bold",
-                        fontSize: "24px",
-                        marginBottom: "4px",
-                      }}
-                    >
+                    <div style={{ fontWeight: "bold", fontSize: "24px", marginBottom: "4px" }}>
                       {r.name[0]}
                     </div>
                     <div>{r.name}</div>
@@ -490,166 +439,14 @@ export default function App() {
           <div className="card">
             <h2 className="section-title">{t.aiTitle}</h2>
             <p className="section-subtitle">{t.aiSubtitle}</p>
-          </div>
-        );
 
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div className={`app-root theme-${theme}`}>
-      <div className="app-shell">
-        {/* Верхняя панель */}
-        <div className="top-bar">
-          <div className="top-bar-left">
-            <span className="app-title">{t.appTitle}</span>
-            <span className="app-subtitle">{t.appSubtitle}</span>
-          </div>
-
-          <div className="controls">
-            <button className="icon-btn" onClick={toggleTheme}>
-              🌗
-            </button>
-
-            <div style={{ position: "relative" }}>
-              <button className="icon-btn" onClick={toggleLangMenu}>
-                🌐
-              </button>
-
-              {showLangMenu && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "30px",
-                    right: 0,
-                    background: "#222",
-                    borderRadius: "10px",
-                    padding: "6px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
-                    zIndex: 10,
-                  }}
-                >
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("ru")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇷🇺 Русский
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("ua")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇺🇦 Українська
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("en")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇬🇧 English
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("kz")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇰🇿 Қазақша
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("by")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇧🇾 Беларуская
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Основные вкладки */}
-        <nav className="tabs">
-          {Object.values(TABS).map((tab) => (
             <button
-              key={tab}
-              className={
-                "tab-btn" + (activeTab === tab ? " tab-btn-active" : "")
-              }
-              onClick={() => setActiveTab(tab)}
+              className="primary-btn"
+              onClick={() => setAiIdea(generateAiIdea())}
+              style={{ marginTop: "20px" }}
             >
-              {labels[tab]}
+              {t.bottomGenerate}
             </button>
-          ))}
-        </nav>
 
-        {/* Контент */}
-        <main className="tab-content">{renderContent()}</main>
-
-        {/* Нижняя кнопка */}
-        <button
-          className="primary-btn fixed-order-btn"
-          onClick={handleBottomButton}
-        >
-          {activeTab === TABS.AI ? t.bottomGenerate : t.bottomOrder}
-        </button>
-      </div>
-
-      {/* Модальное окно для увеличенной картинки */}
-      {selectedImage && (
-        <div
-          className="image-modal-backdrop"
-          onClick={() => setSelectedImage(null)}
-        >
-          <div
-            className="image-modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="icon-btn image-modal-close"
-              onClick={() => setSelectedImage(null)}
-            >
-              ✖
-            </button>
-            <img
-              src={selectedImage.image}
-              alt={selectedImage.title}
-              className="image-modal-img"
-            />
-            <div className="image-modal-text">
-              <h3>{selectedImage.title}</h3>
-              <p>{selectedImage.description}</p>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+            {aiIdea && (
+              <p style={{ marginTop: "15px", fontWeight: "bold"
