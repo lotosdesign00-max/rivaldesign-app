@@ -123,3 +123,37 @@ export default function App() {
     </div>
   );
 }
+
+// Внутри renderContent() -> case TABS.GALLERY:
+const [galleryCategory, setGalleryCategory] = useState("Аватарки");
+
+const categories = ["Аватарки", "Превью", "Баннеры"];
+const filteredGallery = gallery.filter(item => item.category === galleryCategory);
+
+return (
+  <section className="card">
+    <h2 className="section-title">Галерея работ</h2>
+    <div className="row" style={{ marginBottom: 10 }}>
+      {categories.map(cat => (
+        <button
+          key={cat}
+          className={`btn${galleryCategory === cat ? ' active' : ''}`}
+          onClick={() => setGalleryCategory(cat)}
+        >
+          {cat}
+        </button>
+      ))}
+    </div>
+
+    <Swiper spaceBetween={12} slidesPerView={'auto'}>
+      {filteredGallery.map(item => (
+        <SwiperSlide key={item.id} style={{ width: 280 }}>
+          <img src={item.image} alt={item.title} className="project-img"/>
+          <div className="section-subtitle" style={{ marginTop: 6 }}>
+            {item.title}
+          </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  </section>
+);
