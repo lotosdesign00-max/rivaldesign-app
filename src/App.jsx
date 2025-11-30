@@ -12,21 +12,140 @@ const TABS = {
 };
 
 const TAB_LABELS = {
-  [TABS.GALLERY]: "Галерея",
-  [TABS.REVIEWS]: "Отзывы",
-  [TABS.PRICING]: "Прайс",
-  [TABS.ABOUT]: "Обо мне",
-  [TABS.FAQ]: "FAQ",
-  [TABS.AI]: "AI идеи",
+  ru: {
+    [TABS.GALLERY]: "Галерея",
+    [TABS.REVIEWS]: "Отзывы",
+    [TABS.PRICING]: "Прайс",
+    [TABS.ABOUT]: "Обо мне",
+    [TABS.FAQ]: "FAQ",
+    [TABS.AI]: "AI идеи",
+  },
+  en: {
+    [TABS.GALLERY]: "Gallery",
+    [TABS.REVIEWS]: "Reviews",
+    [TABS.PRICING]: "Pricing",
+    [TABS.ABOUT]: "About",
+    [TABS.FAQ]: "FAQ",
+    [TABS.AI]: "AI Ideas",
+  },
+};
+
+// Тексты для двух языков
+const TEXTS = {
+  ru: {
+    appTitle: "Rival App",
+    appSubtitle: "портфолио дизайнера",
+
+    galleryTitle: "Галерея работ",
+    gallerySubtitle: "Аватарки, превью, баннеры и другие проекты.",
+    galleryHint: "Выбери категорию сверху и листай работы свайпом.",
+
+    reviewsTitle: "Отзывы клиентов",
+    reviewsSubtitle: "Настоящие отзывы твоих клиентов.",
+    reviewsAddButton: "Оставить отзыв",
+
+    pricingTitle: "Прайс / Услуги",
+    pricingItems: [
+      "Логотип — от X грн",
+      "Фирменный стиль — от X грн",
+      "Оформление соцсетей — от X грн",
+      "Рекламные баннеры — от X грн",
+    ],
+
+    aboutTitle: "Обо мне",
+    aboutSubtitle:
+      "Я Rival, дизайнер. Помогаю брендам выделяться в соцсетях и рекламе.",
+
+    faqTitle: "FAQ",
+    faqItems: [
+      "Как проходит работа?",
+      "Какие файлы я получу?",
+      "Сколько правок входит в стоимость?",
+    ],
+
+    aiTitle: "AI идеи",
+    aiSubtitle: "Генератор идей для палитр, референсов и концептов (в разработке).",
+
+    bottomOrder: "Оформить заказ",
+    bottomGenerate: "Сгенерировать идею",
+
+    orderAlert: "Скоро здесь будет переход к твоему Telegram для оформления заказа 😉",
+    aiAlert: "Скоро здесь будет генератор идей на AI 🚀",
+  },
+
+  en: {
+    appTitle: "Rival App",
+    appSubtitle: "designer portfolio",
+
+    galleryTitle: "Portfolio",
+    gallerySubtitle: "Avatars, thumbnails, banners and other projects.",
+    galleryHint: "Choose a category above and swipe through your works.",
+
+    reviewsTitle: "Client reviews",
+    reviewsSubtitle: "Real feedback from your clients.",
+    reviewsAddButton: "Leave a review",
+
+    pricingTitle: "Pricing / Services",
+    pricingItems: [
+      "Logo — from X UAH",
+      "Brand identity — from X UAH",
+      "Social media design — from X UAH",
+      "Ad banners — from X UAH",
+    ],
+
+    aboutTitle: "About me",
+    aboutSubtitle:
+      "I'm Rival, a designer. I help brands stand out in social media and advertising.",
+
+    faqTitle: "FAQ",
+    faqItems: [
+      "How does the process work?",
+      "What files will I receive?",
+      "How many revisions are included?",
+    ],
+
+    aiTitle: "AI ideas",
+    aiSubtitle: "Idea generator for palettes, references and concepts (coming soon).",
+
+    bottomOrder: "Place an order",
+    bottomGenerate: "Generate idea",
+
+    orderAlert: "Soon this will open your Telegram for orders 😉",
+    aiAlert: "Soon this will be an AI idea generator 🚀",
+  },
 };
 
 const GALLERY_CATEGORIES = ["Аватарки", "Превью", "Баннеры"];
 
 const GALLERY_ITEMS = [
-  { id: "1", category: "Аватарки", title: "Аватар 1", image: "/images/avatar1.jpg", description: "Описание аватарки 1" },
-  { id: "2", category: "Превью", title: "Превью 1", image: "/images/preview1.jpg", description: "Описание превью 1" },
-  { id: "3", category: "Баннеры", title: "Баннер 1", image: "/images/banner1.jpg", description: "Описание баннера 1" },
-  { id: "4", category: "Аватарки", title: "Аватар 2", image: "/images/avatar2.jpg", description: "Описание аватарки 2" },
+  {
+    id: "1",
+    category: "Аватарки",
+    title: "Аватар 1",
+    image: "/images/avatar1.jpg",
+    description: "Описание аватарки 1",
+  },
+  {
+    id: "2",
+    category: "Превью",
+    title: "Превью 1",
+    image: "/images/preview1.jpg",
+    description: "Описание превью 1",
+  },
+  {
+    id: "3",
+    category: "Баннеры",
+    title: "Баннер 1",
+    image: "/images/banner1.jpg",
+    description: "Описание баннера 1",
+  },
+  {
+    id: "4",
+    category: "Аватарки",
+    title: "Аватар 2",
+    image: "/images/avatar2.jpg",
+    description: "Описание аватарки 2",
+  },
 ];
 
 const REVIEWS_ITEMS = [
@@ -42,13 +161,25 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
 
-  const toggleTheme = () => setTheme(prev => (prev === "dark" ? "alt" : "dark"));
-  const toggleLangMenu = () => setShowLangMenu(prev => !prev);
-  const handleLangChange = (lang) => { setLanguage(lang); setShowLangMenu(false); };
-  
+  const t = TEXTS[language];
+  const labels = TAB_LABELS[language];
+
+  const toggleTheme = () =>
+    setTheme((prev) => (prev === "dark" ? "alt" : "dark"));
+  const toggleLangMenu = () => setShowLangMenu((prev) => !prev);
+  const handleLangChange = (lang) => {
+    setLanguage(lang);
+    setShowLangMenu(false);
+  };
+
   const handleBottomButton = () => {
-    if (activeTab === TABS.AI) alert("Генерируем идею...");
-    else alert("Переход к Telegram для заказа");
+    if (activeTab === TABS.AI) {
+      alert(t.aiAlert);
+    } else {
+      alert(t.orderAlert);
+      // ПОТОМ ЗДЕСЬ МОЖНО СДЕЛАТЬ:
+      // window.open("https://t.me/Rivaldsg", "_blank");
+    }
   };
 
   const renderContent = () => {
@@ -56,38 +187,56 @@ export default function App() {
       case TABS.GALLERY:
         return (
           <div className="card">
-            <h2 className="section-title">Галерея работ</h2>
+            <h2 className="section-title">{t.galleryTitle}</h2>
+            <p className="section-subtitle">{t.gallerySubtitle}</p>
+
             <div className="tabs">
-              {GALLERY_CATEGORIES.map(cat => (
+              {GALLERY_CATEGORIES.map((cat) => (
                 <button
                   key={cat}
-                  className={"tab-btn" + (cat === activeCategory ? " tab-btn-active" : "")}
+                  className={
+                    "tab-btn" +
+                    (cat === activeCategory ? " tab-btn-active" : "")
+                  }
                   onClick={() => setActiveCategory(cat)}
                 >
                   {cat}
                 </button>
               ))}
             </div>
+
             <Swiper spaceBetween={12} slidesPerView={"auto"}>
-              {GALLERY_ITEMS.filter(p => p.category === activeCategory).map(p => (
-                <SwiperSlide key={p.id} style={{width: 320}}>
-                  <img src={p.image} alt={p.title} className="project-img"/>
+              {GALLERY_ITEMS.filter(
+                (p) => p.category === activeCategory
+              ).map((p) => (
+                <SwiperSlide key={p.id} style={{ width: 320 }}>
+                  <img src={p.image} alt={p.title} className="project-img" />
                   <p className="hint-text">{p.description}</p>
                 </SwiperSlide>
               ))}
             </Swiper>
+
+            <p className="hint-text">{t.galleryHint}</p>
           </div>
         );
 
       case TABS.REVIEWS:
         return (
           <div className="card">
-            <h2 className="section-title">Отзывы клиентов</h2>
+            <h2 className="section-title">{t.reviewsTitle}</h2>
+            <p className="section-subtitle">{t.reviewsSubtitle}</p>
+
             <Swiper spaceBetween={12} slidesPerView={"auto"}>
-              {REVIEWS_ITEMS.map(r => (
-                <SwiperSlide key={r.id} style={{width: 250}}>
+              {REVIEWS_ITEMS.map((r) => (
+                <SwiperSlide key={r.id} style={{ width: 250 }}>
                   <div className="card">
-                    <div style={{fontWeight: "bold", fontSize: "24px", marginBottom: "4px"}}>
+                    <div
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "24px",
+                        marginBottom: "4px",
+                      }}
+                    >
                       {r.name[0]}
                     </div>
                     <div>{r.name}</div>
@@ -96,18 +245,21 @@ export default function App() {
                 </SwiperSlide>
               ))}
             </Swiper>
+
+            <button className="secondary-btn" style={{ marginTop: 10 }}>
+              {t.reviewsAddButton}
+            </button>
           </div>
         );
 
       case TABS.PRICING:
         return (
           <div className="card">
-            <h2 className="section-title">Прайс / Услуги</h2>
+            <h2 className="section-title">{t.pricingTitle}</h2>
             <ul className="list">
-              <li>Логотип — от X грн</li>
-              <li>Фирменный стиль — от X грн</li>
-              <li>Оформление соцсетей — от X грн</li>
-              <li>Рекламные баннеры — от X грн</li>
+              {t.pricingItems.map((item, idx) => (
+                <li key={idx}>{item}</li>
+              ))}
             </ul>
           </div>
         );
@@ -115,19 +267,19 @@ export default function App() {
       case TABS.ABOUT:
         return (
           <div className="card">
-            <h2 className="section-title">Обо мне</h2>
-            <p className="section-subtitle">Я Rival, дизайнер. Работаю с брендами, помогаю выделиться.</p>
+            <h2 className="section-title">{t.aboutTitle}</h2>
+            <p className="section-subtitle">{t.aboutSubtitle}</p>
           </div>
         );
 
       case TABS.FAQ:
         return (
           <div className="card">
-            <h2 className="section-title">FAQ</h2>
+            <h2 className="section-title">{t.faqTitle}</h2>
             <ul className="list">
-              <li>Как проходит работа?</li>
-              <li>Какие файлы я получу?</li>
-              <li>Сколько правок входит в стоимость?</li>
+              {t.faqItems.map((item, idx) => (
+                <li key={idx}>{item}</li>
+              ))}
             </ul>
           </div>
         );
@@ -135,8 +287,8 @@ export default function App() {
       case TABS.AI:
         return (
           <div className="card">
-            <h2 className="section-title">AI идеи</h2>
-            <p className="section-subtitle">Здесь можно сгенерировать палитры и концепты.</p>
+            <h2 className="section-title">{t.aiTitle}</h2>
+            <p className="section-subtitle">{t.aiSubtitle}</p>
           </div>
         );
 
@@ -151,21 +303,45 @@ export default function App() {
         {/* Верхняя панель */}
         <div className="top-bar">
           <div className="top-bar-left">
-            <span className="app-title">Rival App</span>
-            <span className="app-subtitle">портфолио дизайнера</span>
+            <span className="app-title">{t.appTitle}</span>
+            <span className="app-subtitle">{t.appSubtitle}</span>
           </div>
 
           <div className="controls">
-            <button className="icon-btn" onClick={toggleTheme}>🌗</button>
+            <button className="icon-btn" onClick={toggleTheme}>
+              🌗
+            </button>
 
-            <div style={{position:"relative"}}>
-              <button className="icon-btn" onClick={toggleLangMenu}>🌐</button>
+            <div style={{ position: "relative" }}>
+              <button className="icon-btn" onClick={toggleLangMenu}>
+                {language === "ru" ? "RU" : "EN"}
+              </button>
               {showLangMenu && (
-                <div style={{
-                  position:"absolute", top:"30px", right:0, background:"#222", borderRadius:"8px", padding:"4px"
-                }}>
-                  <button className="tab-btn" onClick={()=>handleLangChange("ru")}>RU</button>
-                  <button className="tab-btn" onClick={()=>handleLangChange("en")}>EN</button>
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "30px",
+                    right: 0,
+                    background: "#222",
+                    borderRadius: "8px",
+                    padding: "4px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                  }}
+                >
+                  <button
+                    className="tab-btn"
+                    onClick={() => handleLangChange("ru")}
+                  >
+                    RU
+                  </button>
+                  <button
+                    className="tab-btn"
+                    onClick={() => handleLangChange("en")}
+                  >
+                    EN
+                  </button>
                 </div>
               )}
             </div>
@@ -174,21 +350,28 @@ export default function App() {
 
         {/* Основные вкладки */}
         <nav className="tabs">
-          {Object.values(TABS).map(tab => (
+          {Object.values(TABS).map((tab) => (
             <button
               key={tab}
-              className={"tab-btn" + (activeTab===tab?" tab-btn-active":"")}
-              onClick={()=>setActiveTab(tab)}
+              className={
+                "tab-btn" + (activeTab === tab ? " tab-btn-active" : "")
+              }
+              onClick={() => setActiveTab(tab)}
             >
-              {TAB_LABELS[tab]}
+              {labels[tab]}
             </button>
           ))}
         </nav>
 
+        {/* Контент */}
         <main className="tab-content">{renderContent()}</main>
 
-        <button className="primary-btn fixed-order-btn" onClick={handleBottomButton}>
-          {activeTab===TABS.AI ? "Сгенерировать" : "Оформить заказ"}
+        {/* Нижняя кнопка */}
+        <button
+          className="primary-btn fixed-order-btn"
+          onClick={handleBottomButton}
+        >
+          {activeTab === TABS.AI ? t.bottomGenerate : t.bottomOrder}
         </button>
       </div>
     </div>
