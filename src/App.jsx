@@ -1,128 +1,53 @@
-import React, { useState } from "react";
-import Gallery from "./components/Gallery";
-import Reviews from "./components/Reviews";
-import AI from "./components/AI";
+import React, {useEffect, useState} from 'react'
+import Header from './components/Header'
+import Gallery from './components/Gallery'
+import Reviews from './components/Reviews'
+import Pricing from './components/Pricing'
+import About from './components/About'
+import FAQ from './components/FAQ'
+import IdeaGenerator from './components/IdeaGenerator'
+import { CONTACT_TG } from './config'
 
-const TABS = {
-  GALLERY: "gallery",
-  REVIEWS: "reviews",
-  PRICING: "pricing",
-  ABOUT: "about",
-  FAQ: "faq",
-  AI: "ai",
-};
+export default function App(){
+  const [theme, setTheme] = useState('default')
 
-const TAB_LABELS = {
-  [TABS.GALLERY]: "Галерея",
-  [TABS.REVIEWS]: "Отзывы",
-  [TABS.PRICING]: "Прайс",
-  [TABS.ABOUT]: "Обо мне",
-  [TABS.FAQ]: "FAQ",
-  [TABS.AI]: "AI идеи",
-};
-
-const CONTACT_TG = "Rivaldsg";
-
-export default function App() {
-  const [activeTab, setActiveTab] = useState(TABS.GALLERY);
-  const [theme, setTheme] = useState("dark"); // dark | alt
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "alt" : "dark"));
-  };
-
-  const handleOrderClick = () => {
-    if (activeTab === TABS.AI) {
-      alert("Генерируем идею!");
-      return;
+  useEffect(()=>{
+    // Telegram WebApp init
+    if(window.Telegram?.WebApp){
+      window.Telegram.WebApp.ready()
+      window.Telegram.WebApp.MainButton.hide()
     }
-    window.open(`https://t.me/${CONTACT_TG}`, "_blank");
-  };
+    // apply theme to document root
+    document.documentElement.removeAttribute('data-theme')
+    if(theme === 'alt') document.documentElement.setAttribute('data-theme','alt')
+  },[theme])
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case TABS.GALLERY:
-        return <Gallery />;
-      case TABS.REVIEWS:
-        return <Reviews />;
-      case TABS.AI:
-        return <AI />;
-      case TABS.PRICING:
-        return (
-          <div className="card">
-            <h2 className="section-title">Прайс / Услуги</h2>
-            <ul className="list">
-              <li>Логотип — от 𝑋ₓₓₓ грн</li>
-              <li>Фирменный стиль — от 𝑋ₓₓₓ грн</li>
-              <li>Оформление соцсетей — от 𝑋ₓₓₓ грн</li>
-              <li>Рекламные баннеры — от 𝑋ₓₓₓ грн</li>
-            </ul>
-          </div>
-        );
-      case TABS.ABOUT:
-        return (
-          <div className="card">
-            <h2 className="section-title">Обо мне</h2>
-            <p className="section-subtitle">
-              Я Rival, дизайнер. Работаю с брендами, помогаю выделиться в соцсетях и рекламе.
-            </p>
-          </div>
-        );
-      case TABS.FAQ:
-        return (
-          <div className="card">
-            <h2 className="section-title">FAQ / Частые вопросы</h2>
-            <ul className="list">
-              <li>Как проходит работа?</li>
-              <li>Какие файлы я получу?</li>
-              <li>Сколько правок входит в стоимость?</li>
-            </ul>
-          </div>
-        );
-      default:
-        return null;
+  function openChat(){
+    // open t.me link to your username
+    const url = `https://t.me/${CONTACT_TG}`
+    // use WebApp API if available
+    try {
+      if(window.Telegram?.WebApp?.openTelegramLink){
+        window.Telegram.WebApp.openTelegramLink(url)
+      } else {
+        window.open(url, '_blank')
+      }
+    } catch(e){
+      window.open(url, '_blank')
     }
-  };
+  }
 
   return (
-    <div className={`app-root theme-${theme}`}>
-      <div className="app-shell">
-        {/* Верхняя панель */}
-        <div className="top-bar">
-          <div className="top-bar-left">
-            <span className="app-title">Rival App</span>
-            <span className="app-subtitle">портфолио дизайнера</span>
-          </div>
-
-          <div className="controls">
-            <button className="icon-btn" onClick={toggleTheme}>🌗</button>
-            <button className="icon-btn">🌐</button>
-          </div>
-        </div>
-
-        {/* Вкладки */}
-        <nav className="tabs">
-          {Object.values(TABS).map((tabKey) => (
-            <button
-              key={tabKey}
-              className={
-                "tab-btn" + (activeTab === tabKey ? " tab-btn-active" : "")
-              }
-              onClick={() => setActiveTab(tabKey)}
-            >
-              {TAB_LABELS[tabKey]}
-            </button>
-          ))}
-        </nav>
-
-        {/* Контент */}
-        <main className="tab-content">{renderContent()}</main>
-
-        {/* Фиксированная кнопка внизу */}
-        <button className="order-fixed" onClick={handleOrderClick}>
-          {activeTab === TABS.AI ? "Сгенерировать идею" : "Оформить заказ"}
-        </button>
-      </div>
+    <div className="app">
+      <Header theme={theme} setTheme={setTheme} />
+      <Gallery />
+      <Reviews />
+      <Pricing />
+      <About />
+      <FAQ />
+      <IdeaGenerator />
+      <button className="order-fixed" onClick={openChat}>Сделать заказ</button>
+      <div className="footer muted">© {new Date().getFullYear()} Rivaldsg — All rights reserved</div>
     </div>
-  );
+  )
 }
