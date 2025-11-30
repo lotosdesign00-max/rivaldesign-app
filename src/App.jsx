@@ -279,6 +279,7 @@ const GALLERY_ITEMS = [
     image: "/images/podborka1.jpg",
     description: "Описание аватарки 1",
   },
+  
   {
     id: "2",
     category: "Превью",
@@ -286,6 +287,15 @@ const GALLERY_ITEMS = [
     image: "/images/avatar1.jpg",
     description: "Описание превью 1",
   },
+
+  {
+    id: "88",
+    category: "Превью",
+    title: "Превью 2",
+    image: "/images/avatar1.jpg",
+    description: "Описание превью 1",
+  },
+  
   {
     id: "3",
     category: "Баннеры",
@@ -293,6 +303,7 @@ const GALLERY_ITEMS = [
     image: "/images/banner1.jpg",
     description: "Описание баннера 1",
   },
+  
   {
     id: "4",
     category: "Аватарки",
