@@ -103,7 +103,7 @@ const TEXTS = {
 
     pricingTitle: "Pricing / Services",
     pricingItems: [
-      "Logo — from X UAH",
+      "Avatar — from 200 UAH",
       "Brand identity — from X UAH",
       "Social media design — from X UAH",
       "Ad banners — from X UAH",
@@ -145,10 +145,9 @@ const TEXTS = {
 
     pricingTitle: "Прайс / Послуги",
     pricingItems: [
-      "Логотип — від X грн",
-      "Фірмовий стиль — від X грн",
-      "Оформлення соцмереж — від X грн",
-      "Рекламні банери — від X грн",
+      "Aватар — 200 грн",
+      "Прев'ю — 200 грн",
+      "Баннер — 200 грн",
     ],
 
     aboutTitle: "Про мене",
@@ -187,10 +186,9 @@ const TEXTS = {
 
     pricingTitle: "Прайс / Қызметтер",
     pricingItems: [
-      "Логотип — X теңгеден",
-      "Фирмалық стиль — X теңгеден",
-      "Әлеуметтік желі дизайны — X теңгеден",
-      "Жарнамалық баннерлер — X теңгеден",
+      "Аватар — X теңгеден",
+      "Алдын ала қарау — X теңгеден",
+      "Баннер — X теңгеден",
     ],
 
     aboutTitle: "Мен туралы",
@@ -230,10 +228,9 @@ const TEXTS = {
 
     pricingTitle: "Прайс / Паслугі",
     pricingItems: [
+      "аватар — ад X BYN",
       "Лагатып — ад X BYN",
-      "Фірмовы стыль — ад X BYN",
-      "Афармленне сацсетак — ад X BYN",
-      "Рэкламныя банеры — ад X BYN",
+      "банэр — ад X BYN",
     ],
 
     aboutTitle: "Пра мяне",
