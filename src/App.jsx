@@ -468,5 +468,5 @@ body{
   width: 100%;
   max-width: 480px;
   border-radius: 999px;
-}
+}﷯
 </div>
