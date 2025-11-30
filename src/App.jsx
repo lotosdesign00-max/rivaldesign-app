@@ -283,7 +283,7 @@ const GALLERY_ITEMS = [
     id: "2",
     category: "Превью",
     title: "Превью 1",
-    image: "/images/preview1.jpg",
+    image: "/images/podborka1.jpg",
     description: "Описание превью 1",
   },
   {
