@@ -8,40 +8,6 @@
   </head>
   <body>
     <div id="root"></div>
-
-    <!-- Блок для отображения результата генерации -->
-    <div style="margin: 20px;">
-      <button id="generateBtn">Сгенерировать аватарку</button>
-      <p id="result"></p>
-    </div>
-
-    <script>
-      // Массивы с данными для генерации
-      const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#F3FF33"];
-      const texts = ["Shadow", "CryptoKing", "Phantom", "HackerX", "Ghost"];
-      const categories = ["Скамер", "Доксер", "Криптан", "Абузы", "Осинтеры"];
-      const characters = ["Ворон", "Лис", "Волк", "Кот", "Робот"];
-
-      function getRandomItem(arr) {
-        return arr[Math.floor(Math.random() * arr.length)];
-      }
-
-      function generateAvatar() {
-        const color = getRandomItem(colors);
-        const text = getRandomItem(texts);
-        const category = getRandomItem(categories);
-        const character = getRandomItem(characters);
-
-        return `Ник: ${text}, Цвет: ${color}, Тематика: ${category}, Персонаж: ${character}`;
-      }
-
-      // Кнопка генерации
-      document.getElementById("generateBtn").addEventListener("click", () => {
-        const result = generateAvatar();
-        document.getElementById("result").textContent = result;
-      });
-    </script>
-
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
