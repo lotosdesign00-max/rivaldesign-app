@@ -69,10 +69,10 @@ const TEXTS = {
 
     pricingTitle: "Прайс / Услуги",
     pricingItems: [
-      "Аватарка — от 5$",
-      "Превью — от 5$
-      "Баннер — от 5$",
-      "Анимация — + 10$ к цене",
+      "Логотип — от X грн",
+      "Фирменный стиль — от X грн",
+      "Оформление соцсетей — от X грн",
+      "Рекламные баннеры — от X грн",
     ],
 
     aboutTitle: "Обо мне",
@@ -276,7 +276,7 @@ const GALLERY_ITEMS = [
     id: "1",
     category: "Аватарки",
     title: "Аватар 1",
-    image: "/images/podborka1.jpg",
+    image: "/images/avatar1.jpg",
     description: "Описание аватарки 1",
   },
   {
