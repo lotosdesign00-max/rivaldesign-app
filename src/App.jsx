@@ -303,6 +303,14 @@ const GALLERY_ITEMS = [
     image: "/images/banner1.jpg",
     description: "Описание баннера 1",
   },
+
+  {
+    id: "9",
+    category: "Баннеры",
+    title: "Баннер 2",
+    image: "/images/banner1.jpg",
+    description: "Описание баннера 1",
+  },
   
   {
     id: "4",
