@@ -161,16 +161,4 @@ function App() {
         {/* Контент вкладки */}
         <main className="tab-content">{renderContent()}</main>
 
-        {/* Фиксированная кнопка заказа снизу */}
-        <button
-          className="primary-btn fixed-order-btn"
-          onClick={handleOrderClick}
-        >
-          Оформить заказ
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export default App;
