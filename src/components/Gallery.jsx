@@ -16,19 +16,24 @@ export default function Gallery() {
       <h3>Галерея работ</h3>
       <div className="muted">Листай свайпом — нажми «Подробнее» для кейса</div>
 
-      {/* Внутренние категории */}
-      <div className="tabs" style={{ marginTop: "10px", marginBottom: "10px" }}>
+      {/* Фильтры категории в виде заголовков */}
+      <div style={{ display: "flex", justifyContent: "space-around", margin: "12px 0" }}>
         {CATEGORIES.map(cat => (
-          <button
+          <h4
             key={cat}
-            className={"tab-btn" + (activeCategory === cat ? " tab-btn-active" : "")}
+            style={{
+              cursor: "pointer",
+              borderBottom: activeCategory === cat ? "2px solid #ff3040" : "2px solid transparent",
+              paddingBottom: "4px"
+            }}
             onClick={() => setActiveCategory(cat)}
           >
             {cat}
-          </button>
+          </h4>
         ))}
       </div>
 
+      {/* Свайп */}
       <div className="swiper">
         <Swiper spaceBetween={12} slidesPerView={"auto"}>
           {filteredProjects.map(p => (
