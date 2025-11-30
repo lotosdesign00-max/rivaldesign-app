@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import gallery from "./gallery.json";
+import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 
@@ -23,209 +22,165 @@ const TAB_LABELS = {
 
 const CONTACT_TG = "Rivaldsg";
 
-const categories = ["Аватарки", "Превью", "Баннеры"];
-
-const reviewsData = [
-  { id: 1, name: "Alex", text: "Отличная работа, быстро и качественно!" },
-  { id: 2, name: "Mira", text: "Очень доволен логотипом и баннером." },
-  { id: 3, name: "John", text: "Рекомендую! Все сделал идеально." },
+const MOCK_GALLERY = [
+  { id: "1", category: "Аватарки", title: "Аватар 1", image: "/images/avatar1.jpg", description: "Описание аватарки 1" },
+  { id: "2", category: "Превью", title: "Превью 1", image: "/images/preview1.jpg", description: "Описание превью 1" },
+  { id: "3", category: "Баннеры", title: "Баннер 1", image: "/images/banner1.jpg", description: "Описание баннера 1" },
 ];
 
-function App() {
+const MOCK_REVIEWS = [
+  { id: "r1", name: "Alice", text: "Отличная работа!", avatar: "A" },
+  { id: "r2", name: "Bob", text: "Очень доволен.", avatar: "B" },
+  { id: "r3", name: "Charlie", text: "Рекомендую!", avatar: "C" },
+];
+
+export default function App() {
   const [activeTab, setActiveTab] = useState(TABS.GALLERY);
   const [theme, setTheme] = useState("dark");
-  const [galleryCategory, setGalleryCategory] = useState(categories[0]);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [descSwiper, setDescSwiper] = useState(null);
+  const [galleryFilter, setGalleryFilter] = useState("Аватарки");
 
-  const toggleTheme = () => setTheme((prev) => (prev === "dark" ? "alt" : "dark"));
+  const toggleTheme = () => setTheme(theme === "dark" ? "alt" : "dark");
 
   const handleOrderClick = () => {
     if (activeTab === TABS.AI) {
-      alert("Сгенерировать идею!"); // здесь можно добавить логику генератора
+      alert("Генерируем идею...");
     } else {
       window.open(`https://t.me/${CONTACT_TG}`, "_blank");
     }
   };
 
-  const filteredGallery = gallery.filter(
-    (item) => item.category === galleryCategory
+  const renderGallery = () => {
+    const filtered = MOCK_GALLERY.filter(item => item.category === galleryFilter);
+    return (
+      <section className="card">
+        <h2 className="section-title">Галерея работ</h2>
+        <div className="row" style={{marginBottom:"8px"}}>
+          {["Аватарки","Превью","Баннеры"].map(cat => (
+            <button
+              key={cat}
+              className={`tab-btn${galleryFilter===cat ? " tab-btn-active" : ""}`}
+              onClick={()=>setGalleryFilter(cat)}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+        <Swiper spaceBetween={12} slidesPerView={"auto"}>
+          {filtered.map(item => (
+            <SwiperSlide key={item.id} style={{width:300}}>
+              <img src={item.image} alt={item.title} className="project-img"/>
+              <div style={{marginTop:"6px", fontSize:"13px"}}>{item.title}</div>
+              <div style={{fontSize:"12px", opacity:0.7}}>{item.description}</div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </section>
+    );
+  };
+
+  const renderReviews = () => (
+    <section className="card">
+      <h2 className="section-title">Отзывы клиентов</h2>
+      <Swiper spaceBetween={12} slidesPerView={"auto"}>
+        {MOCK_REVIEWS.map(r => (
+          <SwiperSlide key={r.id} style={{width:250}}>
+            <div style={{fontSize:"14px", fontWeight:600, marginBottom:"4px"}}>
+              <span style={{
+                display:"inline-block",
+                width:32,
+                height:32,
+                borderRadius:"50%",
+                background:"#ff3040",
+                color:"#fff",
+                textAlign:"center",
+                lineHeight:"32px",
+                marginRight:"6px"
+              }}>{r.avatar}</span>
+              {r.name}
+            </div>
+            <div style={{fontSize:"12px"}}>{r.text}</div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </section>
   );
 
-  useEffect(() => {
-    if (descSwiper) descSwiper.slideTo(currentSlide);
-  }, [currentSlide, descSwiper]);
-
   const renderContent = () => {
-    switch (activeTab) {
-      case TABS.GALLERY:
-        return (
-          <section className="card">
-            <h2 className="section-title">Галерея работ</h2>
-            <div className="section-subtitle">Выбирай категорию и листай работы</div>
-
-            {/* Категории */}
-            <div className="row" style={{ marginBottom: 12 }}>
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  className={`btn${galleryCategory === cat ? " active" : ""}`}
-                  onClick={() => setGalleryCategory(cat)}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            {/* Свайп изображений */}
-            <Swiper
-              spaceBetween={12}
-              slidesPerView={"auto"}
-              onSlideChange={(swiper) => setCurrentSlide(swiper.activeIndex)}
-            >
-              {filteredGallery.map((item) => (
-                <SwiperSlide key={item.id} style={{ width: 280 }}>
-                  <img src={item.image} alt={item.title} className="project-img" />
-                </SwiperSlide>
-              ))}
-            </Swiper>
-
-            {/* Свайп описаний */}
-            <Swiper
-              spaceBetween={0}
-              slidesPerView={1}
-              allowTouchMove={false}
-              onSwiper={(swiper) => setDescSwiper(swiper)}
-              style={{ marginTop: 8 }}
-            >
-              {filteredGallery.map((item) => (
-                <SwiperSlide key={item.id}>
-                  <div className="section-subtitle">{item.description}</div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </section>
-        );
-
-      case TABS.REVIEWS:
-        return (
-          <section className="card">
-            <h2 className="section-title">Отзывы клиентов</h2>
-            {reviewsData.map((rev) => (
-              <div key={rev.id} style={{ display: "flex", gap: 12, marginBottom: 10, alignItems: "center" }}>
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: "50%",
-                    backgroundColor: "#ff3040",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#fff",
-                    fontWeight: 600,
-                  }}
-                >
-                  {rev.name[0]}
-                </div>
-                <div>
-                  <b>{rev.name}</b>
-                  <div>{rev.text}</div>
-                </div>
-              </div>
-            ))}
-            <button className="secondary-btn">Оставить отзыв</button>
-          </section>
-        );
-
-      case TABS.PRICING:
-        return (
-          <section className="card">
-            <h2 className="section-title">Прайс / Услуги</h2>
-            <ul className="list">
-              <li>Логотип — от 𝑋ₓₓₓ грн</li>
-              <li>Фирменный стиль — от 𝑋ₓₓₓ грн</li>
-              <li>Оформление соцсетей — от 𝑋ₓₓₓ грн</li>
-              <li>Рекламные баннеры — от 𝑋ₓₓₓ грн</li>
-            </ul>
-          </section>
-        );
-
-      case TABS.ABOUT:
-        return (
-          <section className="card">
-            <h2 className="section-title">Обо мне</h2>
-            <p className="section-subtitle">
-              Я Rival, дизайнер. Работаю с брендами, помогаю выделиться в соцсетях и рекламе.
-            </p>
-          </section>
-        );
-
-      case TABS.FAQ:
-        return (
-          <section className="card">
-            <h2 className="section-title">FAQ / Частые вопросы</h2>
-            <ul className="list">
-              <li>Как проходит работа?</li>
-              <li>Какие файлы я получу?</li>
-              <li>Сколько правок входит в стоимость?</li>
-            </ul>
-          </section>
-        );
-
-      case TABS.AI:
-        return (
-          <section className="card">
-            <h2 className="section-title">AI — генератор идей</h2>
-            <p className="section-subtitle">
-              Здесь можно сделать блок, где бот предлагает палитры, референсы и концепты.
-            </p>
-          </section>
-        );
-
-      default:
-        return null;
+    switch(activeTab){
+      case TABS.GALLERY: return renderGallery();
+      case TABS.REVIEWS: return renderReviews();
+      case TABS.PRICING: return (
+        <section className="card">
+          <h2 className="section-title">Прайс / Услуги</h2>
+          <ul className="list">
+            <li>Логотип — от X грн</li>
+            <li>Фирменный стиль — от X грн</li>
+            <li>Оформление соцсетей — от X грн</li>
+            <li>Рекламные баннеры — от X грн</li>
+          </ul>
+        </section>
+      );
+      case TABS.ABOUT: return (
+        <section className="card">
+          <h2 className="section-title">Обо мне</h2>
+          <p>Я Rival, дизайнер. Работаю с брендами и соцсетями.</p>
+        </section>
+      );
+      case TABS.FAQ: return (
+        <section className="card">
+          <h2 className="section-title">FAQ</h2>
+          <ul className="list">
+            <li>Как проходит работа?</li>
+            <li>Какие файлы я получу?</li>
+            <li>Сколько правок входит в стоимость?</li>
+          </ul>
+        </section>
+      );
+      case TABS.AI: return (
+        <section className="card">
+          <h2 className="section-title">AI — генератор идей</h2>
+          <p>Выбирай идеи и вдохновляйся.</p>
+        </section>
+      );
+      default: return null;
     }
   };
 
   return (
     <div className={`app-root theme-${theme}`}>
       <div className="app-shell">
-        {/* Верхняя панель */}
         <div className="top-bar">
           <div className="top-bar-left">
             <span className="app-title">Rival App</span>
             <span className="app-subtitle">портфолио дизайнера</span>
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div className="controls">
             <button className="icon-btn" onClick={toggleTheme}>🌗</button>
             <button className="icon-btn">🌐</button>
           </div>
         </div>
 
-        {/* Вкладки */}
         <nav className="tabs">
-          {Object.values(TABS).map((tabKey) => (
+          {Object.values(TABS).map(tabKey=>(
             <button
               key={tabKey}
-              className={"tab-btn" + (activeTab === tabKey ? " tab-btn-active" : "")}
-              onClick={() => setActiveTab(tabKey)}
+              className={"tab-btn"+(activeTab===tabKey?" tab-btn-active":"")}
+              onClick={()=>setActiveTab(tabKey)}
             >
               {TAB_LABELS[tabKey]}
             </button>
           ))}
         </nav>
 
-        {/* Контент вкладки */}
         <main className="tab-content">{renderContent()}</main>
 
-        {/* Фиксированная кнопка снизу */}
-        <button className="primary-btn fixed-order-btn" onClick={handleOrderClick}>
-          {activeTab === TABS.AI ? "Сгенерировать идею" : "Оформить заказ"}
+        <button
+          className="primary-btn fixed-order-btn"
+          onClick={handleOrderClick}
+        >
+          {activeTab===TABS.AI ? "Сгенерировать идею" : "Оформить заказ"}
         </button>
       </div>
     </div>
   );
 }
-
-export default App;
