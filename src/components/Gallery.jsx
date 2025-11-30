@@ -1,21 +1,24 @@
 import React, { useState } from "react";
 import gallery from "../data/gallery.json";
 import ProjectCard from "./ProjectCard";
-import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+
+const CATEGORIES = ["Лого", "Постеры", "Баннеры"]; // добавляем категории
 
 export default function Gallery() {
-  const CATEGORIES = ["Аватарки", "Превью", "Баннеры"];
-  const [activeCategory, setActiveCategory] = useState("Аватарки");
+  const [activeCategory, setActiveCategory] = useState(CATEGORIES[0]);
 
-  const filtered = gallery.filter((p) => p.category === activeCategory);
+  const filteredProjects = gallery.filter(
+    (p) => p.category === activeCategory
+  );
 
   return (
     <div className="card">
       <h3>Галерея работ</h3>
-      <div className="muted">Выберите категорию и листайте свайпом</div>
+      <div className="muted">Листай свайпом — нажми «Подробнее» для кейса</div>
 
-      {/* Фильтры категорий */}
+      {/* Категории */}
       <div className="category-tabs">
         {CATEGORIES.map((cat) => (
           <button
@@ -28,10 +31,10 @@ export default function Gallery() {
         ))}
       </div>
 
-      {/* Свайп проектов */}
+      {/* Свайп */}
       <div className="swiper">
         <Swiper spaceBetween={12} slidesPerView={"auto"}>
-          {filtered.map((p) => (
+          {filteredProjects.map((p) => (
             <SwiperSlide key={p.id} style={{ width: 320 }}>
               <ProjectCard project={p} />
             </SwiperSlide>
