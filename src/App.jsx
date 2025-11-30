@@ -64,7 +64,8 @@ const TEXTS = {
     ],
 
     aiTitle: "AI идеи",
-    aiSubtitle: "Генератор идей для палитр, референсов и концептов (в разработке).",
+    aiSubtitle:
+      "Генератор идей для палитр, референсов и концептов (в разработке).",
 
     bottomOrder: "Оформить заказ",
     bottomGenerate: "Сгенерировать идею",
@@ -105,7 +106,8 @@ const TEXTS = {
     ],
 
     aiTitle: "AI ideas",
-    aiSubtitle: "Idea generator for palettes, references and concepts (coming soon).",
+    aiSubtitle:
+      "Idea generator for palettes, references and concepts (coming soon).",
 
     bottomOrder: "Place an order",
     bottomGenerate: "Generate idea",
@@ -313,9 +315,12 @@ export default function App() {
             </button>
 
             <div style={{ position: "relative" }}>
+              {/* Кнопка с планетой */}
               <button className="icon-btn" onClick={toggleLangMenu}>
-                {language === "ru" ? "RU" : "EN"}
+                🌐
               </button>
+
+              {/* Выпадающее мини-меню языков */}
               {showLangMenu && (
                 <div
                   style={{
@@ -323,24 +328,36 @@ export default function App() {
                     top: "30px",
                     right: 0,
                     background: "#222",
-                    borderRadius: "8px",
-                    padding: "4px",
+                    borderRadius: "10px",
+                    padding: "6px",
                     display: "flex",
                     flexDirection: "column",
                     gap: "4px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                    zIndex: 10,
                   }}
                 >
                   <button
                     className="tab-btn"
                     onClick={() => handleLangChange("ru")}
+                    style={{
+                      fontSize: "12px",
+                      padding: "4px 10px",
+                      textAlign: "left",
+                    }}
                   >
-                    RU
+                    🇷🇺 Русский
                   </button>
                   <button
                     className="tab-btn"
                     onClick={() => handleLangChange("en")}
+                    style={{
+                      fontSize: "12px",
+                      padding: "4px 10px",
+                      textAlign: "left",
+                    }}
                   >
-                    EN
+                    🇬🇧 English
                   </button>
                 </div>
               )}
