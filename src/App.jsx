@@ -33,7 +33,7 @@ const TAB_LABELS = {
 // Тексты для двух языков
 const TEXTS = {
   ru: {
-    appTitle: "Rival App Design PRO djjdifnw",
+    appTitle: "Rival App",
     appSubtitle: "портфолио дизайнера",
 
     galleryTitle: "Галерея работ",
