@@ -235,9 +235,9 @@ const TEXTS = {
 
     pricingTitle: "Прайс / Паслугі",
     pricingItems: [
-      "Аватарка — ад X BYN",
-      "Превью — ад X BYN",
-      "Баннер — ад X BYN",
+      "Аватарка — ад 10 BYN",
+      "Превью — ад 20 BYN",
+      "Баннер — ад 30 BYN",
     ],
 
     aboutTitle: "Пра мяне",
