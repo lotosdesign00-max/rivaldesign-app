@@ -1,14 +1,13 @@
-:root{
-  --bg:#0b0b0b; /* black primary */
-  --accent:#e11b23; /* red accent for alt theme */
-  --card:#121212;
-  --muted:#9b9b9b;
-  --text:#f5f5f5;
-  --accent-weak:#8a0f12;
+:root {
+  --bg: #0b0b0b;
+  --accent: #e11b23;
+  --card: #121212;
+  --muted: #9b9b9b;
+  --text: #f5f5f5;
+  --accent-weak: #8a0f12;
 }
 
-/* alt theme variables (red accents) */
-[data-theme="alt"]{
+[data-theme="alt"] {
   --bg: linear-gradient(180deg,#070707 0%, #0b0506 100%);
   --accent: #e11b23;
   --card:#160606;
@@ -17,106 +16,20 @@
   --accent-weak:#9b1216;
 }
 
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background:var(--bg);
-  color:var(--text);
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   user-select: none;
 }
 
-.app{
-  max-width:920px;
-  margin:12px auto;
-  padding:14px;
-}
-
-.header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
-
-.logo{
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-
-.logo .dot{
-  width:36px;height:36px;border-radius:8px;background:var(--accent);
-}
-
-.h1{font-size:20px;font-weight:700}
-
-.card{
-  background:var(--card);
-  padding:12px;
-  border-radius:12px;
-  margin:12px 0;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-}
-
-/* header top-right controls */
-.controls{display:flex;gap:8px;align-items:center}
-.icon-btn{background:transparent;border:none;color:var(--text);font-size:18px;padding:8px;border-radius:8px;cursor:pointer}
-.icon-btn:hover{background:rgba(255,255,255,0.03)}
-
-/* gallery */
-.swiper {
-  padding: 16px 0;
-}
-.project-img{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-  border-radius:10px;
-}
-
-/* small */
-.row {display:flex;gap:12px;flex-wrap:wrap}
-.btn{
-  background:var(--accent); color:white; border:none; padding:10px 14px; border-radius:10px; cursor:pointer;
-}
-.muted{color:var(--muted);font-size:13px}
-.input, textarea{
-  width:100%; padding:8px; border-radius:8px; border:1px solid #222;background:#0d0d0d;color:var(--text);margin-top:6px;
-}
-.footer{margin-top:20px;text-align:center;color:var(--muted);font-size:13px}
-
-/* social icons row */
-.socials{display:flex;gap:10px;align-items:center;margin-top:8px}
-.social-link{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:8px;color:var(--text);text-decoration:none;font-size:14px}
-
-/* make order fixed button (appears at bottom) */
-.order-fixed{
-  position:fixed;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:18px;
-  z-index:50;
-  background:var(--accent);
-  color:white;
-  border:none;
-  padding:12px 18px;
-  border-radius:999px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-  cursor:pointer;
-}
-
-/* responsive */
-@media(max-width:480px){
-  .project-img{height:180px}
-  .app{padding:10px}
-}
-/* Ограничиваем ширину приложения и центрируем */
 .app-root {
   min-height: 100vh;
   display: flex;
@@ -126,7 +39,7 @@ body{
 
 .app-shell {
   width: 100%;
-  max-width: 520px; /* чтобы и в растянутом виде смотрелось как аккуратный мобильный макет */
+  max-width: 480px;
   position: relative;
 }
 
@@ -134,7 +47,8 @@ body{
 .top-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start; /* сдвинули влево */
+  gap: 10px;
   margin-bottom: 8px;
 }
 
@@ -160,6 +74,15 @@ body{
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   cursor: pointer;
+  color: inherit;
+}
+
+/* Верхняя дополнительная панель */
+.top-bar-extra {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
 
 /* Вкладки */
@@ -189,222 +112,21 @@ body{
 }
 
 .tab-btn-active {
-  background: #ff3040;
+  background: var(--accent);
   opacity: 1;
 }
 
 /* Контент вкладки */
 .tab-content {
-  padding-bottom: 72px; /* запас под нижнюю кнопку */
+  padding-bottom: 80px; /* запас под фиксированную кнопку */
 }
-
-/* Фиксированная нижняя кнопка заказа */
-.fixed-order-btn {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 10px;
-  width: 100%;
-  max-width: 520px;
-  border-radius: 999px;
-}
-
-/* Центровка и фиксированная "мобильная" ширина */
-
-/* Внешний контейнер: центрируем по горизонтали */
-.app-root {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: 8px;
-}
-
-/* Внутренний контейнер: фиксируем адекватную ширину приложения */
-.app-shell {
-  width: 100%;
-  max-width: 480px; /* можно 420–520 под себя */
-  position: relative;
-}
-
-/* Верхняя панель */
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.top-bar-left {
-  display: flex;
-  flex-direction: column;
-}
-
-.app-title {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.app-subtitle {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-.icon-btn {
-  border: none;
-  outline: none;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  cursor: pointer;
-}
-
-/* Вкладки */
-.tabs {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 6px 2px 8px;
-  margin-bottom: 8px;
-}
-
-.tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.tab-btn {
-  flex: 0 0 auto;
-  border-radius: 999px;
-  border: none;
-  padding: 6px 12px;
-  font-size: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  color: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-  opacity: 0.7;
-}
-
-.tab-btn-active {
-  background: #ff3040;
-  opacity: 1;
-}
-
-/* Контент вкладки + запас под нижнюю кнопку */
-.tab-content {
-  padding-bottom: 80px;
-}
-
-/* Фиксированная нижняя кнопка */
-.fixed-order-btn {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 10px;
-  width: 100%;
-  max-width: 480px;
-  border-radius: 999px;
-}
-/* Центрируем приложение и фиксируем ширину */
-
-.app-root {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: 8px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, sans-serif;
-}
-
-.theme-dark {
-  background: #050509;
-  color: #f5f5f5;
-}
-
-.theme-alt {
-  background: #1a0004;
-  color: #ffecec;
-}
-
-.app-shell {
-  width: 100%;
-  max-width: 480px;
-  position: relative;
-}
-
-/* Верхняя панель */
-
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.top-bar-left {
-  display: flex;
-  flex-direction: column;
-}
-
-.app-title {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.app-subtitle {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-.icon-btn {
-  border: none;
-  outline: none;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: inherit;
-  cursor: pointer;
-}
-
-/* Вкладки */
-
-.tabs {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 6px 2px 8px;
-  margin-bottom: 8px;
-}
-
-.tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.tab-btn {
-  flex: 0 0 auto;
-  border-radius: 999px;
-  border: none;
-  padding: 6px 12px;
-  font-size: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  color: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-  opacity: 0.7;
-}
-
-.tab-btn-active {
-  background: #ff3040;
-  opacity: 1;
-}
-
-/* Карточки и текст */
 
 .card {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 16px;
-  padding: 14px 14px 16px;
-  margin-bottom: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--card);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 12px 0;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
 }
 
 .section-title {
@@ -435,7 +157,6 @@ body{
 }
 
 /* Кнопки */
-
 .primary-btn,
 .secondary-btn {
   border: none;
@@ -448,12 +169,12 @@ body{
 }
 
 .primary-btn {
-  background: #ff3040;
+  background: var(--accent);
   color: #fff;
 }
 
 .secondary-btn {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255,255,255,0.06);
   color: inherit;
 }
 
@@ -461,14 +182,7 @@ body{
   width: 100%;
 }
 
-/* Контент вкладки + место под кнопку снизу */
-
-.tab-content {
-  padding-bottom: 80px;
-}
-
-/* Фиксированная нижняя кнопка */
-
+/* Фиксированная кнопка заказа/генерации */
 .fixed-order-btn {
   position: fixed;
   left: 50%;
@@ -477,6 +191,84 @@ body{
   width: 100%;
   max-width: 480px;
   border-radius: 999px;
+  z-index: 50;
 }
 
+/* Галерея: свайп-карточки */
+.swiper {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding: 16px 0;
+  scroll-snap-type: x mandatory;
+}
 
+.swiper::-webkit-scrollbar {
+  display: none;
+}
+
+.swiper-card {
+  min-width: 200px;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  scroll-snap-align: start;
+  background: var(--card);
+  padding: 8px;
+}
+
+.swiper-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+/* Отзывы с первой буквой ника */
+.review-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(255,255,255,0.03);
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.review-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Социальные ссылки */
+.socials {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.social-link {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+/* Мобильная адаптация */
+@media(max-width:480px){
+  .swiper-card img { height: 120px; }
+  .app-shell { max-width: 100%; padding: 0 10px; }
+}
