@@ -65,45 +65,6 @@ const TEXTS = {
       "Баннер — 600 грн",
       "Концепт — 1000 грн",
     ],
-    // ...
-  },
-  en: {
-    pricingTitle: "Pricing / Services",
-    pricingItems: [
-      "Avatar — $20",
-      "Preview — $15",
-      "Banner — $25",
-      "Concept — $50",
-    ],
-  },
-  ua: {
-    pricingTitle: "Прайс / Послуги",
-    pricingItems: [
-      "Аватарка — 500 грн",
-      "Прев’ю — 400 грн",
-      "Банер — 600 грн",
-      "Концепт — 1000 грн",
-    ],
-  },
-  kz: {
-    pricingTitle: "Прайс / Қызметтер",
-    pricingItems: [
-      "Аватар — 500 ₸",
-      "Превью — 400 ₸",
-      "Баннер — 600 ₸",
-      "Концепт — 1000 ₸",
-    ],
-  },
-  by: {
-    pricingTitle: "Прайс / Паслугі",
-    pricingItems: [
-      "Аватарка — 500 BYN",
-      "Прэв’ю — 400 BYN",
-      "Банер — 600 BYN",
-      "Канцэпт — 1000 BYN",
-    ],
-  },
-};
 
     aboutTitle: "Обо мне",
     aboutSubtitle:
