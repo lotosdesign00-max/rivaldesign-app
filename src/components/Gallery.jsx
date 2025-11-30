@@ -1,42 +1,37 @@
 import React, { useState } from "react";
 import gallery from "../data/gallery.json";
 import ProjectCard from "./ProjectCard";
-import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-
-const CATEGORIES = ["Аватарки", "Превью", "Баннеры"];
+import { Swiper, SwiperSlide } from "swiper/react";
 
 export default function Gallery() {
-  const [activeCategory, setActiveCategory] = useState(CATEGORIES[0]);
+  const CATEGORIES = ["Аватарки", "Превью", "Баннеры"];
+  const [activeCategory, setActiveCategory] = useState("Аватарки");
 
-  const filteredProjects = gallery.filter(p => p.category === activeCategory);
+  const filtered = gallery.filter((p) => p.category === activeCategory);
 
   return (
     <div className="card">
       <h3>Галерея работ</h3>
-      <div className="muted">Листай свайпом — нажми «Подробнее» для кейса</div>
+      <div className="muted">Выберите категорию и листайте свайпом</div>
 
-      {/* Фильтры категории в виде заголовков */}
-      <div style={{ display: "flex", justifyContent: "space-around", margin: "12px 0" }}>
-        {CATEGORIES.map(cat => (
-          <h4
+      {/* Фильтры категорий */}
+      <div className="category-tabs">
+        {CATEGORIES.map((cat) => (
+          <button
             key={cat}
-            style={{
-              cursor: "pointer",
-              borderBottom: activeCategory === cat ? "2px solid #ff3040" : "2px solid transparent",
-              paddingBottom: "4px"
-            }}
+            className={"tab-btn" + (activeCategory === cat ? " tab-btn-active" : "")}
             onClick={() => setActiveCategory(cat)}
           >
             {cat}
-          </h4>
+          </button>
         ))}
       </div>
 
-      {/* Свайп */}
+      {/* Свайп проектов */}
       <div className="swiper">
         <Swiper spaceBetween={12} slidesPerView={"auto"}>
-          {filteredProjects.map(p => (
+          {filtered.map((p) => (
             <SwiperSlide key={p.id} style={{ width: 320 }}>
               <ProjectCard project={p} />
             </SwiperSlide>
