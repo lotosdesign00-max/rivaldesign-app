@@ -36,27 +36,37 @@ export default function App() {
         return (
           <div className="card">
             <h2 className="section-title">Отзывы клиентов</h2>
-            <p className="section-subtitle">Реальные отзывы с аватаркой-буквой</p>
+            <p className="section-subtitle">
+              Реальные отзывы с аватаркой-буквой
+            </p>
             <div className="row">
               {reviewsData.map(r => (
-                <div key={r.id} className="card" style={{ width: "100%", marginBottom: 8 }}>
+                <div
+                  key={r.id}
+                  className="card"
+                  style={{ width: "100%", marginBottom: 8 }}
+                >
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <div style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 999,
-                      background: "#ff3040",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "white",
-                      fontWeight: 600
-                    }}>
+                    <div
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 999,
+                        background: "#ff3040",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "white",
+                        fontWeight: 600,
+                      }}
+                    >
                       {r.name[0].toUpperCase()}
                     </div>
                     <div>
                       <b>{r.name}</b>
-                      <p style={{ margin: 0, fontSize: 12, opacity: 0.8 }}>{r.comment}</p>
+                      <p style={{ margin: 0, fontSize: 12, opacity: 0.8 }}>
+                        {r.comment}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -68,6 +78,7 @@ export default function App() {
         return (
           <div className="card">
             <h2 className="section-title">Прайс / Услуги</h2>
+            <p className="section-subtitle">Примеры услуг и стоимость</p>
             <ul className="list">
               <li>Логотип — от 𝑋ₓₓₓ грн</li>
               <li>Фирменный стиль — от 𝑋ₓₓₓ грн</li>
@@ -82,6 +93,9 @@ export default function App() {
             <h2 className="section-title">Обо мне</h2>
             <p className="section-subtitle">
               Я Rival, дизайнер. Работаю с брендами, помогаю выделиться в соцсетях и рекламе.
+            </p>
+            <p className="hint-text">
+              Здесь можно добавить фото, ссылки на Behance, Instagram, Telegram.
             </p>
           </div>
         );
@@ -114,7 +128,7 @@ export default function App() {
     const isAI = activeTab === TABS.AI;
     return (
       <button
-        className="order-fixed"
+        className="primary-btn wide fixed-order-btn"
         onClick={() => {
           if (isAI) {
             alert("Сгенерировать идею!");
@@ -137,9 +151,9 @@ export default function App() {
             <span className="app-title">Rival App</span>
             <span className="app-subtitle">портфолио дизайнера</span>
           </div>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <div className="controls">
             <button className="icon-btn" onClick={toggleTheme}>🌗</button>
-            <button className="icon-btn">🌐</button> {/* место под смену языка/о приложении */}
+            <button className="icon-btn">🌐</button> {/* смена языка / о приложении */}
           </div>
         </div>
 
