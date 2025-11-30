@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
 const TABS = {
   GALLERY: "gallery",
@@ -10,117 +12,132 @@ const TABS = {
 };
 
 const TAB_LABELS = {
-  ru: {
-    [TABS.GALLERY]: "Галерея",
-    [TABS.REVIEWS]: "Отзывы",
-    [TABS.PRICING]: "Прайс",
-    [TABS.ABOUT]: "Обо мне",
-    [TABS.FAQ]: "FAQ",
-    [TABS.AI]: "AI идеи",
-    ORDER_BTN: "Оформить заказ",
-    AI_BTN: "Сгенерировать",
-  },
-  en: {
-    [TABS.GALLERY]: "Gallery",
-    [TABS.REVIEWS]: "Reviews",
-    [TABS.PRICING]: "Pricing",
-    [TABS.ABOUT]: "About",
-    [TABS.FAQ]: "FAQ",
-    [TABS.AI]: "AI Ideas",
-    ORDER_BTN: "Order",
-    AI_BTN: "Generate",
-  },
+  [TABS.GALLERY]: "Галерея",
+  [TABS.REVIEWS]: "Отзывы",
+  [TABS.PRICING]: "Прайс",
+  [TABS.ABOUT]: "Обо мне",
+  [TABS.FAQ]: "FAQ",
+  [TABS.AI]: "AI идеи",
 };
 
-const CONTACT_TG = "Rivaldsg";
+const GALLERY_CATEGORIES = ["Аватарки", "Превью", "Баннеры"];
+
+const GALLERY_ITEMS = [
+  { id: "1", category: "Аватарки", title: "Аватар 1", image: "/images/avatar1.jpg", description: "Описание аватарки 1" },
+  { id: "2", category: "Превью", title: "Превью 1", image: "/images/preview1.jpg", description: "Описание превью 1" },
+  { id: "3", category: "Баннеры", title: "Баннер 1", image: "/images/banner1.jpg", description: "Описание баннера 1" },
+  { id: "4", category: "Аватарки", title: "Аватар 2", image: "/images/avatar2.jpg", description: "Описание аватарки 2" },
+];
+
+const REVIEWS_ITEMS = [
+  { id: "r1", name: "Alice", text: "Отличная работа!" },
+  { id: "r2", name: "Bob", text: "Очень понравилось." },
+  { id: "r3", name: "Charlie", text: "Буду обращаться ещё." },
+];
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(TABS.GALLERY);
-  const [theme, setTheme] = useState("dark"); // dark | alt
-  const [lang, setLang] = useState("ru"); // ru | en
-  const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const [theme, setTheme] = useState("dark");
+  const [language, setLanguage] = useState("ru");
+  const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
+  const [showLangMenu, setShowLangMenu] = useState(false);
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "alt" : "dark"));
-  };
-
-  const handleOrderClick = () => {
-    window.open(`https://t.me/${CONTACT_TG}`, "_blank");
-  };
-
-  const toggleLangMenu = () => {
-    setLangMenuOpen((prev) => !prev);
-  };
-
-  const changeLang = (newLang) => {
-    setLang(newLang);
-    setLangMenuOpen(false);
+  const toggleTheme = () => setTheme(prev => (prev === "dark" ? "alt" : "dark"));
+  const toggleLangMenu = () => setShowLangMenu(prev => !prev);
+  const handleLangChange = (lang) => { setLanguage(lang); setShowLangMenu(false); };
+  
+  const handleBottomButton = () => {
+    if (activeTab === TABS.AI) alert("Генерируем идею...");
+    else alert("Переход к Telegram для заказа");
   };
 
   const renderContent = () => {
     switch (activeTab) {
       case TABS.GALLERY:
         return (
-          <section className="card">
-            <h2 className="section-title">{TAB_LABELS[lang][TABS.GALLERY]}</h2>
-            <p className="section-subtitle">
-              Здесь будут твои работы: логотипы, постеры, баннеры, брендинг и т.д.
-            </p>
-          </section>
+          <div className="card">
+            <h2 className="section-title">Галерея работ</h2>
+            <div className="tabs">
+              {GALLERY_CATEGORIES.map(cat => (
+                <button
+                  key={cat}
+                  className={"tab-btn" + (cat === activeCategory ? " tab-btn-active" : "")}
+                  onClick={() => setActiveCategory(cat)}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+            <Swiper spaceBetween={12} slidesPerView={"auto"}>
+              {GALLERY_ITEMS.filter(p => p.category === activeCategory).map(p => (
+                <SwiperSlide key={p.id} style={{width: 320}}>
+                  <img src={p.image} alt={p.title} className="project-img"/>
+                  <p className="hint-text">{p.description}</p>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         );
 
       case TABS.REVIEWS:
         return (
-          <section className="card">
-            <h2 className="section-title">{TAB_LABELS[lang][TABS.REVIEWS]}</h2>
-            <p className="section-subtitle">Отзывы клиентов с аватарками</p>
-            <button className="secondary-btn">Оставить отзыв</button>
-          </section>
+          <div className="card">
+            <h2 className="section-title">Отзывы клиентов</h2>
+            <Swiper spaceBetween={12} slidesPerView={"auto"}>
+              {REVIEWS_ITEMS.map(r => (
+                <SwiperSlide key={r.id} style={{width: 250}}>
+                  <div className="card">
+                    <div style={{fontWeight: "bold", fontSize: "24px", marginBottom: "4px"}}>
+                      {r.name[0]}
+                    </div>
+                    <div>{r.name}</div>
+                    <div className="hint-text">{r.text}</div>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         );
 
       case TABS.PRICING:
         return (
-          <section className="card">
-            <h2 className="section-title">{TAB_LABELS[lang][TABS.PRICING]}</h2>
+          <div className="card">
+            <h2 className="section-title">Прайс / Услуги</h2>
             <ul className="list">
-              <li>Логотип — от 𝑋ₓₓₓ грн</li>
-              <li>Фирменный стиль — от 𝑋ₓₓₓ грн</li>
-              <li>Оформление соцсетей — от 𝑋ₓₓₓ грн</li>
-              <li>Рекламные баннеры — от 𝑋ₓₓₓ грн</li>
+              <li>Логотип — от X грн</li>
+              <li>Фирменный стиль — от X грн</li>
+              <li>Оформление соцсетей — от X грн</li>
+              <li>Рекламные баннеры — от X грн</li>
             </ul>
-          </section>
+          </div>
         );
 
       case TABS.ABOUT:
         return (
-          <section className="card">
-            <h2 className="section-title">{TAB_LABELS[lang][TABS.ABOUT]}</h2>
-            <p className="section-subtitle">
-              Я Rival, дизайнер. Работаю с брендами, помогаю выделиться в соцсетях и рекламе.
-            </p>
-          </section>
+          <div className="card">
+            <h2 className="section-title">Обо мне</h2>
+            <p className="section-subtitle">Я Rival, дизайнер. Работаю с брендами, помогаю выделиться.</p>
+          </div>
         );
 
       case TABS.FAQ:
         return (
-          <section className="card">
-            <h2 className="section-title">{TAB_LABELS[lang][TABS.FAQ]}</h2>
+          <div className="card">
+            <h2 className="section-title">FAQ</h2>
             <ul className="list">
               <li>Как проходит работа?</li>
               <li>Какие файлы я получу?</li>
               <li>Сколько правок входит в стоимость?</li>
             </ul>
-          </section>
+          </div>
         );
 
       case TABS.AI:
         return (
-          <section className="card">
-            <h2 className="section-title">{TAB_LABELS[lang][TABS.AI]}</h2>
-            <p className="section-subtitle">
-              Здесь можно сделать блок, где бот предлагает палитры, референсы и концепты.
-            </p>
-          </section>
+          <div className="card">
+            <h2 className="section-title">AI идеи</h2>
+            <p className="section-subtitle">Здесь можно сгенерировать палитры и концепты.</p>
+          </div>
         );
 
       default:
@@ -138,74 +155,40 @@ export default function App() {
             <span className="app-subtitle">портфолио дизайнера</span>
           </div>
 
-          {/* Кнопки справа: тема + язык */}
-          <div style={{ display: "flex", gap: "6px", position: "relative" }}>
-            <button className="icon-btn" onClick={toggleTheme}>
-              🌗
-            </button>
-            <button className="icon-btn" onClick={toggleLangMenu}>
-              🌐
-            </button>
-            {langMenuOpen && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: "32px",
-                  right: "0",
-                  background: "#222",
-                  padding: "6px",
-                  borderRadius: "8px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "4px",
-                  zIndex: 100,
-                }}
-              >
-                <button
-                  className="secondary-btn"
-                  onClick={() => changeLang("ru")}
-                >
-                  RU
-                </button>
-                <button
-                  className="secondary-btn"
-                  onClick={() => changeLang("en")}
-                >
-                  EN
-                </button>
-              </div>
-            )}
+          <div className="controls">
+            <button className="icon-btn" onClick={toggleTheme}>🌗</button>
+
+            <div style={{position:"relative"}}>
+              <button className="icon-btn" onClick={toggleLangMenu}>🌐</button>
+              {showLangMenu && (
+                <div style={{
+                  position:"absolute", top:"30px", right:0, background:"#222", borderRadius:"8px", padding:"4px"
+                }}>
+                  <button className="tab-btn" onClick={()=>handleLangChange("ru")}>RU</button>
+                  <button className="tab-btn" onClick={()=>handleLangChange("en")}>EN</button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Вкладки */}
+        {/* Основные вкладки */}
         <nav className="tabs">
-          {Object.values(TABS).map((tabKey) => (
+          {Object.values(TABS).map(tab => (
             <button
-              key={tabKey}
-              className={
-                "tab-btn" + (activeTab === tabKey ? " tab-btn-active" : "")
-              }
-              onClick={() => setActiveTab(tabKey)}
+              key={tab}
+              className={"tab-btn" + (activeTab===tab?" tab-btn-active":"")}
+              onClick={()=>setActiveTab(tab)}
             >
-              {TAB_LABELS[lang][tabKey]}
+              {TAB_LABELS[tab]}
             </button>
           ))}
         </nav>
 
-        {/* Контент вкладки */}
         <main className="tab-content">{renderContent()}</main>
 
-        {/* Фиксированная кнопка снизу */}
-        <button
-          className="primary-btn fixed-order-btn"
-          onClick={
-            activeTab === TABS.AI ? () => alert("Генерируем идею!") : handleOrderClick
-          }
-        >
-          {activeTab === TABS.AI
-            ? TAB_LABELS[lang].AI_BTN
-            : TAB_LABELS[lang].ORDER_BTN}
+        <button className="primary-btn fixed-order-btn" onClick={handleBottomButton}>
+          {activeTab===TABS.AI ? "Сгенерировать" : "Оформить заказ"}
         </button>
       </div>
     </div>
