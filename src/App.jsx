@@ -1,3 +1,6 @@
+Окей! Вот полный файл `App.jsx` с добавленной функцией генерации идеи для вкладки AI и с черным текстом для сгенерированного блока:
+
+```jsx
 import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -89,6 +92,7 @@ const TEXTS = {
       "Скоро здесь будет переход к твоему Telegram для оформления заказа 😉",
     aiAlert: "Скоро здесь будет генератор идей на AI 🚀",
   },
+
   en: {
     appTitle: "Rival App",
     appSubtitle: "designer portfolio",
@@ -122,33 +126,122 @@ const TEXTS = {
     orderAlert: "Soon this will open your Telegram for orders 😉",
     aiAlert: "Soon this will be an AI idea generator 🚀",
   },
-  // ... остальные языки аналогично ru/en ...
+
+  ua: {
+    appTitle: "Rival App",
+    appSubtitle: "портфоліо дизайнера",
+    galleryTitle: "Галерея робіт",
+    gallerySubtitle: "Аватарки, прев’ю, банери та інші проєкти.",
+    galleryHint: "Обери категорію зверху та гортай роботи свайпом.",
+    reviewsTitle: "Відгуки клієнтів",
+    reviewsSubtitle: "Реальні відгуки твоїх клієнтів.",
+    reviewsAddButton: "Залишити відгук",
+    pricingTitle: "Прайс / Послуги",
+    pricingItems: [
+      "Логотип — від X грн",
+      "Фірмовий стиль — від X грн",
+      "Оформлення соцмереж — від X грн",
+      "Рекламні банери — від X грн",
+    ],
+    aboutTitle: "Про мене",
+    aboutSubtitle:
+      "Я Rival, дизайнер. Допомагаю брендам виділятися в соцмережах та рекламі.",
+    faqTitle: "FAQ",
+    faqItems: [
+      "Як проходить робота?",
+      "Які файли я отримаю?",
+      "Скільки правок входить у вартість?",
+    ],
+    aiTitle: "AI ідеї",
+    aiSubtitle:
+      "Генератор ідей для палітр, референсів та концептів (у розробці).",
+    bottomOrder: "Замовити дизайн",
+    bottomGenerate: "Згенерувати ідею",
+    orderAlert:
+      "Скоро тут буде перехід у твій Telegram для замовлення 😉",
+    aiAlert: "Скоро тут буде AI-генератор ідей 🚀",
+  },
+
+  kz: {
+    appTitle: "Rival App",
+    appSubtitle: "дизайнер портфолиосы",
+    galleryTitle: "Жұмыстар галереясы",
+    gallerySubtitle: "Аватарлар, превью, баннерлер және басқа жобалар.",
+    galleryHint: "Жоғарыдан санатты таңда да, жұмыстарды свайппен қара.",
+    reviewsTitle: "Клиент пікірлері",
+    reviewsSubtitle: "Нағыз клиенттерден пікірлер.",
+    reviewsAddButton: "Пікір қалдыру",
+    pricingTitle: "Прайс / Қызметтер",
+    pricingItems: [
+      "Логотип — X теңгеден",
+      "Фирмалық стиль — X теңгеден",
+      "Әлеуметтік желі дизайны — X теңгеден",
+      "Жарнамалық баннерлер — X теңгеден",
+    ],
+    aboutTitle: "Мен туралы",
+    aboutSubtitle:
+      "Мен Rival, дизайнермін. Брендтерге әлеуметтік желілерде және жарнамада ерекшеленуге көмектесемін.",
+    faqTitle: "FAQ",
+    faqItems: [
+      "Жұмыс қалай өтеді?",
+      "Қандай файлдарды аламын?",
+      "Қанша өзгеріс енгізуге болады?",
+    ],
+    aiTitle: "AI идеялар",
+    aiSubtitle:
+      "Палитралар, референстер және концепттер үшін идея генераторы (әзірлеуде).",
+    bottomOrder: "Дизайнға тапсырыс беру",
+    bottomGenerate: "Идея генерациялау",
+    orderAlert:
+      "Жақында мұнда тапсырыс беру үшін сенің Telegram-ыңа өтуді қосамыз 😉",
+    aiAlert: "Жақында мұнда AI идея генераторы болады 🚀",
+  },
+
+  by: {
+    appTitle: "Rival App",
+    appSubtitle: "партфоліа дызайнера",
+    galleryTitle: "Галерэя работ",
+    gallerySubtitle: "Аватаркі, прэв’ю, банеры і іншыя праекты.",
+    galleryHint: "Абяры катэгорыю зверху і ліставай работы свайпам.",
+    reviewsTitle: "Водгукі кліентаў",
+    reviewsSubtitle: "Сапраўдныя водгукі тваіх кліентаў.",
+    reviewsAddButton: "Пакінуць водгук",
+    pricingTitle: "Прайс / Паслугі",
+    pricingItems: [
+      "Лагатып — ад X BYN",
+      "Фірмовы стыль — ад X BYN",
+      "Афармленне сацсетак — ад X BYN",
+      "Рэкламныя банеры — ад X BYN",
+    ],
+    aboutTitle: "Пра мяне",
+    aboutSubtitle:
+      "Я Rival, дызайнер. Дапамагаю брэндам выдзяляцца ў сацсетках і рэкламе.",
+    faqTitle: "FAQ",
+    faqItems: [
+      "Як праходзіць работа?",
+      "Якія файлы я атрымаю?",
+      "Колькі праўкі ўваходзіць у кошт?",
+    ],
+    aiTitle: "AI ідэі",
+    aiSubtitle:
+      "Генератар ідэй для палітр, рэферансаў і канцэптаў (у распрацоўцы).",
+    bottomOrder: "Замовіць дызайн",
+    bottomGenerate: "Згенераваць ідэю",
+    orderAlert:
+      "Хутка тут будзе пераход у твой Telegram для замовы 😉",
+    aiAlert: "Хутка тут будзе AI-генератар ідэй 🚀",
+  },
 };
 
 const GALLERY_CATEGORIES = ["Аватарки", "Превью", "Баннеры"];
 
 const GALLERY_ITEMS = [
-  {
-    id: "1",
-    category: "Аватарки",
-    title: "Аватар 1",
-    image: "/images/podborka1.jpg",
-    description: "Описание аватарки 1",
-  },
-  {
-    id: "2",
-    category: "Превью",
-    title: "Превью 1",
-    image: "/images/avatar1.jpg",
-    description: "Описание превью 1",
-  },
-  {
-    id: "3",
-    category: "Баннеры",
-    title: "Баннер 1",
-    image: "/images/banner1.jpg",
-    description: "Описание баннера 1",
-  },
+  { id: "1", category: "Аватарки", title: "Аватар 1", image: "/images/podborka1.jpg", description: "Описание аватарки 1" },
+  { id: "2", category: "Превью", title: "Превью 1", image: "/images/avatar1.jpg", description: "Описание превью 1" },
+  { id: "88", category: "Превью", title: "Превью 2", image: "/images/avatar1.jpg", description: "Описание превью 1" },
+  { id: "3", category: "Баннеры", title: "Баннер 1", image: "/images/banner1.jpg", description: "Описание баннера 1" },
+  { id: "9", category: "Баннеры", title: "Баннер 2", image: "/images/banner1.jpg", description: "Описание баннера 1" },
+  { id: "4", category: "Аватарки", title: "Аватар 2", image: "/images/avatar2.jpg", description: "Описание аватарки 2" },
 ];
 
 const REVIEWS_ITEMS = [
@@ -157,20 +250,9 @@ const REVIEWS_ITEMS = [
   { id: "r3", name: "Charlie", text: "Буду обращаться ещё." },
 ];
 
-// --- НОВОЕ: генератор AI идей ---
-const generateAiIdea = () => {
-  const colors = ["Красный", "Синий", "Зелёный", "Жёлтый", "Фиолетовый"];
-  const themes = ["Крипта", "Скамер", "Доксер", "Абузы", "Осинтеры"];
-  const nicknames = ["CryptoKing", "AbuserX", "DoxerPro", "ScammerGuy", "OsintMaster"];
-  const characters = ["Рыцарь", "Кот", "Дракон", "Робот", "Эльф"];
+const AI_CATEGORIES = ["Скамер", "Доксер", "Криптан", "Абузы", "Осинтеры"];
 
-  const color = colors[Math.floor(Math.random() * colors.length)];
-  const theme = themes[Math.floor(Math.random() * themes.length)];
-  const nickname = nicknames[Math.floor(Math.random() * nicknames.length)];
-  const character = characters[Math.floor(Math.random() * characters.length)];
-
-  return `Цвет: ${color}, Тематика: ${theme}, Ник: ${nickname}, Персонаж: ${character}`;
-};
+const AI_NAMES = ["CryptoFox", "ShadowHunter", "NeoBot", "Abyss", "ZeroOne"];
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(TABS.GALLERY);
@@ -179,7 +261,7 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [aiIdea, setAiIdea] = useState(""); // <-- для генератора AI идей
+  const [aiIdea, setAiIdea] = useState("");
 
   const t = TEXTS[language];
   const labels = TAB_LABELS[language];
@@ -194,10 +276,22 @@ export default function App() {
 
   const handleBottomButton = () => {
     if (activeTab === TABS.AI) {
-      setAiIdea(generateAiIdea());
+      generateAiIdea();
     } else {
       alert(t.orderAlert);
     }
+  };
+
+  const generateAiIdea = () => {
+    const colors = ["#FF5733", "#33FF57", "#3357FF", "#F3FF33", "#FF33F3"];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    const randomCategory =
+      AI_CATEGORIES[Math.floor(Math.random() * AI_CATEGORIES.length)];
+    const randomName = AI_NAMES[Math.floor(Math.random() * AI_NAMES.length)];
+    const randomNick = `${randomName}${Math.floor(Math.random() * 999)}`;
+    setAiIdea(
+      `Категория: ${randomCategory}\nИмя: ${randomNick}\nЦвет: ${randomColor}`
+    );
   };
 
   const renderContent = () => {
@@ -230,7 +324,11 @@ export default function App() {
                       style={{ cursor: "pointer" }}
                     >
                       <div className="project-thumb-wrapper">
-                        <img src={p.image} alt={p.title} className="project-thumb-img" />
+                        <img
+                          src={p.image}
+                          alt={p.title}
+                          className="project-thumb-img"
+                        />
                       </div>
                       <div className="project-info">
                         <div className="project-title">{p.title}</div>
@@ -255,7 +353,13 @@ export default function App() {
               {REVIEWS_ITEMS.map((r) => (
                 <SwiperSlide key={r.id} style={{ width: 250 }}>
                   <div className="card">
-                    <div style={{ fontWeight: "bold", fontSize: "24px", marginBottom: "4px" }}>
+                    <div
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "24px",
+                        marginBottom: "4px",
+                      }}
+                    >
                       {r.name[0]}
                     </div>
                     <div>{r.name}</div>
@@ -307,15 +411,6 @@ export default function App() {
           <div className="card">
             <h2 className="section-title">{t.aiTitle}</h2>
             <p className="section-subtitle">{t.aiSubtitle}</p>
-
-            <button
-              className="primary-btn"
-              onClick={() => setAiIdea(generateAiIdea())}
-              style={{ marginTop: "20px" }}
-            >
-              {t.bottomGenerate}
-            </button>
-
             {aiIdea && (
               <div
                 style={{
@@ -324,118 +419,6 @@ export default function App() {
                   border: "1px solid #ccc",
                   borderRadius: "8px",
                   background: "#f5f5f5",
-                }}
-              >
-                {aiIdea}
-              </div>
-            )}
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div className={`app-root theme-${theme}`}>
-      <div className="app-shell">
-        <div className="top-bar">
-          <div className="top-bar-left">
-            <span className="app-title">{t.appTitle}</span>
-            <span className="app-subtitle">{t.appSubtitle}</span>
-          </div>
-
-          <div className="controls">
-            <button className="icon-btn" onClick={toggleTheme}>
-              🌗
-            </button>
-
-            <div style={{ position: "relative" }}>
-              <button className="icon-btn" onClick={toggleLangMenu}>
-                🌐
-              </button>
-              {showLangMenu && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "30px",
-                    right: 0,
-                    background: "#222",
-                    borderRadius: "10px",
-                    padding: "6px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
-                    zIndex: 10,
-                  }}
-                >
-                  {["ru","ua","en","kz","by"].map((lang) => (
-                    <button
-                      key={lang}
-                      className="tab-btn"
-                      onClick={() => handleLangChange(lang)}
-                      style={{ fontSize: "12px", padding: "4px 10px", textAlign: "left" }}
-                    >
-                      {lang.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <nav className="tabs">
-          {Object.values(TABS).map((tab) => (
-            <button
-              key={tab}
-              className={"tab-btn" + (activeTab === tab ? " tab-btn-active" : "")}
-              onClick={() => setActiveTab(tab)}
-            >
-              {labels[tab]}
-            </button>
-          ))}
-        </nav>
-
-        <main className="tab-content">{renderContent()}</main>
-
-        <button
-          className="primary-btn fixed-order-btn"
-          onClick={handleBottomButton}
-        >
-          {activeTab === TABS.AI ? t.bottomGenerate : t.bottomOrder}
-        </button>
-      </div>
-
-      {selectedImage && (
-        <div
-          className="image-modal-backdrop"
-          onClick={() => setSelectedImage(null)}
-        >
-          <div
-            className="image-modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="icon-btn image-modal-close"
-              onClick={() => setSelectedImage(null)}
-            >
-              ✖
-            </button>
-            <img
-              src={selectedImage.image}
-              alt={selectedImage.title}
-              className="image-modal-img"
-            />
-            <div className="image-modal-text">
-              <h3>{selectedImage.title}</h3>
-              <p>{selectedImage.description}</p>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+                  color: "#000", // черный текст
+                  whiteSpace: "pre-line",
+```
