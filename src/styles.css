@@ -295,7 +295,15 @@ body {
 }
 
 .image-modal-close {
-  color: #000; /* черный цвет */
-  font-size: 18px; /* если нужно увеличить */
-  cursor: pointer; /* чтобы был кликабельным */
+  color: #000; /* цвет крестика */
+  background-color: transparent; /* прозрачный фон */
+  border: none; /* убрать границы */
+  font-size: 18px; /* размер */
+  cursor: pointer; /* чтобы было понятно, что кликабельное */
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 4px; /* можно для удобства */
+  border-radius: 50%; /* если хочешь круглую кнопку */
 }
+
