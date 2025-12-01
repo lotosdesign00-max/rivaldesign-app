@@ -56,11 +56,11 @@ const TAB_LABELS = {
 
 // УСЛОВНЫЕ курсы: сколько валюты = 1$
 const RATES = {
-  ru: { code: "₽", perDollar: 100 },   // 5$ = 500₽, 10$ = 1000₽
-  uk: { code: "₴", perDollar: 40 },    // 5$ = 200₴, 10$ = 400₴
-  kz: { code: "₸", perDollar: 500 },   // 5$ = 2500₸, 10$ = 5000₸
-  by: { code: "BYN", perDollar: 3 },   // 5$ = 15 BYN, 10$ = 30 BYN
-  en: { code: "$", perDollar: 1 },     // 5$ = $5, 10$ = $10
+  ru: { code: "₽", perDollar: 100 },
+  uk: { code: "₴", perDollar: 40 },
+  kz: { code: "₸", perDollar: 500 },
+  by: { code: "BYN", perDollar: 3 },
+  en: { code: "$", perDollar: 1 },
 };
 
 // Базовые тексты (без привязки к валюте)
@@ -331,7 +331,7 @@ const GALLERY_ITEMS = [
     id: "1",
     category: "Аватарки",
     title: "Аватар 1",
-    image: "/images/podborka1.jpg",
+    image: "/images/avatar1.jpg",
     description: "Описание аватарки 1",
   },
   {
@@ -369,8 +369,8 @@ export default function App() {
   const [language, setLanguage] = useState("ru");
   const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
+  const [modalImage, setModalImage] = useState(null); // <-- Добавлено
 
-  // безопасно: если что-то не так — откатываемся на ru/en
   const t = buildPricingTexts(language);
   const labels = TAB_LABELS[language] || TAB_LABELS.ru;
 
@@ -389,8 +389,6 @@ export default function App() {
       alert(t.aiAlert);
     } else {
       alert(t.orderAlert);
-      // потом можно заменить на:
-      // window.open("https://t.me/Rivaldsg", "_blank");
     }
   };
 
@@ -421,12 +419,15 @@ export default function App() {
               {GALLERY_ITEMS.filter(
                 (p) => p.category === activeCategory
               ).map((p) => (
-         <SwiperSlide key={p.id} style={{ width: 180 }}> {/* ширина слайда */}
-  <div className="project-thumb-wrapper">
-    <img src={p.image} alt={p.title} className="project-thumb-img" />
-  </div>
-  <p className="hint-text">{p.description}</p>
-</SwiperSlide>
+                <SwiperSlide key={p.id} style={{ width: 320 }}>
+                  <img
+                    src={p.image}
+                    alt={p.title}
+                    className="project-img"
+                    onClick={() => setModalImage(p.image)} // <-- Добавлено
+                  />
+                  <p className="hint-text">{p.description}</p>
+                </SwiperSlide>
               ))}
             </Swiper>
 
@@ -493,124 +494,4 @@ export default function App() {
         return (
           <div className="card">
             <h2 className="section-title">{t.faqTitle}</h2>
-            <ul className="list">
-              {t.faqItems.map((item, idx) => (
-                <li key={idx}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        );
-
-      case TABS.AI:
-        return (
-          <div className="card">
-            <h2 className="section-title">{t.aiTitle}</h2>
-            <p className="section-subtitle">{t.aiSubtitle}</p>
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div className={`app-root theme-${theme}`}>
-      <div className="app-shell">
-        {/* Верхняя панель */}
-        <div className="top-bar">
-          <div className="top-bar-left">
-            <span className="app-title">{t.appTitle}</span>
-            <span className="app-subtitle">{t.appSubtitle}</span>
-          </div>
-
-          <div className="controls">
-            <button className="icon-btn" onClick={toggleTheme}>
-              🌗
-            </button>
-
-            <div style={{ position: "relative" }}>
-              <button className="icon-btn" onClick={toggleLangMenu}>
-                🌐 {language.toUpperCase()}
-              </button>
-              {showLangMenu && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "32px",
-                    right: 0,
-                    background: "#222",
-                    borderRadius: "10px",
-                    padding: "6px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                    minWidth: "80px",
-                    zIndex: 10,
-                  }}
-                >
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("ru")}
-                  >
-                    🇷🇺 RU
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("uk")}
-                  >
-                    🇺🇦 UA
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("kz")}
-                  >
-                    🇰🇿 KZ
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("by")}
-                  >
-                    🇧🇾 BY
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("en")}
-                  >
-                    🇬🇧 EN
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Вкладки */}
-        <nav className="tabs">
-          {Object.values(TABS).map((tab) => (
-            <button
-              key={tab}
-              className={
-                "tab-btn" + (activeTab === tab ? " tab-btn-active" : "")
-              }
-              onClick={() => setActiveTab(tab)}
-            >
-              {labels[tab]}
-            </button>
-          ))}
-        </nav>
-
-        {/* Контент */}
-        <main className="tab-content">{renderContent()}</main>
-
-        {/* Нижняя кнопка */}
-        <button
-          className="primary-btn fixed-order-btn"
-          onClick={handleBottomButton}
-        >
-          {activeTab === TABS.AI ? t.bottomGenerate : t.bottomOrder}
-        </button>
-      </div>
-    </div>
-  );
-}
+           
