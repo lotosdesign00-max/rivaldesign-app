@@ -295,7 +295,7 @@ body {
 }
 
 .image-modal-close {
-  position: absolute;
-  top: 6px;
-  right: 6px;
+  color: #000; /* черный цвет */
+  font-size: 18px; /* если нужно увеличить */
+  cursor: pointer; /* чтобы был кликабельным */
 }
