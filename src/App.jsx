@@ -421,10 +421,12 @@ export default function App() {
               {GALLERY_ITEMS.filter(
                 (p) => p.category === activeCategory
               ).map((p) => (
-                <SwiperSlide key={p.id} style={{ width: 320 }}>
-                  <img src={p.image} alt={p.title} className="project-img" />
-                  <p className="hint-text">{p.description}</p>
-                </SwiperSlide>
+         <SwiperSlide key={p.id} style={{ width: 180 }}> {/* ширина слайда */}
+  <div className="project-thumb-wrapper">
+    <img src={p.image} alt={p.title} className="project-thumb-img" />
+  </div>
+  <p className="hint-text">{p.description}</p>
+</SwiperSlide>
               ))}
             </Swiper>
 
