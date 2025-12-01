@@ -54,193 +54,147 @@ const TAB_LABELS = {
   },
 };
 
-// Базовые тексты (без конкретных цен)
 const BASE_TEXTS = {
   ru: {
     appTitle: "Rival App",
     appSubtitle: "портфолио дизайнера",
-
     galleryTitle: "Галерея работ",
     gallerySubtitle: "Аватарки, превью, баннеры и другие проекты.",
     galleryHint: "Выбери категорию сверху и листай работы свайпом.",
-
     reviewsTitle: "Отзывы клиентов",
     reviewsSubtitle: "Настоящие отзывы твоих клиентов.",
     reviewsAddButton: "Оставить отзыв",
-
     pricingTitle: "Прайс / Услуги",
-
     aboutTitle: "Обо мне",
     aboutSubtitle:
       "Я Rival, дизайнер. Помогаю брендам выделяться в соцсетях и рекламе.",
-
     faqTitle: "FAQ",
     faqItems: [
       "Как проходит работа?",
       "Какие файлы я получу?",
       "Сколько правок входит в стоимость?",
     ],
-
     aiTitle: "AI идеи",
     aiSubtitle:
       "Генератор идей для палитр, референсов и концептов (в разработке).",
-
     bottomOrder: "Оформить заказ",
     bottomGenerate: "Сгенерировать идею",
-
     orderAlert:
       "Скоро здесь будет переход к твоему Telegram для оформления заказа 😉",
     aiAlert: "Скоро здесь будет генератор идей на AI 🚀",
   },
-
   uk: {
     appTitle: "Rival App",
     appSubtitle: "портфоліо дизайнера",
-
     galleryTitle: "Галерея робіт",
     gallerySubtitle: "Аватарки, превʼю, банери та інші проєкти.",
     galleryHint: "Обери категорію зверху та гортай роботи свайпом.",
-
     reviewsTitle: "Відгуки клієнтів",
     reviewsSubtitle: "Реальні відгуки твоїх клієнтів.",
     reviewsAddButton: "Залишити відгук",
-
     pricingTitle: "Прайс / Послуги",
-
     aboutTitle: "Про мене",
     aboutSubtitle:
       "Я Rival, дизайнер. Допомагаю брендам виділятися в соцмережах та рекламі.",
-
     faqTitle: "FAQ",
     faqItems: [
       "Як проходить робота?",
       "Які файли я отримаю?",
       "Скільки правок входить у вартість?",
     ],
-
     aiTitle: "AI ідеї",
     aiSubtitle:
       "Генератор ідей для палітр, референсів і концептів (у розробці).",
-
     bottomOrder: "Оформити замовлення",
     bottomGenerate: "Згенерувати ідею",
-
     orderAlert:
       "Скоро тут буде перехід у твій Telegram для оформлення замовлення 😉",
     aiAlert: "Скоро тут буде AI-генератор ідей 🚀",
   },
-
   kz: {
     appTitle: "Rival App",
     appSubtitle: "дизайнер портфолиосы",
-
     galleryTitle: "Жұмыстар галереясы",
     gallerySubtitle: "Аватарлар, превью, баннерлер және басқа жобалар.",
     galleryHint: "Жоғарыдан категорияны таңдап, жұмыстарды свайппен қара.",
-
     reviewsTitle: "Клиент пікірлері",
     reviewsSubtitle: "Сенің клиенттеріңнің шынайы пікірлері.",
     reviewsAddButton: "Пікір қалдыру",
-
     pricingTitle: "Бағалар / Қызметтер",
-
     aboutTitle: "Мен туралы",
     aboutSubtitle:
       "Мен Rival, дизайнермін. Брендтерге әлеуметтік желі мен жарнамада ерекшеленуге көмектесемін.",
-
     faqTitle: "FAQ",
     faqItems: [
       "Жұмыс қалай жүреді?",
       "Қандай файлдарды аламын?",
       "Бағаға қанша түзету кіреді?",
     ],
-
     aiTitle: "AI идеялар",
     aiSubtitle:
       "Түстер палитрасы, референстер және концепттерге арналған идея генераторы (әзірленуде).",
-
     bottomOrder: "Тапсырыс беру",
     bottomGenerate: "Идея генерациялау",
-
     orderAlert: "Жақында осында тапсырыс беру үшін Telegram-ға өту шығады 😉",
     aiAlert: "Жақында осында AI идея генераторы болады 🚀",
   },
-
   by: {
     appTitle: "Rival App",
     appSubtitle: "партфоліа дызайнера",
-
     galleryTitle: "Галерэя работ",
     gallerySubtitle: "Аватаркі, прэв'ю, банеры і іншыя праекты.",
     galleryHint: "Абяры катэгорыю зверху і гартай работы свайпам.",
-
     reviewsTitle: "Водгукі кліентаў",
     reviewsSubtitle: "Сапраўдныя водгукі тваіх кліентаў.",
     reviewsAddButton: "Пакінуць водгук",
-
     pricingTitle: "Прайс / Паслугі",
-
     aboutTitle: "Пра мяне",
     aboutSubtitle:
       "Я Rival, дызайнер. Дапамагаю брэндам вылучацца ў сацсетках і рэкламе.",
-
     faqTitle: "FAQ",
     faqItems: [
       "Як праходзіць работа?",
       "Якія файлы я атрымаю?",
       "Колькі праўкі ўваходзіць у кошт?",
     ],
-
     aiTitle: "AI ідэі",
     aiSubtitle:
       "Генератар ідэй для палітраў, рэферэнсаў і канцэптаў (у распрацоўцы).",
-
     bottomOrder: "Аформіць заказ",
     bottomGenerate: "Згенераваць ідэю",
-
     orderAlert:
       "Хутка тут будзе пераход у твой Telegram для афармлення замовы 😉",
     aiAlert: "Хутка тут будзе AI-генератар ідэй 🚀",
   },
-
   en: {
     appTitle: "Rival App",
     appSubtitle: "designer portfolio",
-
     galleryTitle: "Portfolio",
     gallerySubtitle: "Avatars, thumbnails, banners and other projects.",
     galleryHint: "Choose a category above and swipe through your works.",
-
     reviewsTitle: "Client reviews",
     reviewsSubtitle: "Real feedback from your clients.",
     reviewsAddButton: "Leave a review",
-
     pricingTitle: "Pricing / Services",
-
     aboutTitle: "About me",
     aboutSubtitle:
       "I'm Rival, a designer. I help brands stand out in social media and advertising.",
-
     faqTitle: "FAQ",
     faqItems: [
       "How does the process work?",
       "What files will I receive?",
       "How many revisions are included?",
     ],
-
     aiTitle: "AI ideas",
     aiSubtitle:
       "Idea generator for palettes, references and concepts (coming soon).",
-
     bottomOrder: "Place an order",
     bottomGenerate: "Generate idea",
-
     orderAlert: "Soon this will open your Telegram for orders 😉",
     aiAlert: "Soon this will be an AI idea generator 🚀",
   },
 };
 
-// Курсы и валюты (примерные, чисто для вида)
 const RATES = {
   ru: { symbol: "₽", value5: 500, value10: 1000 },
   uk: { symbol: "₴", value5: 200, value10: 400 },
@@ -249,7 +203,6 @@ const RATES = {
   en: { symbol: "$", value5: 5, value10: 10 },
 };
 
-// Собираем тексты для конкретного языка + прайс
 function getTextsForLanguage(lang) {
   const base = BASE_TEXTS[lang] || BASE_TEXTS["ru"];
   const rate = RATES[lang] || RATES["en"];
@@ -285,9 +238,7 @@ function getTextsForLanguage(lang) {
       `Social media design — from ${rate.symbol}${rate.value5}`,
       `Ad banners — from ${rate.symbol}${rate.value5}`,
     ],
-  }[lang] || [
-    `Service — from ${rate.value5}${rate.symbol}`,
-  ];
+  }[lang] || [`Service — from ${rate.value5}${rate.symbol}`];
 
   const animationNoteMap = {
     ru: `Анимация: +${rate.value10}${rate.symbol} к цене`,
@@ -349,7 +300,7 @@ export default function App() {
   const [language, setLanguage] = useState("ru");
   const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
-  const [modalImage, setModalImage] = useState(null); // для большого просмотра
+  const [modalImage, setModalImage] = useState(null);
 
   const t = getTextsForLanguage(language);
   const labels = TAB_LABELS[language] || TAB_LABELS["ru"];
@@ -369,8 +320,6 @@ export default function App() {
       alert(t.aiAlert);
     } else {
       alert(t.orderAlert);
-      // потом можно заменить на:
-      // window.open("https://t.me/Rivaldsg", "_blank");
     }
   };
 
@@ -381,7 +330,6 @@ export default function App() {
           <div className="card">
             <h2 className="section-title">{t.galleryTitle}</h2>
             <p className="section-subtitle">{t.gallerySubtitle}</p>
-
             <div className="tabs">
               {GALLERY_CATEGORIES.map((cat) => (
                 <button
@@ -396,7 +344,6 @@ export default function App() {
                 </button>
               ))}
             </div>
-
             <Swiper spaceBetween={12} slidesPerView={"auto"}>
               {GALLERY_ITEMS.filter(
                 (p) => p.category === activeCategory
@@ -406,13 +353,13 @@ export default function App() {
                     src={p.image}
                     alt={p.title}
                     className="project-img-thumb"
+                    style={{ width: "140px", height: "auto", objectFit: "cover" }}
                     onClick={() => setModalImage(p.image)}
                   />
                   <p className="hint-text">{p.title}</p>
                 </SwiperSlide>
               ))}
             </Swiper>
-
             <p className="hint-text">{t.galleryHint}</p>
           </div>
         );
@@ -422,7 +369,6 @@ export default function App() {
           <div className="card">
             <h2 className="section-title">{t.reviewsTitle}</h2>
             <p className="section-subtitle">{t.reviewsSubtitle}</p>
-
             <Swiper spaceBetween={12} slidesPerView={"auto"}>
               {REVIEWS_ITEMS.map((r) => (
                 <SwiperSlide key={r.id} style={{ width: 250 }}>
@@ -442,7 +388,6 @@ export default function App() {
                 </SwiperSlide>
               ))}
             </Swiper>
-
             <button className="secondary-btn" style={{ marginTop: 10 }}>
               {t.reviewsAddButton}
             </button>
@@ -478,135 +423,3 @@ export default function App() {
             <h2 className="section-title">{t.faqTitle}</h2>
             <ul className="list">
               {t.faqItems.map((item, idx) => (
-                <li key={idx}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        );
-
-      case TABS.AI:
-        return (
-          <div className="card">
-            <h2 className="section-title">{t.aiTitle}</h2>
-            <p className="section-subtitle">{t.aiSubtitle}</p>
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div className={`app-root theme-${theme}`}>
-      <div className="app-shell">
-        {/* Верхняя панель */}
-        <div className="top-bar">
-          <div className="top-bar-left">
-            <span className="app-title">{t.appTitle}</span>
-            <span className="app-subtitle">{t.appSubtitle}</span>
-          </div>
-
-          <div className="controls">
-            <button className="icon-btn" onClick={toggleTheme}>
-              🌗
-            </button>
-
-            <div style={{ position: "relative" }}>
-              {/* Эмодзи + текущий язык */}
-              <button className="icon-btn" onClick={toggleLangMenu}>
-                🌐 {language.toUpperCase()}
-              </button>
-              {showLangMenu && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "32px",
-                    right: 0,
-                    background: "#222",
-                    borderRadius: "10px",
-                    padding: "6px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                    minWidth: "80px",
-                    zIndex: 10,
-                  }}
-                >
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("ru")}
-                  >
-                    🇷🇺 RU
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("uk")}
-                  >
-                    🇺🇦 UA
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("kz")}
-                  >
-                    🇰🇿 KZ
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("by")}
-                  >
-                    🇧🇾 BY
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("en")}
-                  >
-                    🇬🇧 EN
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Основные вкладки */}
-        <nav className="tabs">
-          {Object.values(TABS).map((tab) => (
-            <button
-              key={tab}
-              className={
-                "tab-btn" + (activeTab === tab ? " tab-btn-active" : "")
-              }
-              onClick={() => setActiveTab(tab)}
-            >
-              {labels[tab]}
-            </button>
-          ))}
-        </nav>
-
-        {/* Контент */}
-        <main className="tab-content">{renderContent()}</main>
-
-        {/* Нижняя кнопка */}
-        <button
-          className="primary-btn fixed-order-btn"
-          onClick={handleBottomButton}
-        >
-          {activeTab === TABS.AI ? t.bottomGenerate : t.bottomOrder}
-        </button>
-      </div>
-
-      {/* Модалка для полноразмерной картинки */}
-      {modalImage && (
-        <div
-          className="image-modal-backdrop"
-          onClick={() => setModalImage(null)}
-        >
-          <div className="image-modal-content">
-            <img src={modalImage} alt="Просмотр" />
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
