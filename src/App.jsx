@@ -54,7 +54,6 @@ const TAB_LABELS = {
   },
 };
 
-// Все тексты + цены
 const TEXTS = {
   ru: {
     appTitle: "Rival App",
@@ -68,7 +67,6 @@ const TEXTS = {
     reviewsSubtitle: "Настоящие отзывы твоих клиентов.",
     reviewsAddButton: "Оставить отзыв",
 
-    // 5$ ~ 500₽ (условно)
     pricingTitle: "Прайс / Услуги",
     pricingItems: [
       "Логотип — от 500₽",
@@ -113,7 +111,6 @@ const TEXTS = {
     reviewsSubtitle: "Реальні відгуки твоїх клієнтів.",
     reviewsAddButton: "Залишити відгук",
 
-    // 5$ ~ 200₴ (условно)
     pricingTitle: "Прайс / Послуги",
     pricingItems: [
       "Логотип — від 200₴",
@@ -158,7 +155,6 @@ const TEXTS = {
     reviewsSubtitle: "Сенің клиенттеріңнің шынайы пікірлері.",
     reviewsAddButton: "Пікір қалдыру",
 
-    // 5$ ~ 2500₸ (условно)
     pricingTitle: "Бағалар / Қызметтер",
     pricingItems: [
       "Логотип — 2500₸ бастап",
@@ -203,7 +199,6 @@ const TEXTS = {
     reviewsSubtitle: "Сапраўдныя водгукі тваіх кліентаў.",
     reviewsAddButton: "Пакінуць водгук",
 
-    // 5$ ~ 15 BYN (условно)
     pricingTitle: "Прайс / Паслугі",
     pricingItems: [
       "Лагатып — ад 15 BYN",
@@ -248,7 +243,6 @@ const TEXTS = {
     reviewsSubtitle: "Real feedback from your clients.",
     reviewsAddButton: "Leave a review",
 
-    // базовая валюта — 5$
     pricingTitle: "Pricing / Services",
     pricingItems: [
       "Logo — from $5",
@@ -288,7 +282,7 @@ const GALLERY_ITEMS = [
     id: "1",
     category: "Аватарки",
     title: "Аватар 1",
-    image: "/images/podborka1.jpg",
+    image: "/images/avatar1.jpg",
     description: "Описание аватарки 1",
   },
   {
@@ -327,6 +321,9 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
 
+  // для модалки
+  const [modalImage, setModalImage] = useState(null); // {src, title} или null
+
   const t = TEXTS[language];
   const labels = TAB_LABELS[language];
 
@@ -345,9 +342,16 @@ export default function App() {
       alert(t.aiAlert);
     } else {
       alert(t.orderAlert);
-      // потом можно заменить на:
       // window.open("https://t.me/Rivaldsg", "_blank");
     }
+  };
+
+  const openImageModal = (item) => {
+    setModalImage({ src: item.image, title: item.title });
+  };
+
+  const closeImageModal = () => {
+    setModalImage(null);
   };
 
   const renderContent = () => {
@@ -377,9 +381,22 @@ export default function App() {
               {GALLERY_ITEMS.filter(
                 (p) => p.category === activeCategory
               ).map((p) => (
-                <SwiperSlide key={p.id} style={{ width: 320 }}>
-                  <img src={p.image} alt={p.title} className="project-img" />
-                  <p className="hint-text">{p.description}</p>
+                <SwiperSlide key={p.id} style={{ width: 220 }}>
+                  <div
+                    className="project-card"
+                    onClick={() => openImageModal(p)}
+                  >
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      className="project-img-thumb"
+                    />
+                    <div className="project-info">
+                      <div className="project-title">{p.title}</div>
+                      <p className="hint-text">{p.description}</p>
+                      <span className="project-more">Нажми, чтобы увеличить</span>
+                    </div>
+                  </div>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -484,7 +501,6 @@ export default function App() {
             </button>
 
             <div style={{ position: "relative" }}>
-              {/* Эмодзи + текущий язык */}
               <button className="icon-btn" onClick={toggleLangMenu}>
                 🌐 {language.toUpperCase()}
               </button>
@@ -566,6 +582,26 @@ export default function App() {
           {activeTab === TABS.AI ? t.bottomGenerate : t.bottomOrder}
         </button>
       </div>
+
+      {/* Модальное окно для увеличенной картинки */}
+      {modalImage && (
+        <div className="image-modal-backdrop" onClick={closeImageModal}>
+          <div
+            className="image-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button className="image-modal-close" onClick={closeImageModal}>
+              ✕
+            </button>
+            <img
+              src={modalImage.src}
+              alt={modalImage.title}
+              className="image-modal-img"
+            />
+            <div className="image-modal-title">{modalImage.title}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
