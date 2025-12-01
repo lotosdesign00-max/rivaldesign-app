@@ -20,15 +20,7 @@ const TAB_LABELS = {
     [TABS.FAQ]: "FAQ",
     [TABS.AI]: "AI идеи",
   },
-  en: {
-    [TABS.GALLERY]: "Gallery",
-    [TABS.REVIEWS]: "Reviews",
-    [TABS.PRICING]: "Pricing",
-    [TABS.ABOUT]: "About",
-    [TABS.FAQ]: "FAQ",
-    [TABS.AI]: "AI Ideas",
-  },
-  ua: {
+  uk: {
     [TABS.GALLERY]: "Галерея",
     [TABS.REVIEWS]: "Відгуки",
     [TABS.PRICING]: "Прайс",
@@ -39,7 +31,7 @@ const TAB_LABELS = {
   kz: {
     [TABS.GALLERY]: "Галерея",
     [TABS.REVIEWS]: "Пікірлер",
-    [TABS.PRICING]: "Прайс",
+    [TABS.PRICING]: "Бағалар",
     [TABS.ABOUT]: "Мен туралы",
     [TABS.FAQ]: "FAQ",
     [TABS.AI]: "AI идеялар",
@@ -52,19 +44,27 @@ const TAB_LABELS = {
     [TABS.FAQ]: "FAQ",
     [TABS.AI]: "AI ідэі",
   },
+  en: {
+    [TABS.GALLERY]: "Gallery",
+    [TABS.REVIEWS]: "Reviews",
+    [TABS.PRICING]: "Pricing",
+    [TABS.ABOUT]: "About",
+    [TABS.FAQ]: "FAQ",
+    [TABS.AI]: "AI Ideas",
+  },
 };
 
-// Базовые "условные" курсы: сколько в валюте = 1$
+// УСЛОВНЫЕ курсы: сколько валюты = 1$
 const RATES = {
-  ru: { code: "₽",   perDollar: 100 },   // 5$ = 500₽, 10$ = 1000₽
-  uk: { code: "₴",   perDollar: 40 },    // 5$ = 200₴, 10$ = 400₴
-  kz: { code: "₸",   perDollar: 500 },   // 5$ = 2500₸, 10$ = 5000₸
-  by: { code: "BYN", perDollar: 3 },     // 5$ = 15 BYN, 10$ = 30 BYN
-  en: { code: "$",   perDollar: 1 },     // 5$ = $5, 10$ = $10
+  ru: { code: "₽", perDollar: 100 },   // 5$ = 500₽, 10$ = 1000₽
+  uk: { code: "₴", perDollar: 40 },    // 5$ = 200₴, 10$ = 400₴
+  kz: { code: "₸", perDollar: 500 },   // 5$ = 2500₸, 10$ = 5000₸
+  by: { code: "BYN", perDollar: 3 },   // 5$ = 15 BYN, 10$ = 30 BYN
+  en: { code: "$", perDollar: 1 },     // 5$ = $5, 10$ = $10
 };
 
-
-const TEXTS = {
+// Базовые тексты (без привязки к валюте)
+const BASE_TEXTS = {
   ru: {
     appTitle: "Rival App",
     appSubtitle: "портфолио дизайнера",
@@ -78,12 +78,6 @@ const TEXTS = {
     reviewsAddButton: "Оставить отзыв",
 
     pricingTitle: "Прайс / Услуги",
-    pricingItemsBase: [
-      "Логотип — от",
-      "Фирменный стиль — от",
-      "Оформление соцсетей — от",
-      "Рекламные баннеры — от",
-    ],
 
     aboutTitle: "Обо мне",
     aboutSubtitle:
@@ -121,12 +115,6 @@ const TEXTS = {
     reviewsAddButton: "Залишити відгук",
 
     pricingTitle: "Прайс / Послуги",
-    pricingItemsBase: [
-      "Логотип — від",
-      "Фірмовий стиль — від",
-      "Оформлення соцмереж — від",
-      "Рекламні банери — від",
-    ],
 
     aboutTitle: "Про мене",
     aboutSubtitle:
@@ -164,12 +152,6 @@ const TEXTS = {
     reviewsAddButton: "Пікір қалдыру",
 
     pricingTitle: "Бағалар / Қызметтер",
-    pricingItemsBase: [
-      "Логотип —",
-      "Фирмалық стиль —",
-      "Әлеуметтік желі дизайны —",
-      "Жарнамалық баннерлер —",
-    ],
 
     aboutTitle: "Мен туралы",
     aboutSubtitle:
@@ -207,12 +189,6 @@ const TEXTS = {
     reviewsAddButton: "Пакінуць водгук",
 
     pricingTitle: "Прайс / Паслугі",
-    pricingItemsBase: [
-      "Лагатып — ад",
-      "Фірмовы стыль — ад",
-      "Афармленне сацсетак — ад",
-      "Рэкламныя банеры — ад",
-    ],
 
     aboutTitle: "Пра мяне",
     aboutSubtitle:
@@ -250,12 +226,6 @@ const TEXTS = {
     reviewsAddButton: "Leave a review",
 
     pricingTitle: "Pricing / Services",
-    pricingItemsBase: [
-      "Logo — from",
-      "Brand identity — from",
-      "Social media design — from",
-      "Ad banners — from",
-    ],
 
     aboutTitle: "About me",
     aboutSubtitle:
@@ -280,6 +250,79 @@ const TEXTS = {
   },
 };
 
+// Генерация прайса на основе курса
+function buildPricingTexts(lang) {
+  const base = BASE_TEXTS[lang] || BASE_TEXTS.ru;
+  const rate = RATES[lang] || RATES.en;
+
+  const price5 = 5 * rate.perDollar;
+  const price10 = 10 * rate.perDollar;
+
+  const fmt = (v) =>
+    rate.code === "BYN" ? `${v} ${rate.code}` : `${v}${rate.code}`;
+
+  let items;
+  let animNote;
+
+  switch (lang) {
+    case "ru":
+      items = [
+        `Логотип — от ${fmt(price5)}`,
+        `Фирменный стиль — от ${fmt(price5)}`,
+        `Оформление соцсетей — от ${fmt(price5)}`,
+        `Рекламные баннеры — от ${fmt(price5)}`,
+      ];
+      animNote = `Анимация: +${fmt(price10)} к цене`;
+      break;
+
+    case "uk":
+      items = [
+        `Логотип — від ${fmt(price5)}`,
+        `Фірмовий стиль — від ${fmt(price5)}`,
+        `Оформлення соцмереж — від ${fmt(price5)}`,
+        `Рекламні банери — від ${fmt(price5)}`,
+      ];
+      animNote = `Анімація: +${fmt(price10)} до ціни`;
+      break;
+
+    case "kz":
+      items = [
+        `Логотип — ${fmt(price5)} бастап`,
+        `Фирмалық стиль — ${fmt(price5)} бастап`,
+        `Әлеуметтік желі дизайны — ${fmt(price5)} бастап`,
+        `Жарнамалық баннерлер — ${fmt(price5)} бастап`,
+      ];
+      animNote = `Анимация: +${fmt(price10)} бағаға`;
+      break;
+
+    case "by":
+      items = [
+        `Лагатып — ад ${fmt(price5)}`,
+        `Фірмовы стыль — ад ${fmt(price5)}`,
+        `Афармленне сацсетак — ад ${fmt(price5)}`,
+        `Рэкламныя банеры — ад ${fmt(price5)}`,
+      ];
+      animNote = `Анімацыя: +${fmt(price10)} да кошту`;
+      break;
+
+    case "en":
+    default:
+      items = [
+        `Logo — from ${fmt(price5)}`,
+        `Brand identity — from ${fmt(price5)}`,
+        `Social media design — from ${fmt(price5)}`,
+        `Ad banners — from ${fmt(price5)}`,
+      ];
+      animNote = `Animation: +${fmt(price10)} to the price`;
+      break;
+  }
+
+  return {
+    ...base,
+    pricingItems: items,
+    pricingAnimationNote: animNote,
+  };
+}
 
 const GALLERY_CATEGORIES = ["Аватарки", "Превью", "Баннеры"];
 
@@ -288,7 +331,7 @@ const GALLERY_ITEMS = [
     id: "1",
     category: "Аватарки",
     title: "Аватар 1",
-    image: "/images/podborka1.jpg",
+    image: "/images/avatar1.jpg",
     description: "Описание аватарки 1",
   },
   {
@@ -312,14 +355,6 @@ const GALLERY_ITEMS = [
     image: "/images/avatar2.jpg",
     description: "Описание аватарки 2",
   },
-  // пример твоей своей работы
-  // {
-  //   id: "5",
-  //   category: "Аватарки",
-  //   title: "Rival Avatar",
-  //   image: "/images/my-avatar-1.png",
-  //   description: "Мой фирменный аватар",
-  // },
 ];
 
 const REVIEWS_ITEMS = [
@@ -335,50 +370,15 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
 
-  // для зума картинки
-  const [selectedImage, setSelectedImage] = useState(null);
-
-  const t = TEXTS[language];
-  const labels = TAB_LABELS[language];
-
-    // цена за 5$ и 10$ в текущей валюте
-  const currentRate = RATES[language];
-  const price5 = 5 * currentRate.perDollar;
-  const price10 = 10 * currentRate.perDollar;
-
-  // строки с валютой для прайса
-  const pricingItemsWithCurrency = t.pricingItemsBase.map((base) => {
-    // en: "Logo — from $5"
-    if (language === "en") {
-      return `${base} ${currentRate.code}${price5}`;
-    }
-    // by: "Лагатып — ад 15 BYN"
-    if (language === "by") {
-      return `${base} ${price5} ${currentRate.code}`;
-    }
-    // остальные: "от 500₽", "від 200₴", "от 2500₸"
-    return `${base} ${price5}${currentRate.code}`;
-  });
-
-  // текст про анимацию
-  let animationText;
-  if (language === "en") {
-    animationText = `Animation: +${currentRate.code}${price10} to the price`;
-  } else if (language === "by") {
-    animationText = `Анімацыя: +${price10} ${currentRate.code} да кошту`;
-  } else if (language === "uk") {
-    animationText = `Анімація: +${price10}${currentRate.code} до ціни`;
-  } else if (language === "kz") {
-    animationText = `Анимация: бағаға +${price10}${currentRate.code}`;
-  } else {
-    // ru
-    animationText = `Анимация: +${price10}${currentRate.code} к цене`;
-  }
-
+  // безопасно: если что-то не так — откатываемся на ru/en
+  const t = buildPricingTexts(language);
+  const labels = TAB_LABELS[language] || TAB_LABELS.ru;
 
   const toggleTheme = () =>
     setTheme((prev) => (prev === "dark" ? "alt" : "dark"));
+
   const toggleLangMenu = () => setShowLangMenu((prev) => !prev);
+
   const handleLangChange = (lang) => {
     setLanguage(lang);
     setShowLangMenu(false);
@@ -389,6 +389,7 @@ export default function App() {
       alert(t.aiAlert);
     } else {
       alert(t.orderAlert);
+      // потом можно заменить на:
       // window.open("https://t.me/Rivaldsg", "_blank");
     }
   };
@@ -420,27 +421,9 @@ export default function App() {
               {GALLERY_ITEMS.filter(
                 (p) => p.category === activeCategory
               ).map((p) => (
-                <SwiperSlide key={p.id} style={{ width: 220 }}>
-                  <div
-                    className="project-card"
-                    onClick={() => setSelectedImage(p)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div className="project-thumb-wrapper">
-                      <img
-                        src={p.image}
-                        alt={p.title}
-                        className="project-thumb-img"
-                      />
-                    </div>
-                    <div className="project-info">
-                      <div className="project-title">{p.title}</div>
-                      <p className="hint-text">{p.description}</p>
-                      <span className="hint-text">
-                        🔍 нажми, чтобы увеличить
-                      </span>
-                    </div>
-                  </div>
+                <SwiperSlide key={p.id} style={{ width: 320 }}>
+                  <img src={p.image} alt={p.title} className="project-img" />
+                  <p className="hint-text">{p.description}</p>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -481,17 +464,17 @@ export default function App() {
           </div>
         );
 
-          case TABS.PRICING:
+      case TABS.PRICING:
         return (
           <div className="card">
             <h2 className="section-title">{t.pricingTitle}</h2>
             <ul className="list">
-              {pricingItemsWithCurrency.map((item, idx) => (
+              {t.pricingItems.map((item, idx) => (
                 <li key={idx}>{item}</li>
               ))}
             </ul>
             <p className="hint-text" style={{ marginTop: 8 }}>
-              {animationText}
+              {t.pricingAnimationNote}
             </p>
           </div>
         );
@@ -546,14 +529,13 @@ export default function App() {
 
             <div style={{ position: "relative" }}>
               <button className="icon-btn" onClick={toggleLangMenu}>
-                🌐
+                🌐 {language.toUpperCase()}
               </button>
-
               {showLangMenu && (
                 <div
                   style={{
                     position: "absolute",
-                    top: "30px",
+                    top: "32px",
                     right: 0,
                     background: "#222",
                     borderRadius: "10px",
@@ -561,64 +543,39 @@ export default function App() {
                     display: "flex",
                     flexDirection: "column",
                     gap: "4px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                    minWidth: "80px",
                     zIndex: 10,
                   }}
                 >
                   <button
                     className="tab-btn"
                     onClick={() => handleLangChange("ru")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
                   >
-                    🇷🇺 Русский
+                    🇷🇺 RU
                   </button>
                   <button
                     className="tab-btn"
-                    onClick={() => handleLangChange("ua")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
+                    onClick={() => handleLangChange("uk")}
                   >
-                    🇺🇦 Українська
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("en")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇬🇧 English
+                    🇺🇦 UA
                   </button>
                   <button
                     className="tab-btn"
                     onClick={() => handleLangChange("kz")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
                   >
-                    🇰🇿 Қазақша
+                    🇰🇿 KZ
                   </button>
                   <button
                     className="tab-btn"
                     onClick={() => handleLangChange("by")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
                   >
-                    🇧🇾 Беларуская
+                    🇧🇾 BY
+                  </button>
+                  <button
+                    className="tab-btn"
+                    onClick={() => handleLangChange("en")}
+                  >
+                    🇬🇧 EN
                   </button>
                 </div>
               )}
@@ -626,7 +583,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* Основные вкладки */}
+        {/* Вкладки */}
         <nav className="tabs">
           {Object.values(TABS).map((tab) => (
             <button
@@ -652,35 +609,6 @@ export default function App() {
           {activeTab === TABS.AI ? t.bottomGenerate : t.bottomOrder}
         </button>
       </div>
-
-      {/* Модальное окно для увеличенной картинки */}
-      {selectedImage && (
-        <div
-          className="image-modal-backdrop"
-          onClick={() => setSelectedImage(null)}
-        >
-          <div
-            className="image-modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="icon-btn image-modal-close"
-              onClick={() => setSelectedImage(null)}
-            >
-              ✖
-            </button>
-            <img
-              src={selectedImage.image}
-              alt={selectedImage.title}
-              className="image-modal-img"
-            />
-            <div className="image-modal-text">
-              <h3>{selectedImage.title}</h3>
-              <p>{selectedImage.description}</p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
