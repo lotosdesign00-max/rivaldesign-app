@@ -20,7 +20,15 @@ const TAB_LABELS = {
     [TABS.FAQ]: "FAQ",
     [TABS.AI]: "AI идеи",
   },
-  uk: {
+  en: {
+    [TABS.GALLERY]: "Gallery",
+    [TABS.REVIEWS]: "Reviews",
+    [TABS.PRICING]: "Pricing",
+    [TABS.ABOUT]: "About",
+    [TABS.FAQ]: "FAQ",
+    [TABS.AI]: "AI Ideas",
+  },
+  ua: {
     [TABS.GALLERY]: "Галерея",
     [TABS.REVIEWS]: "Відгуки",
     [TABS.PRICING]: "Прайс",
@@ -31,7 +39,7 @@ const TAB_LABELS = {
   kz: {
     [TABS.GALLERY]: "Галерея",
     [TABS.REVIEWS]: "Пікірлер",
-    [TABS.PRICING]: "Бағалар",
+    [TABS.PRICING]: "Прайс",
     [TABS.ABOUT]: "Мен туралы",
     [TABS.FAQ]: "FAQ",
     [TABS.AI]: "AI идеялар",
@@ -43,14 +51,6 @@ const TAB_LABELS = {
     [TABS.ABOUT]: "Пра мяне",
     [TABS.FAQ]: "FAQ",
     [TABS.AI]: "AI ідэі",
-  },
-  en: {
-    [TABS.GALLERY]: "Gallery",
-    [TABS.REVIEWS]: "Reviews",
-    [TABS.PRICING]: "Pricing",
-    [TABS.ABOUT]: "About",
-    [TABS.FAQ]: "FAQ",
-    [TABS.AI]: "AI Ideas",
   },
 };
 
@@ -69,12 +69,11 @@ const TEXTS = {
 
     pricingTitle: "Прайс / Услуги",
     pricingItems: [
-      "Логотип — от 500₽",
-      "Фирменный стиль — от 500₽",
-      "Оформление соцсетей — от 500₽",
-      "Рекламные баннеры — от 500₽",
+      "Логотип — от X грн",
+      "Фирменный стиль — от X грн",
+      "Оформление соцсетей — от X грн",
+      "Рекламные баннеры — от X грн",
     ],
-    pricingAnimationNote: "Анимация: +10$ к цене",
 
     aboutTitle: "Обо мне",
     aboutSubtitle:
@@ -99,138 +98,6 @@ const TEXTS = {
     aiAlert: "Скоро здесь будет генератор идей на AI 🚀",
   },
 
-  uk: {
-    appTitle: "Rival App",
-    appSubtitle: "портфоліо дизайнера",
-
-    galleryTitle: "Галерея робіт",
-    gallerySubtitle: "Аватарки, превʼю, банери та інші проєкти.",
-    galleryHint: "Обери категорію зверху та гортай роботи свайпом.",
-
-    reviewsTitle: "Відгуки клієнтів",
-    reviewsSubtitle: "Реальні відгуки твоїх клієнтів.",
-    reviewsAddButton: "Залишити відгук",
-
-    pricingTitle: "Прайс / Послуги",
-    pricingItems: [
-      "Логотип — від 200₴",
-      "Фірмовий стиль — від 200₴",
-      "Оформлення соцмереж — від 200₴",
-      "Рекламні банери — від 200₴",
-    ],
-    pricingAnimationNote: "Анімація: +10$ до ціни",
-
-    aboutTitle: "Про мене",
-    aboutSubtitle:
-      "Я Rival, дизайнер. Допомагаю брендам виділятися в соцмережах та рекламі.",
-
-    faqTitle: "FAQ",
-    faqItems: [
-      "Як проходить робота?",
-      "Які файли я отримаю?",
-      "Скільки правок входить у вартість?",
-    ],
-
-    aiTitle: "AI ідеї",
-    aiSubtitle:
-      "Генератор ідей для палітр, референсів і концептів (у розробці).",
-
-    bottomOrder: "Оформити замовлення",
-    bottomGenerate: "Згенерувати ідею",
-
-    orderAlert:
-      "Скоро тут буде перехід у твій Telegram для оформлення замовлення 😉",
-    aiAlert: "Скоро тут буде AI-генератор ідей 🚀",
-  },
-
-  kz: {
-    appTitle: "Rival App",
-    appSubtitle: "дизайнер портфолиосы",
-
-    galleryTitle: "Жұмыстар галереясы",
-    gallerySubtitle: "Аватарлар, превью, баннерлер және басқа жобалар.",
-    galleryHint: "Жоғарыдан категорияны таңдап, жұмыстарды свайппен қара.",
-
-    reviewsTitle: "Клиент пікірлері",
-    reviewsSubtitle: "Сенің клиенттеріңнің шынайы пікірлері.",
-    reviewsAddButton: "Пікір қалдыру",
-
-    pricingTitle: "Бағалар / Қызметтер",
-    pricingItems: [
-      "Логотип — 2500₸ бастап",
-      "Фирмалық стиль — 2500₸ бастап",
-      "Әлеуметтік желі дизайны — 2500₸ бастап",
-      "Жарнамалық баннерлер — 2500₸ бастап",
-    ],
-    pricingAnimationNote: "Анимация: бағаға +10$",
-
-    aboutTitle: "Мен туралы",
-    aboutSubtitle:
-      "Мен Rival, дизайнермін. Брендтерге әлеуметтік желі мен жарнамада ерекшеленуге көмектесемін.",
-
-    faqTitle: "FAQ",
-    faqItems: [
-      "Жұмыс қалай жүреді?",
-      "Қандай файлдарды аламын?",
-      "Бағаға қанша түзету кіреді?",
-    ],
-
-    aiTitle: "AI идеялар",
-    aiSubtitle:
-      "Түстер палитрасы, референстер және концепттерге арналған идея генераторы (әзірленуде).",
-
-    bottomOrder: "Тапсырыс беру",
-    bottomGenerate: "Идея генерациялау",
-
-    orderAlert:
-      "Жақында осында тапсырыс беру үшін Telegram-ға өту шығады 😉",
-    aiAlert: "Жақында осында AI идея генераторы болады 🚀",
-  },
-
-  by: {
-    appTitle: "Rival App",
-    appSubtitle: "партфоліа дызайнера",
-
-    galleryTitle: "Галерэя работ",
-    gallerySubtitle: "Аватаркі, прэв'ю, банеры і іншыя праекты.",
-    galleryHint: "Абяры катэгорыю зверху і гартай работы свайпам.",
-
-    reviewsTitle: "Водгукі кліентаў",
-    reviewsSubtitle: "Сапраўдныя водгукі тваіх кліентаў.",
-    reviewsAddButton: "Пакінуць водгук",
-
-    pricingTitle: "Прайс / Паслугі",
-    pricingItems: [
-      "Лагатып — ад 15 BYN",
-      "Фірмовы стыль — ад 15 BYN",
-      "Афармленне сацсетак — ад 15 BYN",
-      "Рэкламныя банеры — ад 15 BYN",
-    ],
-    pricingAnimationNote: "Анімацыя: +10$ да кошту",
-
-    aboutTitle: "Пра мяне",
-    aboutSubtitle:
-      "Я Rival, дызайнер. Дапамагаю брэндам вылучацца ў сацсетках і рэкламе.",
-
-    faqTitle: "FAQ",
-    faqItems: [
-      "Як праходзіць работа?",
-      "Якія файлы я атрымаю?",
-      "Колькі праўкі ўваходзіць у кошт?",
-    ],
-
-    aiTitle: "AI ідэі",
-    aiSubtitle:
-      "Генератар ідэй для палітраў, рэферэнсаў і канцэптаў (у распрацоўцы).",
-
-    bottomOrder: "Аформіць заказ",
-    bottomGenerate: "Згенераваць ідэю",
-
-    orderAlert:
-      "Хутка тут будзе пераход у твой Telegram для афармлення замовы 😉",
-    aiAlert: "Хутка тут будзе AI-генератар ідэй 🚀",
-  },
-
   en: {
     appTitle: "Rival App",
     appSubtitle: "designer portfolio",
@@ -245,12 +112,11 @@ const TEXTS = {
 
     pricingTitle: "Pricing / Services",
     pricingItems: [
-      "Logo — from $5",
-      "Brand identity — from $5",
-      "Social media design — from $5",
-      "Ad banners — from $5",
+      "Logo — from X UAH",
+      "Brand identity — from X UAH",
+      "Social media design — from X UAH",
+      "Ad banners — from X UAH",
     ],
-    pricingAnimationNote: "Animation: +$10 to the price",
 
     aboutTitle: "About me",
     aboutSubtitle:
@@ -272,6 +138,134 @@ const TEXTS = {
 
     orderAlert: "Soon this will open your Telegram for orders 😉",
     aiAlert: "Soon this will be an AI idea generator 🚀",
+  },
+
+  ua: {
+    appTitle: "Rival App",
+    appSubtitle: "портфоліо дизайнера",
+
+    galleryTitle: "Галерея робіт",
+    gallerySubtitle: "Аватарки, прев’ю, банери та інші проєкти.",
+    galleryHint: "Обери категорію зверху та гортай роботи свайпом.",
+
+    reviewsTitle: "Відгуки клієнтів",
+    reviewsSubtitle: "Реальні відгуки твоїх клієнтів.",
+    reviewsAddButton: "Залишити відгук",
+
+    pricingTitle: "Прайс / Послуги",
+    pricingItems: [
+      "Логотип — від X грн",
+      "Фірмовий стиль — від X грн",
+      "Оформлення соцмереж — від X грн",
+      "Рекламні банери — від X грн",
+    ],
+
+    aboutTitle: "Про мене",
+    aboutSubtitle:
+      "Я Rival, дизайнер. Допомагаю брендам виділятися в соцмережах та рекламі.",
+
+    faqTitle: "FAQ",
+    faqItems: [
+      "Як проходить робота?",
+      "Які файли я отримаю?",
+      "Скільки правок входить у вартість?",
+    ],
+
+    aiTitle: "AI ідеї",
+    aiSubtitle:
+      "Генератор ідей для палітр, референсів та концептів (у розробці).",
+
+    bottomOrder: "Замовити дизайн",
+    bottomGenerate: "Згенерувати ідею",
+
+    orderAlert: "Скоро тут буде перехід у твій Telegram для замовлення 😉",
+    aiAlert: "Скоро тут буде AI-генератор ідей 🚀",
+  },
+
+  kz: {
+    appTitle: "Rival App",
+    appSubtitle: "дизайнер портфолиосы",
+
+    galleryTitle: "Жұмыстар галереясы",
+    gallerySubtitle: "Аватарлар, превью, баннерлер және басқа жобалар.",
+    galleryHint: "Жоғарыдан санатты таңда да, жұмыстарды свайппен қара.",
+
+    reviewsTitle: "Клиент пікірлері",
+    reviewsSubtitle: "Нағыз клиенттерден пікірлер.",
+    reviewsAddButton: "Пікір қалдыру",
+
+    pricingTitle: "Прайс / Қызметтер",
+    pricingItems: [
+      "Логотип — X теңгеден",
+      "Фирмалық стиль — X теңгеден",
+      "Әлеуметтік желі дизайны — X теңгеден",
+      "Жарнамалық баннерлер — X теңгеден",
+    ],
+
+    aboutTitle: "Мен туралы",
+    aboutSubtitle:
+      "Мен Rival, дизайнермін. Брендтерге әлеуметтік желілерде және жарнамада ерекшеленуге көмектесемін.",
+
+    faqTitle: "FAQ",
+    faqItems: [
+      "Жұмыс қалай өтеді?",
+      "Қандай файлдарды аламын?",
+      "Қанша өзгеріс енгізуге болады?",
+    ],
+
+    aiTitle: "AI идеялар",
+    aiSubtitle:
+      "Палитралар, референстер және концепттер үшін идея генераторы (әзірлеуде).",
+
+    bottomOrder: "Дизайнға тапсырыс беру",
+    bottomGenerate: "Идея генерациялау",
+
+    orderAlert:
+      "Жақында мұнда тапсырыс беру үшін сенің Telegram-ыңа өтуді қосамыз 😉",
+    aiAlert: "Жақында мұнда AI идея генераторы болады 🚀",
+  },
+
+  by: {
+    appTitle: "Rival App",
+    appSubtitle: "партфоліа дызайнера",
+
+    galleryTitle: "Галерэя работ",
+    gallerySubtitle: "Аватаркі, прэв’ю, банеры і іншыя праекты.",
+    galleryHint: "Абяры катэгорыю зверху і ліставай работы свайпам.",
+
+    reviewsTitle: "Водгукі кліентаў",
+    reviewsSubtitle: "Сапраўдныя водгукі тваіх кліентаў.",
+    reviewsAddButton: "Пакінуць водгук",
+
+    pricingTitle: "Прайс / Паслугі",
+    pricingItems: [
+      "Лагатып — ад X BYN",
+      "Фірмовы стыль — ад X BYN",
+      "Афармленне сацсетак — ад X BYN",
+      "Рэкламныя банеры — ад X BYN",
+    ],
+
+    aboutTitle: "Пра мяне",
+    aboutSubtitle:
+      "Я Rival, дызайнер. Дапамагаю брэндам выдзяляцца ў сацсетках і рэкламе.",
+
+    faqTitle: "FAQ",
+    faqItems: [
+      "Як праходзіць работа?",
+      "Якія файлы я атрымаю?",
+      "Колькі праўкі ўваходзіць у кошт?",
+    ],
+
+    aiTitle: "AI ідэі",
+    aiSubtitle:
+      "Генератар ідэй для палітр, рэферансаў і канцэптаў (у распрацоўцы).",
+
+    bottomOrder: "Замовіць дызайн",
+    bottomGenerate: "Згенераваць ідэю",
+
+    orderAlert:
+      "Хутка тут будзе пераход у твой Telegram для замовы 😉",
+    aiAlert: "Хутка тут будзе AI-генератар ідэй 🚀",
   },
 };
 
@@ -306,6 +300,14 @@ const GALLERY_ITEMS = [
     image: "/images/avatar2.jpg",
     description: "Описание аватарки 2",
   },
+  // пример твоей своей работы
+  // {
+  //   id: "5",
+  //   category: "Аватарки",
+  //   title: "Rival Avatar",
+  //   image: "/images/my-avatar-1.png",
+  //   description: "Мой фирменный аватар",
+  // },
 ];
 
 const REVIEWS_ITEMS = [
@@ -321,17 +323,15 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
 
-  // 🔥 Новое: стейт для модального окна с картинкой
-  const [modalImage, setModalImage] = useState(null); // {src, title} или null
+  // для зума картинки
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const t = TEXTS[language];
   const labels = TAB_LABELS[language];
 
   const toggleTheme = () =>
     setTheme((prev) => (prev === "dark" ? "alt" : "dark"));
-
   const toggleLangMenu = () => setShowLangMenu((prev) => !prev);
-
   const handleLangChange = (lang) => {
     setLanguage(lang);
     setShowLangMenu(false);
@@ -342,7 +342,6 @@ export default function App() {
       alert(t.aiAlert);
     } else {
       alert(t.orderAlert);
-      // потом можно заменить на:
       // window.open("https://t.me/Rivaldsg", "_blank");
     }
   };
@@ -377,16 +376,23 @@ export default function App() {
                 <SwiperSlide key={p.id} style={{ width: 220 }}>
                   <div
                     className="project-card"
-                    onClick={() =>
-                      setModalImage({ src: p.image, title: p.title })
-                    }
+                    onClick={() => setSelectedImage(p)}
+                    style={{ cursor: "pointer" }}
                   >
-                    <img
-                      src={p.image}
-                      alt={p.title}
-                      className="project-img-thumb"
-                    />
-                    <p className="hint-text">{p.description}</p>
+                    <div className="project-thumb-wrapper">
+                      <img
+                        src={p.image}
+                        alt={p.title}
+                        className="project-thumb-img"
+                      />
+                    </div>
+                    <div className="project-info">
+                      <div className="project-title">{p.title}</div>
+                      <p className="hint-text">{p.description}</p>
+                      <span className="hint-text">
+                        🔍 нажми, чтобы увеличить
+                      </span>
+                    </div>
                   </div>
                 </SwiperSlide>
               ))}
@@ -437,9 +443,6 @@ export default function App() {
                 <li key={idx}>{item}</li>
               ))}
             </ul>
-            <p className="hint-text" style={{ marginTop: 8 }}>
-              {t.pricingAnimationNote}
-            </p>
           </div>
         );
 
@@ -493,13 +496,14 @@ export default function App() {
 
             <div style={{ position: "relative" }}>
               <button className="icon-btn" onClick={toggleLangMenu}>
-                🌐 {language.toUpperCase()}
+                🌐
               </button>
+
               {showLangMenu && (
                 <div
                   style={{
                     position: "absolute",
-                    top: "32px",
+                    top: "30px",
                     right: 0,
                     background: "#222",
                     borderRadius: "10px",
@@ -507,39 +511,64 @@ export default function App() {
                     display: "flex",
                     flexDirection: "column",
                     gap: "4px",
-                    minWidth: "80px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
                     zIndex: 10,
                   }}
                 >
                   <button
                     className="tab-btn"
                     onClick={() => handleLangChange("ru")}
+                    style={{
+                      fontSize: "12px",
+                      padding: "4px 10px",
+                      textAlign: "left",
+                    }}
                   >
-                    🇷🇺 RU
+                    🇷🇺 Русский
                   </button>
                   <button
                     className="tab-btn"
-                    onClick={() => handleLangChange("uk")}
+                    onClick={() => handleLangChange("ua")}
+                    style={{
+                      fontSize: "12px",
+                      padding: "4px 10px",
+                      textAlign: "left",
+                    }}
                   >
-                    🇺🇦 UA
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("kz")}
-                  >
-                    🇰🇿 KZ
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("by")}
-                  >
-                    🇧🇾 BY
+                    🇺🇦 Українська
                   </button>
                   <button
                     className="tab-btn"
                     onClick={() => handleLangChange("en")}
+                    style={{
+                      fontSize: "12px",
+                      padding: "4px 10px",
+                      textAlign: "left",
+                    }}
                   >
-                    🇬🇧 EN
+                    🇬🇧 English
+                  </button>
+                  <button
+                    className="tab-btn"
+                    onClick={() => handleLangChange("kz")}
+                    style={{
+                      fontSize: "12px",
+                      padding: "4px 10px",
+                      textAlign: "left",
+                    }}
+                  >
+                    🇰🇿 Қазақша
+                  </button>
+                  <button
+                    className="tab-btn"
+                    onClick={() => handleLangChange("by")}
+                    style={{
+                      fontSize: "12px",
+                      padding: "4px 10px",
+                      textAlign: "left",
+                    }}
+                  >
+                    🇧🇾 Беларуская
                   </button>
                 </div>
               )}
@@ -574,23 +603,31 @@ export default function App() {
         </button>
       </div>
 
-      {/* 🔥 Модальное окно с картинкой на весь экран */}
-      {modalImage && (
+      {/* Модальное окно для увеличенной картинки */}
+      {selectedImage && (
         <div
           className="image-modal-backdrop"
-          onClick={() => setModalImage(null)}
+          onClick={() => setSelectedImage(null)}
         >
           <div
             className="image-modal-content"
             onClick={(e) => e.stopPropagation()}
           >
-            <img src={modalImage.src} alt={modalImage.title} />
             <button
-              className="image-modal-close"
-              onClick={() => setModalImage(null)}
+              className="icon-btn image-modal-close"
+              onClick={() => setSelectedImage(null)}
             >
-              ✕
+              ✖
             </button>
+            <img
+              src={selectedImage.image}
+              alt={selectedImage.title}
+              className="image-modal-img"
+            />
+            <div className="image-modal-text">
+              <h3>{selectedImage.title}</h3>
+              <p>{selectedImage.description}</p>
+            </div>
           </div>
         </div>
       )}
