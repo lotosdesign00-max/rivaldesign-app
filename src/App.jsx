@@ -54,7 +54,17 @@ const TAB_LABELS = {
   },
 };
 
-const TEXTS = {
+// УСЛОВНЫЕ курсы: сколько валюты = 1$
+const RATES = {
+  ru: { code: "₽", perDollar: 100 },   // 5$ = 500₽, 10$ = 1000₽
+  uk: { code: "₴", perDollar: 40 },    // 5$ = 200₴, 10$ = 400₴
+  kz: { code: "₸", perDollar: 500 },   // 5$ = 2500₸, 10$ = 5000₸
+  by: { code: "BYN", perDollar: 3 },   // 5$ = 15 BYN, 10$ = 30 BYN
+  en: { code: "$", perDollar: 1 },     // 5$ = $5, 10$ = $10
+};
+
+// Базовые тексты (без привязки к валюте)
+const BASE_TEXTS = {
   ru: {
     appTitle: "Rival App",
     appSubtitle: "портфолио дизайнера",
@@ -68,13 +78,6 @@ const TEXTS = {
     reviewsAddButton: "Оставить отзыв",
 
     pricingTitle: "Прайс / Услуги",
-    pricingItems: [
-      "Логотип — от 500₽",
-      "Фирменный стиль — от 500₽",
-      "Оформление соцсетей — от 500₽",
-      "Рекламные баннеры — от 500₽",
-    ],
-    pricingAnimationNote: "Анимация: +10$ к цене",
 
     aboutTitle: "Обо мне",
     aboutSubtitle:
@@ -112,13 +115,6 @@ const TEXTS = {
     reviewsAddButton: "Залишити відгук",
 
     pricingTitle: "Прайс / Послуги",
-    pricingItems: [
-      "Логотип — від 200₴",
-      "Фірмовий стиль — від 200₴",
-      "Оформлення соцмереж — від 200₴",
-      "Рекламні банери — від 200₴",
-    ],
-    pricingAnimationNote: "Анімація: +10$ до ціни",
 
     aboutTitle: "Про мене",
     aboutSubtitle:
@@ -156,13 +152,6 @@ const TEXTS = {
     reviewsAddButton: "Пікір қалдыру",
 
     pricingTitle: "Бағалар / Қызметтер",
-    pricingItems: [
-      "Логотип — 2500₸ бастап",
-      "Фирмалық стиль — 2500₸ бастап",
-      "Әлеуметтік желі дизайны — 2500₸ бастап",
-      "Жарнамалық баннерлер — 2500₸ бастап",
-    ],
-    pricingAnimationNote: "Анимация: бағаға +10$",
 
     aboutTitle: "Мен туралы",
     aboutSubtitle:
@@ -200,13 +189,6 @@ const TEXTS = {
     reviewsAddButton: "Пакінуць водгук",
 
     pricingTitle: "Прайс / Паслугі",
-    pricingItems: [
-      "Лагатып — ад 15 BYN",
-      "Фірмовы стыль — ад 15 BYN",
-      "Афармленне сацсетак — ад 15 BYN",
-      "Рэкламныя банеры — ад 15 BYN",
-    ],
-    pricingAnimationNote: "Анімацыя: +10$ да кошту",
 
     aboutTitle: "Пра мяне",
     aboutSubtitle:
@@ -244,13 +226,6 @@ const TEXTS = {
     reviewsAddButton: "Leave a review",
 
     pricingTitle: "Pricing / Services",
-    pricingItems: [
-      "Logo — from $5",
-      "Brand identity — from $5",
-      "Social media design — from $5",
-      "Ad banners — from $5",
-    ],
-    pricingAnimationNote: "Animation: +$10 to the price",
 
     aboutTitle: "About me",
     aboutSubtitle:
@@ -275,6 +250,80 @@ const TEXTS = {
   },
 };
 
+// Генерация прайса на основе курса
+function buildPricingTexts(lang) {
+  const base = BASE_TEXTS[lang] || BASE_TEXTS.ru;
+  const rate = RATES[lang] || RATES.en;
+
+  const price5 = 5 * rate.perDollar;
+  const price10 = 10 * rate.perDollar;
+
+  const fmt = (v) =>
+    rate.code === "BYN" ? `${v} ${rate.code}` : `${v}${rate.code}`;
+
+  let items;
+  let animNote;
+
+  switch (lang) {
+    case "ru":
+      items = [
+        `Логотип — от ${fmt(price5)}`,
+        `Фирменный стиль — от ${fmt(price5)}`,
+        `Оформление соцсетей — от ${fmt(price5)}`,
+        `Рекламные баннеры — от ${fmt(price5)}`,
+      ];
+      animNote = `Анимация: +${fmt(price10)} к цене`;
+      break;
+
+    case "uk":
+      items = [
+        `Логотип — від ${fmt(price5)}`,
+        `Фірмовий стиль — від ${fmt(price5)}`,
+        `Оформлення соцмереж — від ${fmt(price5)}`,
+        `Рекламні банери — від ${fmt(price5)}`,
+      ];
+      animNote = `Анімація: +${fmt(price10)} до ціни`;
+      break;
+
+    case "kz":
+      items = [
+        `Логотип — ${fmt(price5)} бастап`,
+        `Фирмалық стиль — ${fmt(price5)} бастап`,
+        `Әлеуметтік желі дизайны — ${fmt(price5)} бастап`,
+        `Жарнамалық баннерлер — ${fmt(price5)} бастап`,
+      ];
+      animNote = `Анимация: +${fmt(price10)} бағаға`;
+      break;
+
+    case "by":
+      items = [
+        `Лагатып — ад ${fmt(price5)}`,
+        `Фірмовы стыль — ад ${fmt(price5)}`,
+        `Афармленне сацсетак — ад ${fmt(price5)}`,
+        `Рэкламныя банеры — ад ${fmt(price5)}`,
+      ];
+      animNote = `Анімацыя: +${fmt(price10)} да кошту`;
+      break;
+
+    case "en":
+    default:
+      items = [
+        `Logo — from ${fmt(price5)}`,
+        `Brand identity — from ${fmt(price5)}`,
+        `Social media design — from ${fmt(price5)}`,
+        `Ad banners — from ${fmt(price5)}`,
+      ];
+      animNote = `Animation: +${fmt(price10)} to the price`;
+      break;
+  }
+
+  return {
+    ...base,
+    pricingItems: items,
+    pricingAnimationNote: animNote,
+  };
+}
+
 const GALLERY_CATEGORIES = ["Аватарки", "Превью", "Баннеры"];
 
 const GALLERY_ITEMS = [
@@ -282,7 +331,7 @@ const GALLERY_ITEMS = [
     id: "1",
     category: "Аватарки",
     title: "Аватар 1",
-    image: "/images/podborka1.jpg",
+    image: "/images/avatar1.jpg",
     description: "Описание аватарки 1",
   },
   {
@@ -321,11 +370,9 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
 
-  // 🔥 Новое: стейт для модального окна с картинкой
-  const [modalImage, setModalImage] = useState(null); // {src, title} или null
-
-  const t = TEXTS[language];
-  const labels = TAB_LABELS[language];
+  // безопасно: если что-то не так — откатываемся на ru/en
+  const t = buildPricingTexts(language);
+  const labels = TAB_LABELS[language] || TAB_LABELS.ru;
 
   const toggleTheme = () =>
     setTheme((prev) => (prev === "dark" ? "alt" : "dark"));
@@ -374,20 +421,9 @@ export default function App() {
               {GALLERY_ITEMS.filter(
                 (p) => p.category === activeCategory
               ).map((p) => (
-                <SwiperSlide key={p.id} style={{ width: 220 }}>
-                  <div
-                    className="project-card"
-                    onClick={() =>
-                      setModalImage({ src: p.image, title: p.title })
-                    }
-                  >
-                    <img
-                      src={p.image}
-                      alt={p.title}
-                      className="project-img-thumb"
-                    />
-                    <p className="hint-text">{p.description}</p>
-                  </div>
+                <SwiperSlide key={p.id} style={{ width: 320 }}>
+                  <img src={p.image} alt={p.title} className="project-img" />
+                  <p className="hint-text">{p.description}</p>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -547,7 +583,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* Основные вкладки */}
+        {/* Вкладки */}
         <nav className="tabs">
           {Object.values(TABS).map((tab) => (
             <button
@@ -573,27 +609,6 @@ export default function App() {
           {activeTab === TABS.AI ? t.bottomGenerate : t.bottomOrder}
         </button>
       </div>
-
-      {/* 🔥 Модальное окно с картинкой на весь экран */}
-      {modalImage && (
-        <div
-          className="image-modal-backdrop"
-          onClick={() => setModalImage(null)}
-        >
-          <div
-            className="image-modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img src={modalImage.src} alt={modalImage.title} />
-            <button
-              className="image-modal-close"
-              onClick={() => setModalImage(null)}
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
