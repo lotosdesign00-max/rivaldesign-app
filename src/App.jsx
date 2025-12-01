@@ -54,7 +54,6 @@ const TAB_LABELS = {
   },
 };
 
-// Все тексты + цены
 const TEXTS = {
   ru: {
     appTitle: "Rival App",
@@ -68,7 +67,6 @@ const TEXTS = {
     reviewsSubtitle: "Настоящие отзывы твоих клиентов.",
     reviewsAddButton: "Оставить отзыв",
 
-    // 5$ ~ 500₽ (условно)
     pricingTitle: "Прайс / Услуги",
     pricingItems: [
       "Логотип — от 500₽",
@@ -113,7 +111,6 @@ const TEXTS = {
     reviewsSubtitle: "Реальні відгуки твоїх клієнтів.",
     reviewsAddButton: "Залишити відгук",
 
-    // 5$ ~ 200₴ (условно)
     pricingTitle: "Прайс / Послуги",
     pricingItems: [
       "Логотип — від 200₴",
@@ -158,7 +155,6 @@ const TEXTS = {
     reviewsSubtitle: "Сенің клиенттеріңнің шынайы пікірлері.",
     reviewsAddButton: "Пікір қалдыру",
 
-    // 5$ ~ 2500₸ (условно)
     pricingTitle: "Бағалар / Қызметтер",
     pricingItems: [
       "Логотип — 2500₸ бастап",
@@ -203,7 +199,6 @@ const TEXTS = {
     reviewsSubtitle: "Сапраўдныя водгукі тваіх кліентаў.",
     reviewsAddButton: "Пакінуць водгук",
 
-    // 5$ ~ 15 BYN (условно)
     pricingTitle: "Прайс / Паслугі",
     pricingItems: [
       "Лагатып — ад 15 BYN",
@@ -248,7 +243,6 @@ const TEXTS = {
     reviewsSubtitle: "Real feedback from your clients.",
     reviewsAddButton: "Leave a review",
 
-    // базовая валюта — 5$
     pricingTitle: "Pricing / Services",
     pricingItems: [
       "Logo — from $5",
@@ -327,6 +321,9 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
 
+  // 🔥 Новое: стейт для модального окна с картинкой
+  const [modalImage, setModalImage] = useState(null); // {src, title} или null
+
   const t = TEXTS[language];
   const labels = TAB_LABELS[language];
 
@@ -377,9 +374,20 @@ export default function App() {
               {GALLERY_ITEMS.filter(
                 (p) => p.category === activeCategory
               ).map((p) => (
-                <SwiperSlide key={p.id} style={{ width: 320 }}>
-                  <img src={p.image} alt={p.title} className="project-img" />
-                  <p className="hint-text">{p.description}</p>
+                <SwiperSlide key={p.id} style={{ width: 220 }}>
+                  <div
+                    className="project-card"
+                    onClick={() =>
+                      setModalImage({ src: p.image, title: p.title })
+                    }
+                  >
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      className="project-img-thumb"
+                    />
+                    <p className="hint-text">{p.description}</p>
+                  </div>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -484,7 +492,6 @@ export default function App() {
             </button>
 
             <div style={{ position: "relative" }}>
-              {/* Эмодзи + текущий язык */}
               <button className="icon-btn" onClick={toggleLangMenu}>
                 🌐 {language.toUpperCase()}
               </button>
@@ -566,6 +573,27 @@ export default function App() {
           {activeTab === TABS.AI ? t.bottomGenerate : t.bottomOrder}
         </button>
       </div>
+
+      {/* 🔥 Модальное окно с картинкой на весь экран */}
+      {modalImage && (
+        <div
+          className="image-modal-backdrop"
+          onClick={() => setModalImage(null)}
+        >
+          <div
+            className="image-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img src={modalImage.src} alt={modalImage.title} />
+            <button
+              className="image-modal-close"
+              onClick={() => setModalImage(null)}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
