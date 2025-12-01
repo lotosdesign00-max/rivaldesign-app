@@ -266,7 +266,7 @@ body {
 
 .image-modal-content {
   position: relative;
-  max-width: 480px;
+  max-width: 100px;
   width: 100%;
   background: #111;
   border-radius: 20px;
