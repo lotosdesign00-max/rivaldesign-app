@@ -66,7 +66,7 @@ const RATES = {
 // Базовые тексты (без привязки к валюте)
 const BASE_TEXTS = {
   ru: {
-    appTitle: "Rival App",
+    appTitle: "Rival App DESIGN",
     appSubtitle: "портфолио дизайнера",
 
     galleryTitle: "Галерея работ",
