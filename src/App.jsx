@@ -56,7 +56,7 @@ const TAB_LABELS = {
 
 const TEXTS = {
   ru: {
-    appTitle: "Rival App",
+    appTitle: "Rival App12",
     appSubtitle: "портфолио дизайнера",
 
     galleryTitle: "Галерея работ",
