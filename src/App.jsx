@@ -533,15 +533,15 @@ const REVIEWS_ITEMS = [
 ];
 // Базовые цены в USD
 const BASE_PRICES = [
-  { id: 1, service: "Логотип", priceUSD: 100 },
-  { id: 2, service: "Фирменный стиль", priceUSD: 300 },
-  { id: 3, service: "Оформление соцсетей", priceUSD: 150 },
+  { id: 1, service: "Аватарка", priceUSD: 5 },
+  { id: 2, service: "Превью", priceUSD: 5 },
+  { id: 3, service: "Баннеры ", priceUSD: 5 },
   { id: 4, service: "Рекламные баннеры", priceUSD: 80 },
 ];
 
 const SERVICES_TRANSLATIONS = {
   ru: {
-    "Логотип": "Логотип",
+    "Логотип": "Лого",
     "Фирменный стиль": "Фирменный стиль",
     "Оформление соцсетей": "Оформление соцсетей",
     "Рекламные баннеры": "Рекламные баннеры"
