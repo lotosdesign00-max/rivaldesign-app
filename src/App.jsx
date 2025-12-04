@@ -536,7 +536,7 @@ const BASE_PRICES = [
   { id: 1, service: "Аватарка", priceUSD: 5 },
   { id: 2, service: "Превью", priceUSD: 5 },
   { id: 3, service: "Баннеры ", priceUSD: 5 },
-  { id: 4, service: "Рекламные баннеры", priceUSD: 80 },
+  { id: 4, service: "Рекламные баннеры", priceUSD: 5 },
 ];
 
 const SERVICES_TRANSLATIONS = {
