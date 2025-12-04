@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 
@@ -9,6 +9,160 @@ const TABS = {
   ABOUT: "about",
   FAQ: "faq",
   AI: "ai",
+};
+
+// ТЕМЫ С ЦВЕТОВЫМИ СХЕМАМИ (фиксированные цвета)
+const THEMES = {
+  DARK: {
+    id: "dark",
+    name: "Темная",
+    icon: "🌙",
+    colors: {
+      primary: "#0a0a0a",
+      secondary: "#1a1a1a",
+      accent: "#7c3aed",
+      text: "#f8fafc",
+      textSecondary: "#94a3b8",
+      border: "#2d3748",
+      card: "#1a1a1a",
+      button: "#7c3aed",
+      buttonText: "#ffffff",
+      tabActive: "#7c3aed",
+      shadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+      gradient: "linear-gradient(145deg, #0a0a0a, #1a1a1a)"
+    }
+  },
+  LIGHT: {
+    id: "light", 
+    name: "Светлая",
+    icon: "☀️",
+    colors: {
+      primary: "#f1f5f9",
+      secondary: "#ffffff",
+      accent: "#2563eb",
+      text: "#1e293b",
+      textSecondary: "#64748b",
+      border: "#e2e8f0",
+      card: "#ffffff",
+      button: "#2563eb",
+      buttonText: "#ffffff",
+      tabActive: "#2563eb",
+      shadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+      gradient: "linear-gradient(145deg, #f1f5f9, #e2e8f0)"
+    }
+  },
+  RED: {
+    id: "red",
+    name: "Красная",
+    icon: "🔴",
+    colors: {
+      primary: "#1a0000",
+      secondary: "#2a0000",
+      accent: "#dc2626",
+      text: "#fef2f2",
+      textSecondary: "#fca5a5",
+      border: "#7f1d1d",
+      card: "#2a0000",
+      button: "#dc2626",
+      buttonText: "#ffffff",
+      tabActive: "#dc2626",
+      shadow: "0 4px 12px rgba(220, 38, 38, 0.15)",
+      gradient: "linear-gradient(145deg, #1a0000, #2a0000)"
+    }
+  },
+  BLUE: {
+    id: "blue",
+    name: "Синяя",
+    icon: "🔵",
+    colors: {
+      primary: "#0c1a2d",
+      secondary: "#1e293b",
+      accent: "#0ea5e9",
+      text: "#e2e8f0",
+      textSecondary: "#94a3b8",
+      border: "#334155",
+      card: "#1e293b",
+      button: "#0ea5e9",
+      buttonText: "#ffffff",
+      tabActive: "#0ea5e9",
+      shadow: "0 4px 12px rgba(14, 165, 233, 0.1)",
+      gradient: "linear-gradient(145deg, #0c1a2d, #1e293b)"
+    }
+  },
+  PURPLE: {
+    id: "purple",
+    name: "Фиолетовая",
+    icon: "🟣",
+    colors: {
+      primary: "#1e0b3a",
+      secondary: "#2d1b4e",
+      accent: "#a855f7",
+      text: "#f5f3ff",
+      textSecondary: "#c4b5fd",
+      border: "#4c1d95",
+      card: "#2d1b4e",
+      button: "#a855f7",
+      buttonText: "#ffffff",
+      tabActive: "#a855f7",
+      shadow: "0 4px 12px rgba(168, 85, 247, 0.1)",
+      gradient: "linear-gradient(145deg, #1e0b3a, #2d1b4e)"
+    }
+  },
+  GRADIENT: {
+    id: "gradient",
+    name: "Градиент",
+    icon: "🌈",
+    colors: {
+      primary: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)",
+      secondary: "linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%)",
+      accent: "#ffd166",
+      text: "#ffffff",
+      textSecondary: "rgba(255,255,255,0.85)",
+      border: "rgba(255,255,255,0.25)",
+      card: "rgba(255,255,255,0.12)",
+      button: "#ffd166",
+      buttonText: "#000000",
+      tabActive: "#ffd166",
+      shadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+      gradient: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)"
+    }
+  },
+  NEON: {
+    id: "neon",
+    name: "Неон",
+    icon: "💡",
+    colors: {
+      primary: "#000000",
+      secondary: "#0a0a0a",
+      accent: "#00ff9d",
+      text: "#ffffff",
+      textSecondary: "#00ff9d",
+      border: "#00ff9d",
+      card: "#0a0a0a",
+      button: "#00ff9d",
+      buttonText: "#000000",
+      tabActive: "#00ff9d",
+      shadow: "0 0 10px rgba(0, 255, 157, 0.3)",
+      gradient: "linear-gradient(145deg, #000000, #0a0a0a)"
+    }
+  }
+};
+
+// Курсы валют (примерные)
+const EXCHANGE_RATES = {
+  USD: 1,
+  RUB: 95,
+  UAH: 40,
+  BYN: 3.2,
+  KZT: 450,
+};
+
+const LANGUAGE_TO_CURRENCY = {
+  ru: { symbol: "₽", code: "RUB" },
+  ua: { symbol: "₴", code: "UAH" },
+  en: { symbol: "$", code: "USD" },
+  by: { symbol: "Br", code: "BYN" },
+  kz: { symbol: "₸", code: "KZT" },
 };
 
 const TAB_LABELS = {
@@ -54,284 +208,453 @@ const TAB_LABELS = {
   },
 };
 
+// Категории галереи для разных языков
+const GALLERY_CATEGORIES_TRANSLATIONS = {
+  ru: ["Аватарки", "Превью", "Баннеры"],
+  en: ["Avatars", "Previews", "Banners"],
+  ua: ["Аватарки", "Прев'ю", "Банери"],
+  kz: ["Аватарлар", "Превью", "Баннерлер"],
+  by: ["Аватаркі", "Прэв'ю", "Банеры"]
+};
+
+// FAQ вопросы для разных языков
+const FAQ_ITEMS_TRANSLATIONS = {
+  ru: [
+    "Как проходит работа?",
+    "Какие файлы я получу?",
+    "Сколько правок входит в стоимость?",
+  ],
+  en: [
+    "How does the process work?",
+    "What files will I receive?",
+    "How many revisions are included?",
+  ],
+  ua: [
+    "Як проходить робота?",
+    "Які файли я отримаю?",
+    "Скільки правок входить у вартість?",
+  ],
+  kz: [
+    "Жұмыс қалай өтеді?",
+    "Қандай файлдарды аламын?",
+    "Қанша өзгеріс енгізуге болады?",
+  ],
+  by: [
+    "Як праходзіць работа?",
+    "Якія файлы я атрымаю?",
+    "Колькі праўкі ўваходзіць у кошт?",
+  ]
+};
+
+// Текст для кнопки "нажми, чтобы увеличить"
+const ZOOM_HINT_TRANSLATIONS = {
+  ru: "🔍 нажми, чтобы увеличить",
+  en: "🔍 click to zoom",
+  ua: "🔍 натисніть, щоб збільшити",
+  kz: "🔍 үлкейту үшін басыңыз",
+  by: "🔍 націсніце, каб павялічыць"
+};
+
 const TEXTS = {
   ru: {
     appTitle: "Rival App",
     appSubtitle: "портфолио дизайнера",
-
     galleryTitle: "Галерея работ",
     gallerySubtitle: "Аватарки, превью, баннеры и другие проекты.",
     galleryHint: "Выбери категорию сверху и листай работы свайпом.",
-
     reviewsTitle: "Отзывы клиентов",
     reviewsSubtitle: "Настоящие отзывы твоих клиентов.",
     reviewsAddButton: "Оставить отзыв",
-
     pricingTitle: "Прайс / Услуги",
-    pricingItems: [
-      "Логотип — от X грн",
-      "Фирменный стиль — от X грн",
-      "Оформление соцсетей — от X грн",
-      "Рекламные баннеры — от X грн",
-    ],
-
     aboutTitle: "Обо мне",
     aboutSubtitle:
       "Я Rival, дизайнер. Помогаю брендам выделяться в соцсетях и рекламе.",
-
     faqTitle: "FAQ",
-    faqItems: [
-      "Как проходит работа?",
-      "Какие файлы я получу?",
-      "Сколько правок входит в стоимость?",
-    ],
-
     aiTitle: "AI идеи",
     aiSubtitle:
       "Генератор идей для палитр, референсов и концептов (в разработке).",
-
     bottomOrder: "Оформить заказ",
     bottomGenerate: "Сгенерировать идею",
-
     orderAlert:
       "Скоро здесь будет переход к твоему Telegram для оформления заказа 😉",
     aiAlert: "Скоро здесь будет генератор идей на AI 🚀",
   },
-
   en: {
     appTitle: "Rival App",
     appSubtitle: "designer portfolio",
-
     galleryTitle: "Portfolio",
     gallerySubtitle: "Avatars, thumbnails, banners and other projects.",
     galleryHint: "Choose a category above and swipe through your works.",
-
     reviewsTitle: "Client reviews",
     reviewsSubtitle: "Real feedback from your clients.",
     reviewsAddButton: "Leave a review",
-
     pricingTitle: "Pricing / Services",
-    pricingItems: [
-      "Logo — from X UAH",
-      "Brand identity — from X UAH",
-      "Social media design — from X UAH",
-      "Ad banners — from X UAH",
-    ],
-
     aboutTitle: "About me",
     aboutSubtitle:
       "I'm Rival, a designer. I help brands stand out in social media and advertising.",
-
     faqTitle: "FAQ",
-    faqItems: [
-      "How does the process work?",
-      "What files will I receive?",
-      "How many revisions are included?",
-    ],
-
     aiTitle: "AI ideas",
     aiSubtitle:
       "Idea generator for palettes, references and concepts (coming soon).",
-
     bottomOrder: "Place an order",
     bottomGenerate: "Generate idea",
-
     orderAlert: "Soon this will open your Telegram for orders 😉",
     aiAlert: "Soon this will be an AI idea generator 🚀",
   },
-
   ua: {
     appTitle: "Rival App",
     appSubtitle: "портфоліо дизайнера",
-
     galleryTitle: "Галерея робіт",
-    gallerySubtitle: "Аватарки, прев’ю, банери та інші проєкти.",
+    gallerySubtitle: "Аватарки, прев'ю, банери та інші проєкти.",
     galleryHint: "Обери категорію зверху та гортай роботи свайпом.",
-
     reviewsTitle: "Відгуки клієнтів",
     reviewsSubtitle: "Реальні відгуки твоїх клієнтів.",
     reviewsAddButton: "Залишити відгук",
-
     pricingTitle: "Прайс / Послуги",
-    pricingItems: [
-      "Логотип — від X грн",
-      "Фірмовий стиль — від X грн",
-      "Оформлення соцмереж — від X грн",
-      "Рекламні банери — від X грн",
-    ],
-
     aboutTitle: "Про мене",
     aboutSubtitle:
       "Я Rival, дизайнер. Допомагаю брендам виділятися в соцмережах та рекламі.",
-
     faqTitle: "FAQ",
-    faqItems: [
-      "Як проходить робота?",
-      "Які файли я отримаю?",
-      "Скільки правок входить у вартість?",
-    ],
-
     aiTitle: "AI ідеї",
     aiSubtitle:
       "Генератор ідей для палітр, референсів та концептів (у розробці).",
-
     bottomOrder: "Замовити дизайн",
     bottomGenerate: "Згенерувати ідею",
-
     orderAlert: "Скоро тут буде перехід у твій Telegram для замовлення 😉",
     aiAlert: "Скоро тут буде AI-генератор ідей 🚀",
   },
-
   kz: {
     appTitle: "Rival App",
     appSubtitle: "дизайнер портфолиосы",
-
     galleryTitle: "Жұмыстар галереясы",
     gallerySubtitle: "Аватарлар, превью, баннерлер және басқа жобалар.",
     galleryHint: "Жоғарыдан санатты таңда да, жұмыстарды свайппен қара.",
-
     reviewsTitle: "Клиент пікірлері",
     reviewsSubtitle: "Нағыз клиенттерден пікірлер.",
     reviewsAddButton: "Пікір қалдыру",
-
     pricingTitle: "Прайс / Қызметтер",
-    pricingItems: [
-      "Логотип — X теңгеден",
-      "Фирмалық стиль — X теңгеден",
-      "Әлеуметтік желі дизайны — X теңгеден",
-      "Жарнамалық баннерлер — X теңгеден",
-    ],
-
     aboutTitle: "Мен туралы",
     aboutSubtitle:
       "Мен Rival, дизайнермін. Брендтерге әлеуметтік желілерде және жарнамада ерекшеленуге көмектесемін.",
-
     faqTitle: "FAQ",
-    faqItems: [
-      "Жұмыс қалай өтеді?",
-      "Қандай файлдарды аламын?",
-      "Қанша өзгеріс енгізуге болады?",
-    ],
-
     aiTitle: "AI идеялар",
     aiSubtitle:
       "Палитралар, референстер және концепттер үшін идея генераторы (әзірлеуде).",
-
     bottomOrder: "Дизайнға тапсырыс беру",
     bottomGenerate: "Идея генерациялау",
-
     orderAlert:
       "Жақында мұнда тапсырыс беру үшін сенің Telegram-ыңа өтуді қосамыз 😉",
     aiAlert: "Жақында мұнда AI идея генераторы болады 🚀",
   },
-
   by: {
     appTitle: "Rival App",
     appSubtitle: "партфоліа дызайнера",
-
     galleryTitle: "Галерэя работ",
-    gallerySubtitle: "Аватаркі, прэв’ю, банеры і іншыя праекты.",
+    gallerySubtitle: "Аватаркі, прэв'ю, банеры і іншыя праекты.",
     galleryHint: "Абяры катэгорыю зверху і ліставай работы свайпам.",
-
     reviewsTitle: "Водгукі кліентаў",
     reviewsSubtitle: "Сапраўдныя водгукі тваіх кліентаў.",
     reviewsAddButton: "Пакінуць водгук",
-
     pricingTitle: "Прайс / Паслугі",
-    pricingItems: [
-      "Лагатып — ад X BYN",
-      "Фірмовы стыль — ад X BYN",
-      "Афармленне сацсетак — ад X BYN",
-      "Рэкламныя банеры — ад X BYN",
-    ],
-
     aboutTitle: "Пра мяне",
     aboutSubtitle:
       "Я Rival, дызайнер. Дапамагаю брэндам выдзяляцца ў сацсетках і рэкламе.",
-
     faqTitle: "FAQ",
-    faqItems: [
-      "Як праходзіць работа?",
-      "Якія файлы я атрымаю?",
-      "Колькі праўкі ўваходзіць у кошт?",
-    ],
-
     aiTitle: "AI ідэі",
     aiSubtitle:
       "Генератар ідэй для палітр, рэферансаў і канцэптаў (у распрацоўцы).",
-
     bottomOrder: "Замовіць дызайн",
     bottomGenerate: "Згенераваць ідэю",
-
-    orderAlert:
-      "Хутка тут будзе пераход у твой Telegram для замовы 😉",
+    orderAlert: "Хутка тут будзе пераход у твой Telegram для замовы 😉",
     aiAlert: "Хутка тут будзе AI-генератар ідэй 🚀",
   },
 };
 
-const GALLERY_CATEGORIES = ["Аватарки", "Превью", "Баннеры"];
-
-const GALLERY_ITEMS = [
-  {
-    id: "1",
-    category: "Аватарки",
-    title: "Аватар 1",
-    image: "/images/avatar1.jpg",
-    description: "Описание аватарки 1",
-  },
-  {
-    id: "2",
-    category: "Превью",
-    title: "Превью 1",
-    image: "/images/preview1.jpg",
-    description: "Описание превью 1",
-  },
-  {
-    id: "3",
-    category: "Баннеры",
-    title: "Баннер 1",
-    image: "/images/banner1.jpg",
-    description: "Описание баннера 1",
-  },
-  {
-    id: "4",
-    category: "Аватарки",
-    title: "Аватар 2",
-    image: "/images/avatar2.jpg",
-    description: "Описание аватарки 2",
-  },
-  // пример твоей своей работы
-  // {
-  //   id: "5",
-  //   category: "Аватарки",
-  //   title: "Rival Avatar",
-  //   image: "/images/my-avatar-1.png",
-  //   description: "Мой фирменный аватар",
-  // },
+// Исходные данные галереи (на русском)
+const GALLERY_ITEMS_RU = [
+  { id: "1", category: "Аватарки", title: "Аватар 1", image: "/images/podborka av 1.jpg", description: "Описание аватарки 1" },
+  { id: "2", category: "Аватарки", title: "Аватар 1", image: "/images/podborka av 2.jpg", description: "Описание аватарки 1" },
+  { id: "3", category: "Аватарки", title: "Аватар 1", image: "/images/podborka av 3.jpg", description: "Описание аватарки 1" },
+  { id: "20", category: "Превью", title: "Превью 1", image: "/images/podborka prewiew 1.jpg", description: "Описание превью 1" },
+  { id: "21", category: "Превью", title: "Превью 1", image: "/images/podborka prewiew 2.jpg", description: "Описание превью 1" },
+  { id: "22", category: "Превью", title: "Превью 1", image: "/images/podborka prewiew 3.jpg", description: "Описание превью 1" },
+  { id: "23", category: "Превью", title: "Превью 1", image: "/images/podborka prewiew 4.jpg", description: "Описание превью 1" },
+  { id: "24", category: "Превью", title: "Превью 1", image: "/images/podborka prewiew 5.jpg", description: "Описание превью 1" },
+  { id: "3", category: "Баннеры", title: "Баннер 1", image: "/images/banner1.jpg", description: "Описание баннера 1" },
 ];
+
+// Трансляции для галереи
+const GALLERY_TRANSLATIONS = {
+  ru: GALLERY_ITEMS_RU,
+  en: [
+    { id: "1", category: "Avatars", title: "Avatar 1", image: "/images/podborka av 1.jpg", description: "Avatar description 1" },
+    { id: "2", category: "Avatars", title: "Avatar 2", image: "/images/podborka av 2.jpg", description: "Avatar description 2" },
+    { id: "3", category: "Avatars", title: "Avatar 2", image: "/images/podborka av 3.jpg", description: "Avatar description 2" },
+    { id: "20", category: "Previews", title: "Preview 1", image: "/images/podborka prewiew 1.jpg", description: "Preview description 1" },
+    { id: "21", category: "Previews", title: "Preview 1", image: "/images/podborka prewiew 2.jpg", description: "Preview description 1" },
+    { id: "22", category: "Previews", title: "Preview 1", image: "/images/podborka prewiew 3.jpg", description: "Preview description 1" },
+    { id: "23", category: "Previews", title: "Preview 1", image: "/images/podborka prewiew 4.jpg", description: "Preview description 1" },
+    { id: "24", category: "Previews", title: "Preview 1", image: "/images/podborka prewiew 5.jpg", description: "Preview description 1" },
+    { id: "3", category: "Banners", title: "Banner 1", image: "/images/banner1.jpg", description: "Banner description 1" },
+  ],
+  ua: [
+    { id: "1", category: "Аватарки", title: "Аватар 1", image: "/images/podborka av 1.jpg", description: "Опис аватарки 1" },
+    { id: "2", category: "Аватарки", title: "Аватар 2", image: "/images/podborka av 2.jpg", description: "Опис аватарки 1" },
+    { id: "3", category: "Аватарки", title: "Аватар 1", image: "/images/podborka av 3.jpg", description: "Опис аватарки 1" },
+    { id: "20", category: "Прев'ю", title: "Прев'ю 1", image: "/images/podborka prewiew 1.jpg", description: "Опис прев'ю 1" },
+    { id: "21", category: "Прев'ю", title: "Прев'ю 1", image: "/images/podborka prewiew 2.jpg", description: "Опис прев'ю 1" },
+    { id: "22", category: "Прев'ю", title: "Прев'ю 1", image: "/images/podborka prewiew 3.jpg", description: "Опис прев'ю 1" },
+    { id: "23", category: "Прев'ю", title: "Прев'ю 1", image: "/images/podborka prewiew 4.jpg", description: "Опис прев'ю 1" },
+    { id: "24", category: "Прев'ю", title: "Прев'ю 1", image: "/images/podborka prewiew 5.jpg", description: "Опис прев'ю 1" },
+    { id: "3", category: "Банери", title: "Банер 1", image: "/images/banner1.jpg", description: "Опис банера 1" },
+  ],
+  kz: [
+    { id: "1", category: "Аватарлар", title: "Аватар 1", image: "/images/podborka av 1.jpg", description: "Аватар сипаттамасы 1" },
+    { id: "2", category: "Аватарлар", title: "Аватар 1", image: "/images/podborka av 2.jpg", description: "Аватар сипаттамасы 1" },
+    { id: "3", category: "Аватарлар", title: "Аватар 1", image: "/images/podborka av 3.jpg", description: "Аватар сипаттамасы 1" },
+    { id: "20", category: "Превью", title: "Превью 1", image: "/images/podborka prewiew 1.jpg", description: "Превью сипаттамасы 1" },
+    { id: "21", category: "Превью", title: "Превью 1", image: "/images/podborka prewiew 2.jpg", description: "Превью сипаттамасы 1" },
+    { id: "22", category: "Превью", title: "Превью 1", image: "/images/podborka prewiew 3.jpg", description: "Превью сипаттамасы 1" },
+    { id: "23", category: "Превью", title: "Превью 1", image: "/images/podborka prewiew 4.jpg", description: "Превью сипаттамасы 1" },
+    { id: "24", category: "Превью", title: "Превью 1", image: "/images/podborka prewiew 5.jpg", description: "Превью сипаттамасы 1" },
+    { id: "3", category: "Баннерлер", title: "Баннер 1", image: "/images/banner1.jpg", description: "Баннер сипаттамасы 1" },
+    { id: "4", category: "Аватарлар", title: "Аватар 2", image: "/images/avatar2.jpg", description: "Аватар сипаттамасы 2" },
+  ],
+  by: [
+    { id: "1", category: "Аватаркі", title: "Аватар 1", image: "/images/podborka av 1.jpg", description: "Апісанне аватаркі 1" },
+    { id: "2", category: "Аватаркі", title: "Аватар 1", image: "/images/podborka av 2.jpg", description: "Апісанне аватаркі 1" },
+    { id: "3", category: "Аватаркі", title: "Аватар 1", image: "/images/podborka av 3.jpg", description: "Апісанне аватаркі 1" },
+    { id: "20", category: "Прэв'ю", title: "Прэв'ю 1", image: "/images/podborka prewiew 1.jpg", description: "Апісанне прэв'ю 1" },
+    { id: "21", category: "Прэв'ю", title: "Прэв'ю 1", image: "/images/podborka prewiew 2.jpg", description: "Апісанне прэв'ю 1" },
+    { id: "22", category: "Прэв'ю", title: "Прэв'ю 1", image: "/images/podborka prewiew 3.jpg", description: "Апісанне прэв'ю 1" },
+    { id: "23", category: "Прэв'ю", title: "Прэв'ю 1", image: "/images/podborka prewiew 4.jpg", description: "Апісанне прэв'ю 1" },
+    { id: "24", category: "Прэв'ю", title: "Прэв'ю 1", image: "/images/podborka prewiew 5.jpg", description: "Апісанне прэв'ю 1" },
+    { id: "3", category: "Банеры", title: "Банер 1", image: "/images/banner1.jpg", description: "Апісанне банеру 1" },
+    { id: "4", category: "Аватаркі", title: "Аватар 2", image: "/images/avatar2.jpg", description: "Апісанне аватаркі 2" },
+  ]
+};
 
 const REVIEWS_ITEMS = [
-  { id: "r1", name: "Alice", text: "Отличная работа!" },
-  { id: "r2", name: "Bob", text: "Очень понравилось." },
-  { id: "r3", name: "Charlie", text: "Буду обращаться ещё." },
+  { 
+    id: "r1", 
+    name: "W1tex", 
+    text: "Работа выполнена превосходно, очень доволен результатом." 
+  },
+  { 
+    id: "r2", 
+    name: "Shyngyzx", 
+    text: "Отличный специалист, рекомендую к сотрудничеству." 
+  },
+  { 
+    id: "r3", 
+    name: "Butter", 
+    text: "Качество работы на высшем уровне, оценка 10/10." 
+  },
+  { 
+    id: "r4", 
+    name: "scarlet roses", 
+    text: "Благодарю за проделанную работу, всё выполнено профессионально." 
+  },
+  { 
+    id: "r5", 
+    name: "Solevoy", 
+    text: "Рекомендую всем — работа выполнена безупречно." 
+  },
+  { 
+    id: "r6", 
+    name: "Aero", 
+    text: "Отличный результат, спасибо за качественную работу." 
+  },
+  { 
+    id: "r7", 
+    name: "Firessk", 
+    text: "Большое спасибо, обязательно порекомендую вас своим знакомым." 
+  },
+  { 
+    id: "r8", 
+    name: "Helvite", 
+    text: "Работа выполнена на оценку 10/10, всё качественно." 
+  },
+  { 
+    id: "r9", 
+    name: "Usepsyho", 
+    text: "Всё выполнено быстро и профессионально, 10/10." 
+  },
+  { 
+    id: "r10", 
+    name: "Filling", 
+    text: "Отличная работа, оценка 9/10, очень качественно." 
+  },
+  { 
+    id: "r11", 
+    name: "Arthur", 
+    text: "Благодарю за профессиональный подход." 
+  },
+  { 
+    id: "r12", 
+    name: "Kupiz", 
+    text: "Всё выполнено чётко и качественно." 
+  },
+  { 
+    id: "r13", 
+    name: "Du", 
+    text: "Полностью доволен результатом, получил всё что хотел." 
+  },
+  { 
+    id: "r14", 
+    name: "ZetaMert", 
+    text: "Всё отлично, работа выполнена качественно." 
+  },
+  { 
+    id: "r15", 
+    name: "Rare", 
+    text: "Работа выполнена в указанные сроки, даже быстрее. Рекомендую специалиста @Rivaldsg." 
+  },
+  { 
+    id: "r16", 
+    name: "Xyi v tapke", 
+    text: "Отличный результат, очень доволен." 
+  },
+  { 
+    id: "r17", 
+    name: "Yvonne", 
+    text: "Работа выполнена именно так, как я и хотел." 
+  },
+  { 
+    id: "r18", 
+    name: "Wised", 
+    text: "Заказывал баннер и аватарку — рекомендую специалиста @Rivaldsg, работа выполнена профессионально." 
+  },
+  { 
+    id: "r19", 
+    name: "Zahar", 
+    text: "@Rivaldsg оперативно выполнил заказ, всё чётко и быстро." 
+  }
 ];
+// Базовые цены в USD
+const BASE_PRICES = [
+  { id: 1, service: "Логотип", priceUSD: 100 },
+  { id: 2, service: "Фирменный стиль", priceUSD: 300 },
+  { id: 3, service: "Оформление соцсетей", priceUSD: 150 },
+  { id: 4, service: "Рекламные баннеры", priceUSD: 80 },
+];
+
+const SERVICES_TRANSLATIONS = {
+  ru: {
+    "Логотип": "Логотип",
+    "Фирменный стиль": "Фирменный стиль",
+    "Оформление соцсетей": "Оформление соцсетей",
+    "Рекламные баннеры": "Рекламные баннеры"
+  },
+  en: {
+    "Логотип": "Logo",
+    "Фирменный стиль": "Brand identity",
+    "Оформление соцсетей": "Social media design",
+    "Рекламные баннеры": "Ad banners"
+  },
+  ua: {
+    "Логотип": "Логотип",
+    "Фирменный стиль": "Фірмовий стиль",
+    "Оформление соцсетей": "Оформлення соцмереж",
+    "Рекламные баннеры": "Рекламні банери"
+  },
+  kz: {
+    "Логотип": "Логотип",
+    "Фирменный стиль": "Фирмалық стиль",
+    "Оформление соцсетей": "Әлеуметтік желі дизайны",
+    "Рекламные баннеры": "Жарнамалық баннерлер"
+  },
+  by: {
+    "Логотип": "Лагатып",
+    "Фирменный стиль": "Фірмовы стыль",
+    "Оформление соцсетей": "Афармленне сацсетак",
+    "Рекламные баннеры": "Рэкламныя банеры"
+  }
+};
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(TABS.GALLERY);
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState(THEMES.DARK);
   const [language, setLanguage] = useState("ru");
-  const [activeCategory, setActiveCategory] = useState(GALLERY_CATEGORIES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
-
-  // для зума картинки
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("Аватарки");
   const [selectedImage, setSelectedImage] = useState(null);
 
+  // Сохранение темы в localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("appTheme");
+    if (savedTheme && THEMES[savedTheme.toUpperCase()]) {
+      setTheme(THEMES[savedTheme.toUpperCase()]);
+    }
+  }, []);
+
+  // Сброс активной категории при смене языка
+  useEffect(() => {
+    // Устанавливаем первую категорию для текущего языка
+    const categories = GALLERY_CATEGORIES_TRANSLATIONS[language];
+    if (categories && categories.length > 0) {
+      setActiveCategory(categories[0]);
+    }
+  }, [language]);
+
+  const saveTheme = (themeId) => {
+    localStorage.setItem("appTheme", themeId);
+  };
+
+  const currencyInfo = LANGUAGE_TO_CURRENCY[language];
   const t = TEXTS[language];
   const labels = TAB_LABELS[language];
+  const galleryCategories = GALLERY_CATEGORIES_TRANSLATIONS[language] || GALLERY_CATEGORIES_TRANSLATIONS.ru;
+  const faqItems = FAQ_ITEMS_TRANSLATIONS[language] || FAQ_ITEMS_TRANSLATIONS.ru;
+  const galleryItems = GALLERY_TRANSLATIONS[language] || GALLERY_TRANSLATIONS.ru;
+  const zoomHint = ZOOM_HINT_TRANSLATIONS[language] || ZOOM_HINT_TRANSLATIONS.ru;
 
-  const toggleTheme = () =>
-    setTheme((prev) => (prev === "dark" ? "alt" : "dark"));
-  const toggleLangMenu = () => setShowLangMenu((prev) => !prev);
+  // Функция конвертации цены
+  const convertPrice = (priceUSD) => {
+    const rate = EXCHANGE_RATES[currencyInfo.code];
+    return Math.round(priceUSD * rate);
+  };
+
+  // Функция форматирования цены
+  const formatPrice = (priceUSD) => {
+    const converted = convertPrice(priceUSD);
+    return `${converted} ${currencyInfo.symbol}`;
+  };
+
+  // Получение переведенных названий услуг
+  const getTranslatedServices = () => {
+    return BASE_PRICES.map(item => ({
+      ...item,
+      translatedService: SERVICES_TRANSLATIONS[language][item.service] || item.service
+    }));
+  };
+
+  const toggleTheme = () => {
+    const themeKeys = Object.keys(THEMES);
+    const currentIndex = themeKeys.findIndex(key => THEMES[key].id === theme.id);
+    const nextIndex = (currentIndex + 1) % themeKeys.length;
+    const newTheme = THEMES[themeKeys[nextIndex]];
+    setTheme(newTheme);
+    saveTheme(newTheme.id);
+  };
+
+  const selectTheme = (themeObj) => {
+    setTheme(themeObj);
+    saveTheme(themeObj.id);
+    setShowThemeMenu(false);
+  };
+
+  const toggleLangMenu = () => {
+    setShowLangMenu(prev => !prev);
+    setShowThemeMenu(false);
+  };
+
+  const toggleThemeMenu = () => {
+    setShowThemeMenu(prev => !prev);
+    setShowLangMenu(false);
+  };
+
   const handleLangChange = (lang) => {
     setLanguage(lang);
     setShowLangMenu(false);
@@ -341,8 +664,22 @@ export default function App() {
     if (activeTab === TABS.AI) {
       alert(t.aiAlert);
     } else {
-      alert(t.orderAlert);
-      // window.open("https://t.me/Rivaldsg", "_blank");
+      // Определяем, какую услугу просматривает пользователь
+      let serviceType = "дизайн";
+      if (activeTab === TABS.PRICING) {
+        // Если пользователь в разделе Pricing, можно определить конкретную услугу
+        serviceType = "услугу из прайса";
+      } else if (activeTab === TABS.GALLERY) {
+        serviceType = "работу из галереи";
+      }
+      
+      // Создаем сообщение
+      const message = encodeURIComponent(
+        `Привет! Я с твоего портфолио. Хочу заказать ${serviceType}. ` +
+        `Язык интерфейса: ${labels[TABS.ABOUT] === "Обо мне" ? "русский" : language}`
+      );
+      
+      window.open(`https://t.me/Rivaldsg?text=${message}`, "_blank");
     }
   };
 
@@ -350,97 +687,119 @@ export default function App() {
     switch (activeTab) {
       case TABS.GALLERY:
         return (
-          <div className="card">
-            <h2 className="section-title">{t.galleryTitle}</h2>
-            <p className="section-subtitle">{t.gallerySubtitle}</p>
-
-            <div className="tabs">
-              {GALLERY_CATEGORIES.map((cat) => (
+          <div className="card" style={{ background: theme.colors.card, boxShadow: theme.colors.shadow }}>
+            <h2 className="section-title" style={{ color: theme.colors.text }}>{t.galleryTitle}</h2>
+            <p className="section-subtitle" style={{ color: theme.colors.textSecondary }}>{t.gallerySubtitle}</p>
+            
+            {/* Кнопки категорий с переводами */}
+            <div 
+              className="tabs" 
+              style={{ 
+                borderBottom: `1px solid ${theme.colors.border}`,
+                background: theme.colors.secondary,
+                borderRadius: '8px',
+                padding: '4px',
+                marginBottom: '16px'
+              }}
+            >
+              {galleryCategories.map((cat) => (
                 <button
                   key={cat}
-                  className={
-                    "tab-btn" +
-                    (cat === activeCategory ? " tab-btn-active" : "")
-                  }
+                  className={"tab-btn" + (cat === activeCategory ? " tab-btn-active" : "")}
                   onClick={() => setActiveCategory(cat)}
+                  style={{
+                    color: cat === activeCategory ? theme.colors.accent : theme.colors.textSecondary,
+                    borderBottom: cat === activeCategory ? `2px solid ${theme.colors.accent}` : 'none',
+                    background: 'transparent'
+                  }}
                 >
                   {cat}
                 </button>
               ))}
             </div>
-
             <Swiper spaceBetween={12} slidesPerView={"auto"}>
-              {GALLERY_ITEMS.filter(
-                (p) => p.category === activeCategory
-              ).map((p) => (
+              {galleryItems
+                .filter((p) => p.category === activeCategory)
+                .map((p) => (
                 <SwiperSlide key={p.id} style={{ width: 220 }}>
-                  <div
-                    className="project-card"
-                    onClick={() => setSelectedImage(p)}
-                    style={{ cursor: "pointer" }}
+                  <div 
+                    className="project-card" 
+                    onClick={() => setSelectedImage(p)} 
+                    style={{ 
+                      cursor: "pointer",
+                      background: theme.colors.card,
+                      border: `1px solid ${theme.colors.border}`,
+                      boxShadow: theme.colors.shadow
+                    }}
                   >
                     <div className="project-thumb-wrapper">
-                      <img
-                        src={p.image}
-                        alt={p.title}
-                        className="project-thumb-img"
-                      />
+                      <img src={p.image} alt={p.title} className="project-thumb-img" />
                     </div>
                     <div className="project-info">
-                      <div className="project-title">{p.title}</div>
-                      <p className="hint-text">{p.description}</p>
-                      <span className="hint-text">
-                        🔍 нажми, чтобы увеличить
-                      </span>
+                      <div className="project-title" style={{ color: theme.colors.text }}>{p.title}</div>
+                      <p className="hint-text" style={{ color: theme.colors.textSecondary }}>{p.description}</p>
+                      <span className="hint-text" style={{ color: theme.colors.accent }}>{zoomHint}</span>
                     </div>
                   </div>
                 </SwiperSlide>
               ))}
             </Swiper>
-
-            <p className="hint-text">{t.galleryHint}</p>
+            <p className="hint-text" style={{ color: theme.colors.textSecondary }}>{t.galleryHint}</p>
           </div>
         );
 
       case TABS.REVIEWS:
         return (
-          <div className="card">
-            <h2 className="section-title">{t.reviewsTitle}</h2>
-            <p className="section-subtitle">{t.reviewsSubtitle}</p>
-
+          <div className="card" style={{ background: theme.colors.card, boxShadow: theme.colors.shadow }}>
+            <h2 className="section-title" style={{ color: theme.colors.text }}>{t.reviewsTitle}</h2>
+            <p className="section-subtitle" style={{ color: theme.colors.textSecondary }}>{t.reviewsSubtitle}</p>
             <Swiper spaceBetween={12} slidesPerView={"auto"}>
               {REVIEWS_ITEMS.map((r) => (
                 <SwiperSlide key={r.id} style={{ width: 250 }}>
-                  <div className="card">
-                    <div
-                      style={{
-                        fontWeight: "bold",
-                        fontSize: "24px",
-                        marginBottom: "4px",
-                      }}
-                    >
+                  <div 
+                    className="card" 
+                    style={{ 
+                      background: theme.colors.card,
+                      border: `1px solid ${theme.colors.border}`,
+                      boxShadow: theme.colors.shadow
+                    }}
+                  >
+                    <div style={{ fontWeight: "bold", fontSize: "24px", marginBottom: "4px", color: theme.colors.accent }}>
                       {r.name[0]}
                     </div>
-                    <div>{r.name}</div>
-                    <div className="hint-text">{r.text}</div>
+                    <div style={{ color: theme.colors.text }}>{r.name}</div>
+                    <div className="hint-text" style={{ color: theme.colors.textSecondary }}>{r.text}</div>
                   </div>
                 </SwiperSlide>
               ))}
             </Swiper>
-
-            <button className="secondary-btn" style={{ marginTop: 10 }}>
+            <button 
+              className="secondary-btn" 
+              style={{ 
+                marginTop: 10,
+                background: theme.colors.secondary,
+                color: theme.colors.text,
+                border: `1px solid ${theme.colors.border}`
+              }}
+            >
               {t.reviewsAddButton}
             </button>
           </div>
         );
 
       case TABS.PRICING:
+        const translatedServices = getTranslatedServices();
         return (
-          <div className="card">
-            <h2 className="section-title">{t.pricingTitle}</h2>
+          <div className="card" style={{ background: theme.colors.card, boxShadow: theme.colors.shadow }}>
+            <h2 className="section-title" style={{ color: theme.colors.text }}>{t.pricingTitle}</h2>
+            <div className="currency-hint" style={{ fontSize: "12px", color: theme.colors.textSecondary, marginBottom: "10px" }}>
+              Цены в {currencyInfo.symbol} (курс: 1$ ≈ {EXCHANGE_RATES[currencyInfo.code]} {currencyInfo.symbol})
+            </div>
             <ul className="list">
-              {t.pricingItems.map((item, idx) => (
-                <li key={idx}>{item}</li>
+              {translatedServices.map((item) => (
+                <li key={item.id} style={{ color: theme.colors.text }}>
+                  {item.translatedService} — от {formatPrice(item.priceUSD)}
+                </li>
               ))}
             </ul>
           </div>
@@ -448,19 +807,19 @@ export default function App() {
 
       case TABS.ABOUT:
         return (
-          <div className="card">
-            <h2 className="section-title">{t.aboutTitle}</h2>
-            <p className="section-subtitle">{t.aboutSubtitle}</p>
+          <div className="card" style={{ background: theme.colors.card, boxShadow: theme.colors.shadow }}>
+            <h2 className="section-title" style={{ color: theme.colors.text }}>{t.aboutTitle}</h2>
+            <p className="section-subtitle" style={{ color: theme.colors.textSecondary }}>{t.aboutSubtitle}</p>
           </div>
         );
 
       case TABS.FAQ:
         return (
-          <div className="card">
-            <h2 className="section-title">{t.faqTitle}</h2>
+          <div className="card" style={{ background: theme.colors.card, boxShadow: theme.colors.shadow }}>
+            <h2 className="section-title" style={{ color: theme.colors.text }}>{t.faqTitle}</h2>
             <ul className="list">
-              {t.faqItems.map((item, idx) => (
-                <li key={idx}>{item}</li>
+              {faqItems.map((item, index) => (
+                <li key={index} style={{ color: theme.colors.text }}>{item}</li>
               ))}
             </ul>
           </div>
@@ -468,9 +827,9 @@ export default function App() {
 
       case TABS.AI:
         return (
-          <div className="card">
-            <h2 className="section-title">{t.aiTitle}</h2>
-            <p className="section-subtitle">{t.aiSubtitle}</p>
+          <div className="card" style={{ background: theme.colors.card, boxShadow: theme.colors.shadow }}>
+            <h2 className="section-title" style={{ color: theme.colors.text }}>{t.aiTitle}</h2>
+            <p className="section-subtitle" style={{ color: theme.colors.textSecondary }}>{t.aiSubtitle}</p>
           </div>
         );
 
@@ -480,22 +839,97 @@ export default function App() {
   };
 
   return (
-    <div className={`app-root theme-${theme}`}>
+    <div className={`app-root theme-${theme.id}`} style={{ background: theme.colors.primary }}>
       <div className="app-shell">
         {/* Верхняя панель */}
-        <div className="top-bar">
+        <div 
+          className="top-bar" 
+          style={{ 
+            background: theme.colors.secondary,
+            borderBottom: `1px solid ${theme.colors.border}`
+          }}
+        >
           <div className="top-bar-left">
-            <span className="app-title">{t.appTitle}</span>
-            <span className="app-subtitle">{t.appSubtitle}</span>
+            <span className="app-title" style={{ color: theme.colors.text }}>{t.appTitle}</span>
+            <span className="app-subtitle" style={{ color: theme.colors.textSecondary }}>{t.appSubtitle}</span>
           </div>
 
           <div className="controls">
-            <button className="icon-btn" onClick={toggleTheme}>
-              🌗
-            </button>
+            {/* Меню тем */}
+            <div style={{ position: "relative", marginRight: "8px" }}>
+              <button 
+                className="icon-btn" 
+                onClick={toggleThemeMenu}
+                style={{ 
+                  background: theme.colors.accent,
+                  color: theme.colors.buttonText,
+                  border: `1px solid ${theme.colors.border}`
+                }}
+              >
+                {theme.icon}
+              </button>
 
+              {showThemeMenu && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "40px",
+                    right: 0,
+                    background: theme.colors.card,
+                    borderRadius: "12px",
+                    padding: "8px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "6px",
+                    boxShadow: theme.colors.shadow,
+                    border: `1px solid ${theme.colors.border}`,
+                    zIndex: 20,
+                    minWidth: "140px"
+                  }}
+                >
+                  {Object.values(THEMES).map((themeOption) => (
+                    <button
+                      key={themeOption.id}
+                      className="theme-option"
+                      onClick={() => selectTheme(themeOption)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        padding: "8px 12px",
+                        borderRadius: "8px",
+                        background: theme.id === themeOption.id ? theme.colors.accent + "20" : "transparent",
+                        border: "none",
+                        color: theme.id === themeOption.id ? theme.colors.accent : theme.colors.text,
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = theme.colors.accent + "10"}
+                      onMouseLeave={(e) => e.currentTarget.style.background = theme.id === themeOption.id ? theme.colors.accent + "20" : "transparent"}
+                    >
+                      <span style={{ fontSize: "16px" }}>{themeOption.icon}</span>
+                      <span>{themeOption.name}</span>
+                      {theme.id === themeOption.id && (
+                        <span style={{ marginLeft: "auto", color: theme.colors.accent }}>✓</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Меню языка */}
             <div style={{ position: "relative" }}>
-              <button className="icon-btn" onClick={toggleLangMenu}>
+              <button 
+                className="icon-btn" 
+                onClick={toggleLangMenu}
+                style={{ 
+                  background: theme.colors.secondary,
+                  color: theme.colors.text,
+                  border: `1px solid ${theme.colors.border}`
+                }}
+              >
                 🌐
               </button>
 
@@ -503,73 +937,60 @@ export default function App() {
                 <div
                   style={{
                     position: "absolute",
-                    top: "30px",
+                    top: "40px",
                     right: 0,
-                    background: "#222",
-                    borderRadius: "10px",
-                    padding: "6px",
+                    background: theme.colors.card,
+                    borderRadius: "12px",
+                    padding: "8px",
                     display: "flex",
                     flexDirection: "column",
-                    gap: "4px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                    gap: "6px",
+                    boxShadow: theme.colors.shadow,
+                    border: `1px solid ${theme.colors.border}`,
                     zIndex: 10,
+                    minWidth: "140px"
                   }}
                 >
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("ru")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇷🇺 Русский
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("ua")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇺🇦 Українська
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("en")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇬🇧 English
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("kz")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇰🇿 Қазақша
-                  </button>
-                  <button
-                    className="tab-btn"
-                    onClick={() => handleLangChange("by")}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 10px",
-                      textAlign: "left",
-                    }}
-                  >
-                    🇧🇾 Беларуская
-                  </button>
+                  {Object.entries(LANGUAGE_TO_CURRENCY).map(([langCode, currency]) => (
+                    <button
+                      key={langCode}
+                      className="tab-btn"
+                      onClick={() => handleLangChange(langCode)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        padding: "8px 12px",
+                        borderRadius: "8px",
+                        background: language === langCode ? theme.colors.accent + "20" : "transparent",
+                        border: "none",
+                        color: language === langCode ? theme.colors.accent : theme.colors.text,
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = theme.colors.accent + "10"}
+                      onMouseLeave={(e) => e.currentTarget.style.background = language === langCode ? theme.colors.accent + "20" : "transparent"}
+                    >
+                      <span>
+                        {langCode === "ru" && "🇷🇺"}
+                        {langCode === "ua" && "🇺🇦"}
+                        {langCode === "en" && "🇺🇸"}
+                        {langCode === "kz" && "🇰🇿"}
+                        {langCode === "by" && "🇧🇾"}
+                      </span>
+                      <span>
+                        {langCode === "ru" && "Русский"}
+                        {langCode === "ua" && "Українська"}
+                        {langCode === "en" && "English"}
+                        {langCode === "kz" && "Қазақша"}
+                        {langCode === "by" && "Беларуская"}
+                      </span>
+                      {language === langCode && (
+                        <span style={{ marginLeft: "auto", color: theme.colors.accent }}>✓</span>
+                      )}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
@@ -577,14 +998,23 @@ export default function App() {
         </div>
 
         {/* Основные вкладки */}
-        <nav className="tabs">
+        <nav 
+          className="tabs" 
+          style={{ 
+            borderBottom: `1px solid ${theme.colors.border}`,
+            background: theme.colors.secondary
+          }}
+        >
           {Object.values(TABS).map((tab) => (
             <button
               key={tab}
-              className={
-                "tab-btn" + (activeTab === tab ? " tab-btn-active" : "")
-              }
+              className={"tab-btn" + (activeTab === tab ? " tab-btn-active" : "")}
               onClick={() => setActiveTab(tab)}
+              style={{
+                color: activeTab === tab ? theme.colors.accent : theme.colors.textSecondary,
+                borderBottom: activeTab === tab ? `2px solid ${theme.colors.accent}` : 'none',
+                background: 'transparent'
+              }}
             >
               {labels[tab]}
             </button>
@@ -592,12 +1022,19 @@ export default function App() {
         </nav>
 
         {/* Контент */}
-        <main className="tab-content">{renderContent()}</main>
+        <main className="tab-content">
+          {renderContent()}
+        </main>
 
         {/* Нижняя кнопка */}
         <button
           className="primary-btn fixed-order-btn"
           onClick={handleBottomButton}
+          style={{
+            background: theme.colors.button,
+            color: theme.colors.buttonText,
+            border: `1px solid ${theme.colors.accent}`,
+          }}
         >
           {activeTab === TABS.AI ? t.bottomGenerate : t.bottomOrder}
         </button>
@@ -605,17 +1042,28 @@ export default function App() {
 
       {/* Модальное окно для увеличенной картинки */}
       {selectedImage && (
-        <div
-          className="image-modal-backdrop"
+        <div 
+          className="image-modal-backdrop" 
           onClick={() => setSelectedImage(null)}
+          style={{ background: 'rgba(0,0,0,0.9)' }}
         >
-          <div
-            className="image-modal-content"
+          <div 
+            className="image-modal-content" 
             onClick={(e) => e.stopPropagation()}
+            style={{ 
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+              boxShadow: theme.colors.shadow
+            }}
           >
-            <button
-              className="icon-btn image-modal-close"
+            <button 
+              className="icon-btn image-modal-close" 
               onClick={() => setSelectedImage(null)}
+              style={{ 
+                background: theme.colors.accent,
+                color: theme.colors.buttonText,
+                border: `1px solid ${theme.colors.border}`
+              }}
             >
               ✖
             </button>
@@ -625,8 +1073,8 @@ export default function App() {
               className="image-modal-img"
             />
             <div className="image-modal-text">
-              <h3>{selectedImage.title}</h3>
-              <p>{selectedImage.description}</p>
+              <h3 style={{ color: theme.colors.text }}>{selectedImage.title}</h3>
+              <p style={{ color: theme.colors.textSecondary }}>{selectedImage.description}</p>
             </div>
           </div>
         </div>
