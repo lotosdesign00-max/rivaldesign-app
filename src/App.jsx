@@ -353,7 +353,7 @@ const TEXTS = {
     gallerySubtitle: "Аватаркі, прэв'ю, банеры і іншыя праекты.",
     galleryHint: "Абяры катэгорыю зверху і ліставай работы свайпам.",
     reviewsTitle: "Водгукі маіх кліентаў",
-    reviewsSubtitle: "Сапраўдныя водгукі тваіх кліентаў.",
+    reviewsSubtitle: "Сапраўдныя водгукі маіх кліентаў.",
     reviewsAddButton: "Пакінуць водгук",
     pricingTitle: "Прайс / Паслугі",
     aboutTitle: "Пра мяне",
