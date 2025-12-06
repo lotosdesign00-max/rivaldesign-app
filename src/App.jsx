@@ -257,7 +257,7 @@ const ZOOM_HINT_TRANSLATIONS = {
 
 const TEXTS = {
   ru: {
-    appTitle: "Rival App",
+    appTitle: "Rival App12",
     appSubtitle: "портфолио дизайнера",
     galleryTitle: "Галерея работ",
     gallerySubtitle: "Аватарки, превью, баннеры и другие проекты.",
