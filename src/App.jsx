@@ -372,10 +372,10 @@ const TEXTS = {
 
 // Исходные данные галереи (на русском)
 const GALLERY_ITEMS_RU = [
+  { id: "4", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 4.jpg", description: "«Воплоти свою идею в дизайн вместе с нами» " },
   { id: "1", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 1.jpg", description: "«Воплоти свою идею в дизайн вместе с нами» " },
   { id: "2", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 2.jpg", description: "«Воплоти свою идею в дизайн вместе с нами» " },
   { id: "3", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 3.jpg", description: "«Воплоти свою идею в дизайн вместе с нами» " },
-  { id: "4", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 4.jpg", description: "«Воплоти свою идею в дизайн вместе с нами» " },
   { id: "20", category: "Превью", title: "Свежая Подборка Работ", image: "/images/podborka prewiew 1.jpg", description: "«Воплоти свою идею в дизайн вместе с нами»" },
   { id: "21", category: "Превью", title: "Свежая Подборка Работ", image: "/images/podborka prewiew 2.jpg", description: "«Воплоти свою идею в дизайн вместе с нами»" },
   { id: "22", category: "Превью", title: "Свежая Подборка Работ", image: "/images/podborka prewiew 3.jpg", description: "«Воплоти свою идею в дизайн вместе с нами»" },
