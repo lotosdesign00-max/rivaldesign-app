@@ -1903,21 +1903,19 @@ export default function App() {
         </main>
 
         {/* Нижняя кнопка */}
-        <button
-          className="primary-btn fixed-order-btn"
-          onClick={handleBottomButton}
-          style={{
-            background: theme.colors.button,
-            color: theme.colors.buttonText,
-            border: `1px solid ${theme.colors.accent}`,
-            animation: 'slideUp 0.4s ease 0.2s forwards',
-            opacity: 0
-          }}
-        >
-          {activeTab === TABS.AI ? t.bottomGenerate : 
-           activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
-        </button>
-      </div>
+<button
+  className="primary-btn fixed-order-btn"
+  onClick={handleBottomButton}
+  style={{
+    background: theme.colors.button,
+    color: theme.colors.buttonText,
+    border: `1px solid ${theme.colors.accent}`,
+    animation: 'slideUp 0.4s ease 0.2s forwards'
+  }}
+>
+  {activeTab === TABS.AI ? t.bottomGenerate : 
+   activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
+</button>
 
       {/* Модальное окно для увеличенной картинки */}
       {selectedImage && (
