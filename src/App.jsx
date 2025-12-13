@@ -412,7 +412,6 @@ const CART_TEXTS = {
 const TEXTS = {
   ru: {
     appTitle: "Rival App",
-    appSubtitle: "портфолио дизайнера",
     galleryTitle: "Галерея работ",
     gallerySubtitle: "Аватарки, превью, баннеры и другие проекты.",
     galleryHint: "Выбери категорию сверху и листай работы свайпом.",
@@ -438,7 +437,6 @@ const TEXTS = {
   },
   en: {
     appTitle: "Rival App",
-    appSubtitle: "designer portfolio",
     galleryTitle: "Portfolio",
     gallerySubtitle: "Avatars, thumbnails, banners and other projects.",
     galleryHint: "Choose a category above and swipe through your works.",
@@ -463,7 +461,6 @@ const TEXTS = {
   },
   ua: {
     appTitle: "Rival App",
-    appSubtitle: "портфоліо дизайнера",
     galleryTitle: "Галерея робіт",
     gallerySubtitle: "Аватарки, прев'ю, банери та інші проєкти.",
     galleryHint: "Обери категорію зверху та гортай роботи свайпом.",
@@ -488,7 +485,6 @@ const TEXTS = {
   },
   kz: {
     appTitle: "Rival App",
-    appSubtitle: "дизайнер портфолиосы",
     galleryTitle: "Жұмыстар галереясы",
     gallerySubtitle: "Аватарлар, превью, баннерлер және басқа жобалар.",
     galleryHint: "Жоғарыдан санатты таңда да, жұмыстарды свайппен қара.",
@@ -514,7 +510,6 @@ const TEXTS = {
   },
   by: {
     appTitle: "Rival App",
-    appSubtitle: "партфоліа дызайнера",
     galleryTitle: "Галерэя работ",
     gallerySubtitle: "Аватаркі, прэв'ю, банеры і іншыя праекты.",
     galleryHint: "Абяры катэгорыю зверху і ліставай работы свайпам.",
