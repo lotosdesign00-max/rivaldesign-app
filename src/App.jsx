@@ -1579,7 +1579,6 @@ export default function App() {
   return (
     <div className={`app-root theme-${theme.id}`} style={{ 
       background: theme.colors.primary,
-      minHeight: '100vh',
       position: 'relative'
     }}>
       {/* Добавляем инлайн стили для анимаций */}
@@ -1675,160 +1674,6 @@ export default function App() {
         button:hover {
           transform: translateY(-1px);
         }
-        
-        /* Стили для нижней кнопки */
-        .fixed-order-btn {
-          position: fixed;
-          bottom: 16px;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 100;
-          width: calc(100% - 32px);
-          max-width: 500px;
-          padding: 14px;
-          font-size: 16px;
-          font-weight: 600;
-          border-radius: 10px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-          animation: buttonSlideUp 0.4s ease 0.2s forwards;
-          opacity: 0;
-        }
-        
-        @keyframes buttonSlideUp {
-          from {
-            opacity: 0;
-            transform: translate(-50%, 10px);
-          }
-          to {
-            opacity: 1;
-            transform: translate(-50%, 0);
-          }
-        }
-        
-        /* Основные стили */
-        .app-shell {
-          max-width: 1200px;
-          margin: 0 auto;
-          position: relative;
-          min-height: 100vh;
-          padding-bottom: 80px;
-        }
-        
-        .tab-content {
-          padding: 16px;
-          padding-bottom: 80px;
-        }
-        
-        .top-bar {
-          padding: 8px 16px;
-          min-height: 50px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-        
-        .tabs {
-          display: flex;
-          overflow-x: auto;
-          padding: 0 16px;
-          gap: 8px;
-          border-bottom: 1px solid;
-        }
-        
-        .tab-btn {
-          padding: 10px 12px;
-          font-size: 13px;
-          white-space: nowrap;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          background: transparent;
-          border: none;
-        }
-        
-        .tab-btn-active {
-          font-weight: 600;
-        }
-        
-        .card {
-          border-radius: 12px;
-          padding: 16px;
-          margin-bottom: 16px;
-          transition: all 0.3s ease;
-        }
-        
-        .section-title {
-          font-size: 20px;
-          font-weight: bold;
-          margin-bottom: 6px;
-        }
-        
-        .section-subtitle {
-          font-size: 14px;
-          margin-bottom: 16px;
-        }
-        
-        .hint-text {
-          font-size: 12px;
-          margin-top: 8px;
-          display: block;
-        }
-        
-        .project-card {
-          border-radius: 10px;
-          overflow: hidden;
-          transition: all 0.3s ease;
-          cursor: pointer;
-          width: 220px;
-        }
-        
-        .project-thumb-wrapper {
-          width: 100%;
-          height: 150px;
-          overflow: hidden;
-          border-radius: 8px;
-        }
-        
-        .project-thumb-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.5s ease;
-        }
-        
-        .project-info {
-          padding: 10px 0;
-        }
-        
-        .project-title {
-          font-size: 14px;
-          font-weight: 600;
-          margin-bottom: 4px;
-        }
-        
-        .swiper-slide {
-          width: auto !important;
-        }
-        
-        /* Адаптивность */
-        @media (max-width: 768px) {
-          .app-shell {
-            padding-bottom: 90px;
-          }
-          
-          .tab-content {
-            padding: 12px;
-            padding-bottom: 90px;
-          }
-          
-          .fixed-order-btn {
-            width: calc(100% - 24px);
-            bottom: 12px;
-          }
-          
-          .tabs {
-            padding: 0 12px;
-          }
-        }
       `}</style>
       
       <div className="app-shell">
@@ -1838,6 +1683,11 @@ export default function App() {
           style={{ 
             background: theme.colors.secondary,
             borderBottom: `1px solid ${theme.colors.border}`,
+            padding: '8px 16px', // Уменьшил отступы для узкой панели
+            minHeight: '50px', // Уменьшил высоту
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
             animation: 'slideDown 0.3s ease'
           }}
         >
@@ -2022,6 +1872,7 @@ export default function App() {
         <nav 
           className="tabs" 
           style={{ 
+            borderBottom: `1px solid ${theme.colors.border}`,
             background: theme.colors.secondary,
             animation: 'slideDown 0.3s ease 0.1s forwards',
             opacity: 0
@@ -2035,6 +1886,7 @@ export default function App() {
               style={{
                 color: activeTab === tab ? theme.colors.accent : theme.colors.textSecondary,
                 borderBottom: activeTab === tab ? `2px solid ${theme.colors.accent}` : 'none',
+                background: 'transparent',
                 opacity: 0,
                 animation: 'slideDown 0.3s ease forwards',
                 animationDelay: `calc(${index} * 0.05s)`
@@ -2050,14 +1902,16 @@ export default function App() {
           {renderContent()}
         </main>
 
-        {/* Нижняя кнопка - БЕЗ opacity: 0 в инлайн стилях! */}
+        {/* Нижняя кнопка */}
         <button
           className="primary-btn fixed-order-btn"
           onClick={handleBottomButton}
           style={{
             background: theme.colors.button,
             color: theme.colors.buttonText,
-            border: `1px solid ${theme.colors.accent}`
+            border: `1px solid ${theme.colors.accent}`,
+            animation: 'slideUp 0.4s ease 0.2s forwards',
+            opacity: 0
           }}
         >
           {activeTab === TABS.AI ? t.bottomGenerate : 
@@ -2072,16 +1926,6 @@ export default function App() {
           onClick={() => setSelectedImage(null)}
           style={{ 
             background: 'rgba(0,0,0,0.9)',
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 1000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
             animation: 'fadeIn 0.3s ease'
           }}
         >
@@ -2092,10 +1936,6 @@ export default function App() {
               background: theme.colors.card,
               border: `1px solid ${theme.colors.border}`,
               boxShadow: theme.colors.shadow,
-              borderRadius: '16px',
-              overflow: 'hidden',
-              maxWidth: '90%',
-              maxHeight: '90%',
               animation: 'slideUp 0.3s ease'
             }}
           >
@@ -2105,18 +1945,7 @@ export default function App() {
               style={{ 
                 background: theme.colors.accent,
                 color: theme.colors.buttonText,
-                border: `1px solid ${theme.colors.border}`,
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                zIndex: 10,
-                width: '36px',
-                height: '36px',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer'
+                border: `1px solid ${theme.colors.border}`
               }}
             >
               ✖
@@ -2124,13 +1953,9 @@ export default function App() {
             <img
               src={selectedImage.image}
               alt={selectedImage.title}
-              style={{
-                width: '100%',
-                maxHeight: '70vh',
-                objectFit: 'contain'
-              }}
+              className="image-modal-img"
             />
-            <div style={{ padding: '16px' }}>
+            <div className="image-modal-text">
               <h3 style={{ color: theme.colors.text }}>{selectedImage.title}</h3>
               <p style={{ color: theme.colors.textSecondary }}>{selectedImage.description}</p>
             </div>
