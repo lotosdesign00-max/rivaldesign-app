@@ -1903,22 +1903,33 @@ export default function App() {
         </main>
 
         {/* Нижняя кнопка */}
-        <button
-          className="primary-btn fixed-order-btn"
-          onClick={handleBottomButton}
-          style={{
-            background: theme.colors.button,
-            color: theme.colors.buttonText,
-            border: `1px solid ${theme.colors.accent}`,
-            animation: 'slideUp 0.4s ease 0.2s forwards',
-            opacity: 0
-          }}
-        >
-          {activeTab === TABS.AI ? t.bottomGenerate : 
-           activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
-        </button>
-      </div>
-
+<button
+  className="primary-btn fixed-order-btn"
+  onClick={handleBottomButton}
+  style={{
+    background: theme.colors.button,
+    color: theme.colors.buttonText,
+    border: `1px solid ${theme.colors.accent}`,
+    animation: 'slideUp 0.4s ease 0.2s forwards',
+    opacity: 0,
+    // Добавьте эти стили:
+    position: 'fixed',
+    bottom: '20px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 'auto',
+    minWidth: '200px',
+    padding: '12px 24px',
+    borderRadius: '25px',
+    fontWeight: 'bold',
+    fontSize: '16px',
+    zIndex: 100,
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+  }}
+>
+  {activeTab === TABS.AI ? t.bottomGenerate : 
+   activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
+</button>
       {/* Модальное окно для увеличенной картинки */}
       {selectedImage && (
         <div 
