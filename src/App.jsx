@@ -1903,33 +1903,37 @@ export default function App() {
         </main>
 
         {/* Нижняя кнопка */}
-<button
-  className="primary-btn fixed-order-btn"
-  onClick={handleBottomButton}
-  style={{
-    background: theme.colors.button,
-    color: theme.colors.buttonText,
-    border: `1px solid ${theme.colors.accent}`,
-    animation: 'slideUp 0.4s ease 0.2s forwards',
-    opacity: 0,
-    // Исправленные стили:
-    position: 'fixed',
-    bottom: '20px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    width: 'auto',
-    minWidth: '200px',
-    padding: '12px 24px',
-    borderRadius: '25px',
-    fontWeight: 'bold',
-    fontSize: '16px',
-    zIndex: 100,
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
-  }}
->
-  {activeTab === TABS.AI ? t.bottomGenerate : 
-   activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
-</button>
+<div style={{
+  position: 'fixed',
+  bottom: '20px',
+  left: '0',
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+  zIndex: 100,
+  padding: '0 16px'
+}}>
+  <button
+    className="primary-btn"
+    onClick={handleBottomButton}
+    style={{
+      background: theme.colors.button,
+      color: theme.colors.buttonText,
+      border: `1px solid ${theme.colors.accent}`,
+      padding: '12px 32px',
+      borderRadius: '25px',
+      fontWeight: 'bold',
+      fontSize: '16px',
+      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+      cursor: 'pointer',
+      width: '100%',
+      maxWidth: '400px'
+    }}
+  >
+    {activeTab === TABS.AI ? t.bottomGenerate : 
+     activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
+  </button>
+</div>
       {/* Модальное окно для увеличенной картинки */}
       {selectedImage && (
         <div 
