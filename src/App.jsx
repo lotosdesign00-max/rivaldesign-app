@@ -342,7 +342,7 @@ const ZOOM_HINT_TRANSLATIONS = {
   by: "🔍 націсніце, каб павялічыць"
 };
 
-// Тексты для корзины
+// Тексты для корзины (обновленные для скидки по количеству)
 const CART_TEXTS = {
   ru: {
     cartTitle: "Корзина",
@@ -354,7 +354,7 @@ const CART_TEXTS = {
     addToCart: "В корзину",
     remove: "Удалить",
     quantity: "Кол-во",
-    discountNote: "При заказе 2+ услуг скидка 10%",
+    discountNote: "При заказе 2+ товаров скидка 10%",
     finalPrice: "Итоговая цена",
   },
   en: {
@@ -367,7 +367,7 @@ const CART_TEXTS = {
     addToCart: "Add to cart",
     remove: "Remove",
     quantity: "Qty",
-    discountNote: "10% discount for 2+ services",
+    discountNote: "10% discount for 2+ items",
     finalPrice: "Final price",
   },
   ua: {
@@ -380,7 +380,7 @@ const CART_TEXTS = {
     addToCart: "У кошик",
     remove: "Видалити",
     quantity: "Кількість",
-    discountNote: "Знижка 10% при замовленні 2+ послуг",
+    discountNote: "Знижка 10% при замовленні 2+ товарів",
     finalPrice: "Фінальна ціна",
   },
   kz: {
@@ -393,7 +393,7 @@ const CART_TEXTS = {
     addToCart: "Себетке қосу",
     remove: "Жою",
     quantity: "Саны",
-    discountNote: "2+ қызметке 10% жеңілдік",
+    discountNote: "2+ тауарға 10% жеңілдік",
     finalPrice: "Соңғы баға",
   },
   by: {
@@ -406,7 +406,7 @@ const CART_TEXTS = {
     addToCart: "У кошык",
     remove: "Выдаліць",
     quantity: "Колькасць",
-    discountNote: "Зніжка 10% пры замове 2+ паслуг",
+    discountNote: "Зніжка 10% пры замове 2+ тавараў",
     finalPrice: "Канчатковая цана",
   }
 };
@@ -909,12 +909,17 @@ export default function App() {
   };
 
   const getCartTotal = () => {
+    // Считаем общее количество товаров
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    // Считаем общую стоимость
     const subtotal = cart.reduce((sum, item) => sum + (item.priceUSD * item.quantity), 0);
-    const discount = cart.length >= 2 ? subtotal * 0.1 : 0;
+    // Скидка 10% если общее количество товаров 2 или больше
+    const discount = totalItems >= 2 ? subtotal * 0.1 : 0;
     return {
       subtotal: subtotal,
       discount: discount,
-      total: subtotal - discount
+      total: subtotal - discount,
+      totalItems: totalItems
     };
   };
 
@@ -1212,7 +1217,10 @@ export default function App() {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   marginBottom: '8px',
-                  padding: '4px 0'
+                  padding: '4px 0',
+                  opacity: 0,
+                  animation: 'slideUp 0.3s ease forwards',
+                  animationDelay: `calc(var(--item-index) * 0.05s)`
                 }}>
                   <span>
                     {item.translatedService} — от {formatPrice(item.priceUSD)}
@@ -1272,7 +1280,8 @@ export default function App() {
               <div style={{ 
                 textAlign: 'center', 
                 padding: '20px',
-                color: theme.colors.textSecondary
+                color: theme.colors.textSecondary,
+                animation: 'fadeIn 0.5s ease'
               }}>
                 {t.cartEmpty}
               </div>
@@ -1282,17 +1291,21 @@ export default function App() {
                   <h3 style={{ 
                     fontSize: '13px', 
                     color: theme.colors.textSecondary,
-                    marginBottom: '8px'
+                    marginBottom: '8px',
+                    animation: 'slideDown 0.3s ease'
                   }}>
                     {t.cartItems}
                   </h3>
-                  {cart.map(item => (
+                  {cart.map((item, index) => (
                     <div key={item.id} style={{
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       padding: '8px 0',
-                      borderBottom: `1px solid ${theme.colors.border}`
+                      borderBottom: `1px solid ${theme.colors.border}`,
+                      opacity: 0,
+                      animation: 'slideUp 0.3s ease forwards',
+                      animationDelay: `calc(${index} * 0.05s)`
                     }}>
                       <div>
                         <div style={{ color: theme.colors.text, fontSize: '12px' }}>
@@ -1374,7 +1387,8 @@ export default function App() {
                   background: theme.colors.secondary,
                   borderRadius: '8px',
                   padding: '12px',
-                  border: `1px solid ${theme.colors.border}`
+                  border: `1px solid ${theme.colors.border}`,
+                  animation: 'slideUp 0.4s ease'
                 }}>
                   <div style={{ 
                     display: 'flex', 
@@ -1391,10 +1405,11 @@ export default function App() {
                     <div style={{ 
                       display: 'flex', 
                       justifyContent: 'space-between',
-                      marginBottom: '4px'
+                      marginBottom: '4px',
+                      animation: 'pulse 0.5s ease'
                     }}>
                       <span style={{ color: '#10b981', fontSize: '11px' }}>
-                        {t.discountNote}:
+                        {t.discountNote} ({cartTotal.totalItems} шт.):
                       </span>
                       <span style={{ color: '#10b981', fontSize: '11px' }}>
                         -{formatPrice(cartTotal.discount)}
@@ -1424,11 +1439,22 @@ export default function App() {
 
       case TABS.ABOUT_FAQ:
         return (
-          <div className="card" style={{ background: theme.colors.card, boxShadow: theme.colors.shadow }}>
-            <h2 className="section-title" style={{ color: theme.colors.text }}>{t.aboutFaqTitle}</h2>
+          <div className="card" style={{ 
+            background: theme.colors.card, 
+            boxShadow: theme.colors.shadow,
+            animation: 'fadeIn 0.5s ease'
+          }}>
+            <h2 className="section-title" style={{ 
+              color: theme.colors.text,
+              animation: 'slideDown 0.4s ease'
+            }}>{t.aboutFaqTitle}</h2>
             
             {/* Секция "Обо мне" */}
-            <div style={{ marginBottom: '32px' }}>
+            <div style={{ 
+              marginBottom: '32px',
+              animation: 'slideUp 0.5s ease 0.1s forwards',
+              opacity: 0
+            }}>
               <h3 style={{ 
                 color: theme.colors.accent, 
                 fontSize: '16px',
@@ -1441,7 +1467,9 @@ export default function App() {
                   color: theme.colors.textSecondary,
                   whiteSpace: 'pre-line',
                   lineHeight: '1.6',
-                  fontSize: '14px'
+                  fontSize: '14px',
+                  animation: 'fadeIn 0.8s ease 0.2s forwards',
+                  opacity: 0
                 }}
               >
                 {t.aboutSubtitle}
@@ -1449,7 +1477,10 @@ export default function App() {
             </div>
             
             {/* Секция "FAQ" с аккордеоном */}
-            <div>
+            <div style={{
+              animation: 'slideUp 0.5s ease 0.2s forwards',
+              opacity: 0
+            }}>
               <h3 style={{ 
                 color: theme.colors.accent, 
                 fontSize: '16px',
@@ -1467,7 +1498,10 @@ export default function App() {
                       borderRadius: '8px',
                       marginBottom: '10px',
                       overflow: 'hidden',
-                      transition: 'all 0.3s ease'
+                      transition: 'all 0.3s ease',
+                      opacity: 0,
+                      animation: 'slideUp 0.3s ease forwards',
+                      animationDelay: `calc(${index} * 0.05s)`
                     }}
                   >
                     <button
@@ -1543,7 +1577,105 @@ export default function App() {
   };
 
   return (
-    <div className={`app-root theme-${theme.id}`} style={{ background: theme.colors.primary }}>
+    <div className={`app-root theme-${theme.id}`} style={{ 
+      background: theme.colors.primary,
+      position: 'relative'
+    }}>
+      {/* Добавляем инлайн стили для анимаций */}
+      <style>{`
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        
+        @keyframes pulse {
+          0% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.02);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+        
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-5px);
+          }
+        }
+        
+        .section-title {
+          animation: slideDown 0.4s ease;
+        }
+        
+        .card {
+          animation: fadeIn 0.4s ease;
+        }
+        
+        /* Анимация для кнопок в прайсе */
+        .list li {
+          opacity: 0;
+          animation: slideUp 0.3s ease forwards;
+        }
+        
+        /* Анимация для элементов корзины */
+        .cart-item {
+          opacity: 0;
+          animation: slideUp 0.3s ease forwards;
+        }
+        
+        /* Анимация для FAQ */
+        .faq-item {
+          opacity: 0;
+          animation: slideUp 0.3s ease forwards;
+        }
+        
+        /* Анимация для галереи */
+        .project-card {
+          transition: all 0.3s ease;
+        }
+        
+        /* Анимация для кнопок */
+        button {
+          transition: all 0.2s ease;
+        }
+        
+        button:hover {
+          transform: translateY(-1px);
+        }
+      `}</style>
+      
       <div className="app-shell">
         {/* Верхняя панель - УЗКАЯ БЕЗ СТАТИСТИКИ */}
         <div 
@@ -1555,7 +1687,8 @@ export default function App() {
             minHeight: '50px', // Уменьшил высоту
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            animation: 'slideDown 0.3s ease'
           }}
         >
           <div className="top-bar-left" style={{ display: 'flex', alignItems: 'center' }}>
@@ -1563,12 +1696,15 @@ export default function App() {
               <span className="app-title" style={{ 
                 color: theme.colors.text, 
                 fontSize: '18px',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                animation: 'slideDown 0.4s ease'
               }}>{t.appTitle}</span>
               <span className="app-subtitle" style={{ 
                 color: theme.colors.textSecondary,
                 fontSize: '14px',
-                marginLeft: '8px'
+                marginLeft: '8px',
+                animation: 'slideDown 0.4s ease 0.1s forwards',
+                opacity: 0
               }}>{t.appSubtitle}</span>
             </div>
           </div>
@@ -1610,7 +1746,8 @@ export default function App() {
                     boxShadow: theme.colors.shadow,
                     border: `1px solid ${theme.colors.border}`,
                     zIndex: 20,
-                    minWidth: "140px"
+                    minWidth: "140px",
+                    animation: 'slideDown 0.2s ease'
                   }}
                 >
                   {Object.values(THEMES).map((themeOption) => (
@@ -1681,7 +1818,8 @@ export default function App() {
                     boxShadow: theme.colors.shadow,
                     border: `1px solid ${theme.colors.border}`,
                     zIndex: 10,
-                    minWidth: "140px"
+                    minWidth: "140px",
+                    animation: 'slideDown 0.2s ease'
                   }}
                 >
                   {Object.entries(LANGUAGE_TO_CURRENCY).map(([langCode, currency]) => (
@@ -1735,10 +1873,12 @@ export default function App() {
           className="tabs" 
           style={{ 
             borderBottom: `1px solid ${theme.colors.border}`,
-            background: theme.colors.secondary
+            background: theme.colors.secondary,
+            animation: 'slideDown 0.3s ease 0.1s forwards',
+            opacity: 0
           }}
         >
-          {Object.values(TABS).map((tab) => (
+          {Object.values(TABS).map((tab, index) => (
             <button
               key={tab}
               className={"tab-btn" + (activeTab === tab ? " tab-btn-active" : "")}
@@ -1746,7 +1886,10 @@ export default function App() {
               style={{
                 color: activeTab === tab ? theme.colors.accent : theme.colors.textSecondary,
                 borderBottom: activeTab === tab ? `2px solid ${theme.colors.accent}` : 'none',
-                background: 'transparent'
+                background: 'transparent',
+                opacity: 0,
+                animation: 'slideDown 0.3s ease forwards',
+                animationDelay: `calc(${index} * 0.05s)`
               }}
             >
               {labels[tab]}
@@ -1760,47 +1903,31 @@ export default function App() {
         </main>
 
         {/* Нижняя кнопка */}
-<div style={{
-  position: 'fixed',
-  bottom: '20px',
-  left: '0',
-  right: '0',
-  display: 'flex',
-  justifyContent: 'center',
-  zIndex: 5,
-  animation: 'slideUp 0.4s ease 0.2s forwards',
-  opacity: 0
-}}>
-  <button
-    className="primary-btn fixed-order-btn"
-    onClick={handleBottomButton}
-    style={{
-      background: theme.colors.button,
-      color: theme.colors.buttonText,
-      border: `1px solid ${theme.colors.accent}`,
-      padding: '12px 32px',
-      borderRadius: '12px',
-      fontSize: '14px',
-      fontWeight: 'bold',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      boxShadow: `0 4px 12px ${theme.colors.accent}40`,
-      minWidth: '200px'
-    }}
-    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-  >
-    {activeTab === TABS.AI ? t.bottomGenerate : 
-     activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
-  </button>
-</div>
+        <button
+          className="primary-btn fixed-order-btn"
+          onClick={handleBottomButton}
+          style={{
+            background: theme.colors.button,
+            color: theme.colors.buttonText,
+            border: `1px solid ${theme.colors.accent}`,
+            animation: 'slideUp 0.4s ease 0.2s forwards',
+            opacity: 0
+          }}
+        >
+          {activeTab === TABS.AI ? t.bottomGenerate : 
+           activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
+        </button>
+      </div>
 
       {/* Модальное окно для увеличенной картинки */}
       {selectedImage && (
         <div 
           className="image-modal-backdrop" 
           onClick={() => setSelectedImage(null)}
-          style={{ background: 'rgba(0,0,0,0.9)' }}
+          style={{ 
+            background: 'rgba(0,0,0,0.9)',
+            animation: 'fadeIn 0.3s ease'
+          }}
         >
           <div 
             className="image-modal-content" 
@@ -1808,7 +1935,8 @@ export default function App() {
             style={{ 
               background: theme.colors.card,
               border: `1px solid ${theme.colors.border}`,
-              boxShadow: theme.colors.shadow
+              boxShadow: theme.colors.shadow,
+              animation: 'slideUp 0.3s ease'
             }}
           >
             <button 
