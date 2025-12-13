@@ -1912,31 +1912,40 @@ export default function App() {
 </main>
 
         {/* Нижняя кнопка */}
-<button
-  onClick={handleBottomButton}
-  style={{
-    background: theme.colors.button,
-    color: theme.colors.buttonText,
-    border: `1px solid ${theme.colors.accent}`,
-    position: 'fixed',
-    bottom: '16px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    zIndex: 100,
-    width: 'calc(100% - 32px)',
-    maxWidth: '500px',
-    padding: '14px',
-    fontSize: '16px',
-    fontWeight: 600,
-    borderRadius: '10px',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-    border: 'none',
-    cursor: 'pointer'
-  }}
->
-  {activeTab === TABS.AI ? t.bottomGenerate : 
-   activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
-</button>
+<div style={{
+  position: 'fixed',
+  bottom: '20px',
+  left: '0',
+  right: '0',
+  display: 'flex',
+  justifyContent: 'center',
+  zIndex: 5,
+  animation: 'slideUp 0.4s ease 0.2s forwards',
+  opacity: 0
+}}>
+  <button
+    className="primary-btn fixed-order-btn"
+    onClick={handleBottomButton}
+    style={{
+      background: theme.colors.button,
+      color: theme.colors.buttonText,
+      border: `1px solid ${theme.colors.accent}`,
+      padding: '12px 32px',
+      borderRadius: '12px',
+      fontSize: '14px',
+      fontWeight: 'bold',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+      boxShadow: `0 4px 12px ${theme.colors.accent}40`,
+      minWidth: '200px'
+    }}
+    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+  >
+    {activeTab === TABS.AI ? t.bottomGenerate : 
+     activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
+  </button>
+</div>
 
       {/* Модальное окно для увеличенной картинки */}
       {selectedImage && (
