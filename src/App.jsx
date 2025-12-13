@@ -1902,7 +1902,20 @@ export default function App() {
           {renderContent()}
         </main>
 
-        {/* Нижняя кнопка */}
+              </main> {/* Закрытие main.tab-content */}
+
+      {/* Нижняя кнопка */}
+      <div style={{
+        position: 'fixed',
+        bottom: '20px',
+        left: '0',
+        right: '0',
+        display: 'flex',
+        justifyContent: 'center',
+        zIndex: 5,
+        animation: 'slideUp 0.4s ease 0.2s forwards',
+        opacity: 0
+      }}>
         <button
           className="primary-btn fixed-order-btn"
           onClick={handleBottomButton}
@@ -1910,14 +1923,23 @@ export default function App() {
             background: theme.colors.button,
             color: theme.colors.buttonText,
             border: `1px solid ${theme.colors.accent}`,
-            animation: 'slideUp 0.4s ease 0.2s forwards',
-            opacity: 0
+            padding: '12px 32px',
+            borderRadius: '12px',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            boxShadow: `0 4px 12px ${theme.colors.accent}40`,
+            minWidth: '200px'
           }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
         >
           {activeTab === TABS.AI ? t.bottomGenerate : 
            activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
         </button>
       </div>
+    </div> {/* Закрытие app-shell */}
 
       {/* Модальное окно для увеличенной картинки */}
       {selectedImage && (
