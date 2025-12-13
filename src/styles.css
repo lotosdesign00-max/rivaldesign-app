@@ -334,150 +334,283 @@ a,
   user-select: none !important;
 }
 
-/* 3. СПЕЦИАЛЬНО ДЛЯ IOS SAFARI */
-@supports (-webkit-touch-callout: none) {
-  button,
-  .tab-btn,
-  .icon-btn {
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    -webkit-user-select: none;
+/* ===== ПЛАВНЫЕ АНИМАЦИИ ДЛЯ ВСЕГО ПРИЛОЖЕНИЯ ===== */
+
+/* 1. Плавное появление всего приложения */
+.app-root {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* 4. УБИРАЕМ СИНИЙ ПРИ ДОЛГОМ НАЖАТИИ НА IOS */
-button,
-.tab-btn {
-  -webkit-touch-callout: none;
+/* 2. Анимация загрузки подборки работ (карточки) */
+.project-card {
+  animation: cardLoad 0.5s ease-out backwards;
+  animation-delay: calc(var(--card-index, 0) * 0.1s);
 }
 
-/* ===== АНИМАЦИИ НАЖАТИЯ ДЛЯ ВСЕХ КНОПОК ===== */
-
-/* 1. Анимация нажатия для основных вкладок (Галерея, Отзывы, Прайс и т.д.) */
-.tab-btn:active {
-  animation: tabClick 0.2s ease-out;
-  transform: scale(0.95);
+@keyframes cardLoad {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-@keyframes tabClick {
+/* 3. Плавное появление секций */
+.card {
+  animation: sectionFadeIn 0.4s ease-out;
+}
+
+@keyframes sectionFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 4. Анимация переключения вкладок */
+.tab-content {
+  animation: tabSwitch 0.3s ease-out;
+}
+
+@keyframes tabSwitch {
+  from {
+    opacity: 0.5;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 5. Анимация верхней панели */
+.top-bar {
+  animation: topBarSlide 0.4s ease-out;
+}
+
+@keyframes topBarSlide {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 6. Анимация нижней кнопки */
+.fixed-order-btn {
+  animation: buttonFloat 0.5s ease-out 0.2s backwards;
+}
+
+@keyframes buttonFloat {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* 7. Плавное свечение кнопки */
+.primary-btn {
+  animation: buttonGlow 3s infinite alternate;
+}
+
+@keyframes buttonGlow {
+  from {
+    box-shadow: 0 12px 24px rgba(255, 40, 70, 0.5);
+  }
+  to {
+    box-shadow: 0 12px 24px rgba(255, 40, 70, 0.8),
+                0 0 15px rgba(255, 107, 61, 0.4);
+  }
+}
+
+/* 8. Анимация наведения на карточки */
+.project-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* 9. Анимация изображений при наведении */
+.project-thumb-img {
+  transition: transform 0.5s ease;
+}
+
+.project-card:hover .project-thumb-img {
+  transform: scale(1.05);
+}
+
+/* 10. Анимация модального окна */
+.image-modal-backdrop {
+  animation: backdropFade 0.3s ease-out;
+}
+
+@keyframes backdropFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.image-modal-content {
+  animation: modalSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalSlide {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 11. Анимация выпадающих меню */
+.controls > div > div {
+  animation: dropdownAppear 0.2s ease-out;
+}
+
+@keyframes dropdownAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-15px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 12. Анимация переключения темы */
+.app-root {
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* 13. Анимация загрузки списков (FAQ, Pricing) */
+.list li {
+  animation: listItemLoad 0.3s ease-out backwards;
+  animation-delay: calc(var(--item-index, 0) * 0.05s);
+}
+
+@keyframes listItemLoad {
+  from {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 14. Анимация загрузки отзывов */
+.swiper-slide {
+  animation: slideLoad 0.4s ease-out backwards;
+  animation-delay: calc(var(--slide-index, 0) * 0.08s);
+}
+
+@keyframes slideLoad {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 15. Анимация фильтров галереи */
+.card .tabs {
+  animation: filtersLoad 0.3s ease-out;
+}
+
+@keyframes filtersLoad {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== АНИМАЦИИ НАЖАТИЯ ===== */
+
+/* 1. Мягкая анимация нажатия для всех кнопок */
+button:active,
+.tab-btn:active,
+.icon-btn:active {
+  animation: gentlePress 0.2s ease-out;
+}
+
+@keyframes gentlePress {
   0% {
     transform: scale(1);
   }
   50% {
-    transform: scale(0.95);
+    transform: scale(0.96);
   }
   100% {
     transform: scale(1);
   }
 }
 
-/* 2. Анимация нажатия для фильтров галереи (Аватарки, Превью, Баннеры) */
-/* Эти кнопки имеют классы tab-btn внутри .tabs в секции галереи */
-.card .tabs .tab-btn:active {
-  animation: filterClick 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes filterClick {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 rgba(255, 255, 255, 0.1);
-  }
-  50% {
-    transform: scale(0.92);
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 rgba(255, 255, 255, 0.1);
-  }
-}
-
-/* 3. Анимация нажатия для активных фильтров */
-.card .tabs .tab-btn-active:active {
-  animation: activeFilterClick 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes activeFilterClick {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 4px 12px rgba(255, 40, 70, 0.4);
-  }
-  50% {
-    transform: scale(0.9);
-    box-shadow: 0 8px 20px rgba(255, 40, 70, 0.6);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 4px 12px rgba(255, 40, 70, 0.4);
-  }
-}
-
-/* 4. Анимация нажатия для кнопок в верхней панели (язык, тема) */
-.controls .icon-btn:active {
-  animation: iconButtonClick 0.2s ease-out;
-}
-
-@keyframes iconButtonClick {
-  0% {
-    transform: scale(1) rotate(0deg);
-  }
-  50% {
-    transform: scale(0.85) rotate(-15deg);
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
-  }
-}
-
-/* 5. Анимация нажатия для нижней кнопки (Оформить заказ / Сгенерировать идею) */
+/* 2. Анимация нажатия для нижней кнопки */
 .fixed-order-btn:active {
-  animation: mainButtonClick 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: mainButtonPress 0.3s ease-out;
 }
 
-@keyframes mainButtonClick {
+@keyframes mainButtonPress {
   0% {
     transform: translateX(-50%) scale(1);
-    box-shadow: 0 12px 24px rgba(255, 40, 70, 0.6);
-  }
-  30% {
-    transform: translateX(-50%) scale(0.94);
-    box-shadow: 0 6px 12px rgba(255, 40, 70, 0.8);
-  }
-  70% {
-    transform: translateX(-50%) scale(0.96);
-    box-shadow: 0 8px 16px rgba(255, 40, 70, 0.7);
-  }
-  100% {
-    transform: translateX(-50%) scale(1);
-    box-shadow: 0 12px 24px rgba(255, 40, 70, 0.6);
-  }
-}
-
-/* 6. Анимация нажатия для кнопки "Оставить отзыв" */
-.secondary-btn:active {
-  animation: secondaryButtonClick 0.2s ease-out;
-}
-
-@keyframes secondaryButtonClick {
-  0% {
-    transform: scale(1);
-    border-color: rgba(255, 255, 255, 0.2);
   }
   50% {
-    transform: scale(0.95);
-    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateX(-50%) scale(0.95);
   }
   100% {
-    transform: scale(1);
-    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(-50%) scale(1);
   }
 }
 
-/* 7. Анимация нажатия для карточек в галерее */
+/* 3. Анимация нажатия для карточек */
 .project-card:active {
-  animation: cardClick 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: cardPress 0.25s ease-out;
 }
 
-@keyframes cardClick {
+@keyframes cardPress {
   0% {
     transform: translateY(0) scale(1);
   }
@@ -489,153 +622,99 @@ button,
   }
 }
 
-/* 8. Анимация нажатия для элементов в выпадающих меню (темы, языки) */
-.theme-option:active,
-.lang-option:active {
-  animation: menuOptionClick 0.15s ease-out;
+/* 4. Анимация нажатия для фильтров */
+.card .tabs .tab-btn:active {
+  animation: filterPress 0.2s ease-out;
 }
 
-@keyframes menuOptionClick {
-  0% {
-    transform: translateX(0);
-    background: transparent;
-  }
-  50% {
-    transform: translateX(4px);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-/* 9. Анимация нажатия для кнопки закрытия модального окна */
-.image-modal-close:active {
-  animation: closeButtonClick 0.2s ease-out;
-}
-
-@keyframes closeButtonClick {
-  0% {
-    transform: scale(1) rotate(0deg);
-  }
-  50% {
-    transform: scale(0.9) rotate(90deg);
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
-  }
-}
-
-/* 10. Анимация нажатия для слайдов отзывов */
-.swiper-slide:active > .card {
-  animation: reviewCardClick 0.25s ease-out;
-}
-
-@keyframes reviewCardClick {
+@keyframes filterPress {
   0% {
     transform: scale(1);
   }
   50% {
-    transform: scale(0.97);
+    transform: scale(0.92);
   }
   100% {
     transform: scale(1);
   }
 }
 
-/* 11. Убираем стандартные transition на время анимации, чтобы не конфликтовали */
+/* 5. Плавный скролл */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 6. Убираем стандартные transition на время анимации */
+button:active,
 .tab-btn:active,
-.icon-btn:active,
-.primary-btn:active,
-.secondary-btn:active,
-.project-card:active {
+.icon-btn:active {
   transition: none !important;
 }
 
-/* 12. После анимации возвращаем плавные переходы */
-.tab-btn,
-.icon-btn,
-.primary-btn,
-.secondary-btn,
-.project-card {
-  animation-fill-mode: forwards;
-}
-
-/* 13. Адаптация для мобильных устройств (более заметные анимации) */
+/* 7. Для мобильных устройств */
 @media (max-width: 768px) {
-  .tab-btn:active {
-    animation: mobileTabClick 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  .project-card {
+    animation: mobileCardLoad 0.4s ease-out backwards;
+    animation-delay: calc(var(--card-index, 0) * 0.07s);
   }
   
-  @keyframes mobileTabClick {
-    0% {
-      transform: scale(1);
+  @keyframes mobileCardLoad {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
     }
-    25% {
-      transform: scale(0.92);
-    }
-    50% {
-      transform: scale(0.94);
-    }
-    75% {
-      transform: scale(0.96);
-    }
-    100% {
-      transform: scale(1);
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
   }
   
   .fixed-order-btn:active {
-    animation: mobileMainButtonClick 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: mobileButtonPress 0.25s ease-out;
   }
   
-  @keyframes mobileMainButtonClick {
+  @keyframes mobileButtonPress {
     0% {
       transform: translateX(-50%) scale(1);
-      box-shadow: 0 12px 24px rgba(255, 40, 70, 0.6);
     }
-    30% {
-      transform: translateX(-50%) scale(0.92);
-      box-shadow: 0 4px 8px rgba(255, 40, 70, 0.9);
-    }
-    60% {
-      transform: translateX(-50%) scale(0.94);
-      box-shadow: 0 6px 12px rgba(255, 40, 70, 0.8);
-    }
-    80% {
-      transform: translateX(-50%) scale(0.96);
-      box-shadow: 0 8px 16px rgba(255, 40, 70, 0.7);
+    50% {
+      transform: translateX(-50%) scale(0.93);
     }
     100% {
       transform: translateX(-50%) scale(1);
-      box-shadow: 0 12px 24px rgba(255, 40, 70, 0.6);
     }
   }
 }
 
-/* 14. Эффект "ряби" для активных элементов */
-@keyframes ripple {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.1);
+/* 8. Анимация загрузки скелетона */
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 1;
   }
-  100% {
-    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  50% {
+    opacity: 0.5;
   }
 }
 
-.tab-btn-active:active::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  transform: translate(-50%, -50%) scale(0);
-  animation: ripple 0.4s ease-out;
+.skeleton {
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.05) 25%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    rgba(255, 255, 255, 0.05) 75%);
+  background-size: 200% 100%;
 }
 
-/* 15. Плавное восстановление после анимации */
+/* 9. Анимация иконок при наведении */
+.icon-btn {
+  transition: all 0.3s ease;
+}
+
+.icon-btn:hover {
+  transform: rotate(12deg) scale(1.1);
+}
+
+/* 10. Плавное изменение прозрачности */
 * {
   animation-fill-mode: forwards;
 }
