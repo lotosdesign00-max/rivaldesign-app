@@ -1897,48 +1897,92 @@ export default function App() {
           ))}
         </nav>
 
-        {/* Контент */}
+                {/* Контент */}
         <main className="tab-content">
           {renderContent()}
         </main>
 
-              </main> {/* Закрытие main.tab-content */}
+        {/* Нижняя кнопка */}
+        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          left: '0',
+          right: '0',
+          display: 'flex',
+          justifyContent: 'center',
+          zIndex: 5,
+          animation: 'slideUp 0.4s ease 0.2s forwards',
+          opacity: 0
+        }}>
+          <button
+            className="primary-btn fixed-order-btn"
+            onClick={handleBottomButton}
+            style={{
+              background: theme.colors.button,
+              color: theme.colors.buttonText,
+              border: `1px solid ${theme.colors.accent}`,
+              padding: '12px 32px',
+              borderRadius: '12px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: `0 4px 12px ${theme.colors.accent}40`,
+              minWidth: '200px'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+          >
+            {activeTab === TABS.AI ? t.bottomGenerate : 
+             activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
+          </button>
+        </div>
+      </div> {/* Закрытие app-shell */}
 
-      {/* Нижняя кнопка */}
-      <div style={{
-        position: 'fixed',
-        bottom: '20px',
-        left: '0',
-        right: '0',
-        display: 'flex',
-        justifyContent: 'center',
-        zIndex: 5,
-        animation: 'slideUp 0.4s ease 0.2s forwards',
-        opacity: 0
-      }}>
-        <button
-          className="primary-btn fixed-order-btn"
-          onClick={handleBottomButton}
-          style={{
-            background: theme.colors.button,
-            color: theme.colors.buttonText,
-            border: `1px solid ${theme.colors.accent}`,
-            padding: '12px 32px',
-            borderRadius: '12px',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            boxShadow: `0 4px 12px ${theme.colors.accent}40`,
-            minWidth: '200px'
+      {/* Модальное окно для увеличенной картинки */}
+      {selectedImage && (
+        <div 
+          className="image-modal-backdrop" 
+          onClick={() => setSelectedImage(null)}
+          style={{ 
+            background: 'rgba(0,0,0,0.9)',
+            animation: 'fadeIn 0.3s ease'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
         >
-          {activeTab === TABS.AI ? t.bottomGenerate : 
-           activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
-        </button>
-      </div>
+          <div 
+            className="image-modal-content" 
+            onClick={(e) => e.stopPropagation()}
+            style={{ 
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+              boxShadow: theme.colors.shadow,
+              animation: 'slideUp 0.3s ease'
+            }}
+          >
+            <button 
+              className="icon-btn image-modal-close" 
+              onClick={() => setSelectedImage(null)}
+              style={{ 
+                background: theme.colors.accent,
+                color: theme.colors.buttonText,
+                border: `1px solid ${theme.colors.border}`
+              }}
+            >
+              ✖
+            </button>
+            <img
+              src={selectedImage.image}
+              alt={selectedImage.title}
+              className="image-modal-img"
+            />
+            <div className="image-modal-text">
+              <h3 style={{ color: theme.colors.text }}>{selectedImage.title}</h3>
+              <p style={{ color: theme.colors.textSecondary }}>{selectedImage.description}</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div> {/* Закрытие app-root */}
 
       {/* Модальное окно для увеличенной картинки */}
       {selectedImage && (
