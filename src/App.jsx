@@ -266,6 +266,7 @@ const TEXTS = {
     reviewsSubtitle: "Настоящие отзывы моих клиентов.",
     reviewsAddButton: "Оставить отзыв",
     pricingTitle: "Прайс / Услуги",
+    pricingCurrencyHint: "Цены в {currency} (курс: 1$ ≈ {rate} {currency})",
     aboutTitle: "Обо мне",
     aboutSubtitle:
       "Я Rival, дизайнер. Помогаю брендам выделяться в соцсетях и рекламе.",
@@ -289,6 +290,7 @@ const TEXTS = {
     reviewsSubtitle: "Real feedback from my clients.",
     reviewsAddButton: "Leave a review",
     pricingTitle: "Pricing / Services",
+    pricingCurrencyHint: "Prices in {currency} (rate: 1$ ≈ {rate} {currency})",
     aboutTitle: "About me",
     aboutSubtitle:
       "I'm Rival, a designer. I help brands stand out in social media and advertising.",
@@ -311,6 +313,7 @@ const TEXTS = {
     reviewsSubtitle: "Реальні відгуки моїх клієнтів.",
     reviewsAddButton: "Залишити відгук",
     pricingTitle: "Прайс / Послуги",
+    pricingCurrencyHint: "Ціни в {currency} (курс: 1$ ≈ {rate} {currency})",
     aboutTitle: "Про мене",
     aboutSubtitle:
       "Я Rival, дизайнер. Допомагаю брендам виділятися в соцмережах та рекламі.",
@@ -333,6 +336,7 @@ const TEXTS = {
     reviewsSubtitle: "Нағыз клиенттерден пікірлер.",
     reviewsAddButton: "Пікір қалдыру",
     pricingTitle: "Прайс / Қызметтер",
+    pricingCurrencyHint: "Бағалар {currency} (курс: 1$ ≈ {rate} {currency})",
     aboutTitle: "Мен туралы",
     aboutSubtitle:
       "Мен Rival, дизайнермін. Брендтерге әлеуметтік желілерде және жарнамада ерекшеленуге көмектесемін.",
@@ -356,6 +360,7 @@ const TEXTS = {
     reviewsSubtitle: "Сапраўдныя водгукі маіх кліентаў.",
     reviewsAddButton: "Пакінуць водгук",
     pricingTitle: "Прайс / Паслугі",
+    pricingCurrencyHint: "Цэны ў {currency} (курс: 1$ ≈ {rate} {currency})",
     aboutTitle: "Пра мяне",
     aboutSubtitle:
       "Я Rival, дызайнер. Дапамагаю брэндам выдзяляцца ў сацсетках і рэкламе.",
@@ -366,7 +371,7 @@ const TEXTS = {
     bottomOrder: "Замовіць дызайн",
     bottomGenerate: "Згенераваць ідэю",
     orderAlert: "Хутка тут будзе пераход у твой Telegram для замовы 😉",
-    aiAlert: "Хутка тут будзе AI-генератар ідэй 🚀",
+    aiAlert: "Хутка тут буде AI-генератар ідэй 🚀",
   },
 };
 
@@ -431,7 +436,7 @@ const GALLERY_TRANSLATIONS = {
     { id: "4", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 4.png", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
     { id: "1", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 1.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
     { id: "2", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 2.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
-    { id: "3", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 3.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
+    { id: "3", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 3.jpg", description: "Ажиццявіце сваю ідэю ў дызайне з намі" },
     { id: "25", category: "Прэв'ю", title: "Свежы падбор твораў", image: "/images/мокап для превьюшек.png", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
     { id: "20", category: "Прэв'ю", title: "Свежы падбор твораў", image: "/images/podborka prewiew 1.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
     { id: "21", category: "Прэв'ю", title: "Свежы падбор твораў", image: "/images/podborka prewiew 2.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
@@ -442,101 +447,121 @@ const GALLERY_TRANSLATIONS = {
   ]
 };
 
+// Отзывы с ссылками на Telegram
 const REVIEWS_ITEMS = [
   { 
     id: "r1", 
     name: "W1tex", 
-    text: "Работа выполнена превосходно, очень доволен результатом." 
+    text: "Работа выполнена превосходно, очень доволен результатом.",
+    telegram: "W1tex" // Добавлено поле для Telegram
   },
   { 
     id: "r2", 
     name: "Shyngyzx", 
-    text: "Отличный специалист, рекомендую к сотрудничеству." 
+    text: "Отличный специалист, рекомендую к сотрудничеству.",
+    telegram: "Shyngyzx"
   },
   { 
     id: "r3", 
     name: "Butter", 
-    text: "Качество работы на высшем уровне, оценка 10/10." 
+    text: "Качество работы на высшем уровне, оценка 10/10.",
+    telegram: "butter_tg"
   },
   { 
     id: "r4", 
     name: "scarlet roses", 
-    text: "Благодарю за проделанную работу, всё выполнено профессионально." 
+    text: "Благодарю за проделанную работу, всё выполнено профессионально.",
+    telegram: "scarlet_roses"
   },
   { 
     id: "r5", 
     name: "Solevoy", 
-    text: "Рекомендую всем — работа выполнена безупречно." 
+    text: "Рекомендую всем — работа выполнена безупречно.",
+    telegram: "Solevoy"
   },
   { 
     id: "r6", 
     name: "Aero", 
-    text: "Отличный результат, спасибо за качественную работу." 
+    text: "Отличный результат, спасибо за качественную работу.",
+    telegram: "Aero_tg"
   },
   { 
     id: "r7", 
     name: "Firessk", 
-    text: "Большое спасибо, обязательно порекомендую вас своим знакомым." 
+    text: "Большое спасибо, обязательно порекомендую вас своим знакомым.",
+    telegram: "Firessk"
   },
   { 
     id: "r8", 
     name: "Helvite", 
-    text: "Работа выполнена на оценку 10/10, всё качественно." 
+    text: "Работа выполнена на оценку 10/10, всё качественно.",
+    telegram: "Helvite"
   },
   { 
     id: "r9", 
     name: "Usepsyho", 
-    text: "Всё выполнено быстро и профессионально, 10/10." 
+    text: "Всё выполнено быстро и профессионально, 10/10.",
+    telegram: "Usepsyho"
   },
   { 
     id: "r10", 
     name: "Filling", 
-    text: "Отличная работа, оценка 9/10, очень качественно." 
+    text: "Отличная работа, оценка 9/10, очень качественно.",
+    telegram: "Filling_tg"
   },
   { 
     id: "r11", 
     name: "Arthur", 
-    text: "Благодарю за профессиональный подход." 
+    text: "Благодарю за профессиональный подход.",
+    telegram: "Arthur_dsg"
   },
   { 
     id: "r12", 
     name: "Kupiz", 
-    text: "Всё выполнено чётко и качественно." 
+    text: "Всё выполнено чётко и качественно.",
+    telegram: "Kupiz"
   },
   { 
     id: "r13", 
     name: "Du", 
-    text: "Полностью доволен результатом, получил всё что хотел." 
+    text: "Полностью доволен результатом, получил всё что хотел.",
+    telegram: "Du_tg"
   },
   { 
     id: "r14", 
     name: "ZetaMert", 
-    text: "Всё отлично, работа выполнена качественно." 
+    text: "Всё отлично, работа выполнена качественно.",
+    telegram: "ZetaMert"
   },
   { 
     id: "r15", 
     name: "Rare", 
-    text: "Работа выполнена в указанные сроки, даже быстрее. Рекомендую специалиста @Rivaldsg." 
+    text: "Работа выполнена в указанные сроки, даже быстрее. Рекомендую специалиста @Rivaldsg.",
+    telegram: "Rare_user"
   },
   { 
     id: "r16", 
     name: "Xyi v tapke", 
-    text: "Отличный результат, очень доволен." 
+    text: "Отличный результат, очень доволен.",
+    telegram: "xyi_v_tapke"
   },
   { 
     id: "r17", 
     name: "Yvonne", 
-    text: "Работа выполнена именно так, как я и хотел." 
+    text: "Работа выполнена именно так, как я и хотел.",
+    telegram: "Yvonne_dsg"
   },
   { 
     id: "r18", 
     name: "Wised", 
-    text: "Заказывал баннер и аватарку — рекомендую специалиста @Rivaldsg, работа выполнена профессионально." 
+    text: "Заказывал баннер и аватарку — рекомендую специалиста @Rivaldsg, работа выполнена профессионально.",
+    telegram: "Wised_tg"
   },
   { 
     id: "r19", 
     name: "Zahar", 
-    text: "@Rivaldsg оперативно выполнил заказ, всё чётко и быстро." 
+    text: "@Rivaldsg оперативно выполнил заказ, всё чётко и быстро.",
+    telegram: "Zahar_user"
   }
 ];
 // Базовые цены в USD
@@ -597,6 +622,14 @@ export default function App() {
     }
   }, []);
 
+  // СОХРАНЕНИЕ ЯЗЫКА в localStorage
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("appLanguage");
+    if (savedLanguage && TEXTS[savedLanguage]) {
+      setLanguage(savedLanguage);
+    }
+  }, []);
+
   // Сброс активной категории при смене языка
   useEffect(() => {
     // Устанавливаем первую категорию для текущего языка
@@ -608,6 +641,11 @@ export default function App() {
 
   const saveTheme = (themeId) => {
     localStorage.setItem("appTheme", themeId);
+  };
+
+  // Функция сохранения языка
+  const saveLanguage = (lang) => {
+    localStorage.setItem("appLanguage", lang);
   };
 
   const currencyInfo = LANGUAGE_TO_CURRENCY[language];
@@ -630,12 +668,29 @@ export default function App() {
     return `${converted} ${currencyInfo.symbol}`;
   };
 
+  // Функция для получения текста про курс валют
+  const getCurrencyHint = () => {
+    const hintTemplate = t.pricingCurrencyHint;
+    const rate = EXCHANGE_RATES[currencyInfo.code];
+    const symbol = currencyInfo.symbol;
+    
+    return hintTemplate
+      .replace("{currency}", symbol)
+      .replace("{rate}", rate)
+      .replace("{currency}", symbol);
+  };
+
   // Получение переведенных названий услуг
   const getTranslatedServices = () => {
     return BASE_PRICES.map(item => ({
       ...item,
       translatedService: SERVICES_TRANSLATIONS[language][item.service] || item.service
     }));
+  };
+
+  // Функция для открытия Telegram пользователя из отзыва
+  const openTelegramProfile = (username) => {
+    window.open(`https://t.me/${username}`, "_blank");
   };
 
   const toggleTheme = () => {
@@ -665,6 +720,7 @@ export default function App() {
 
   const handleLangChange = (lang) => {
     setLanguage(lang);
+    saveLanguage(lang); // Сохраняем язык
     setShowLangMenu(false);
   };
 
@@ -728,7 +784,7 @@ export default function App() {
             <Swiper spaceBetween={12} slidesPerView={"auto"}>
               {galleryItems
                 .filter((p) => p.category === activeCategory)
-                .map((p) => (
+                .map((p, index) => (
                 <SwiperSlide key={p.id} style={{ width: 220 }}>
                   <div 
                     className="project-card" 
@@ -737,7 +793,8 @@ export default function App() {
                       cursor: "pointer",
                       background: theme.colors.card,
                       border: `1px solid ${theme.colors.border}`,
-                      boxShadow: theme.colors.shadow
+                      boxShadow: theme.colors.shadow,
+                      '--card-index': index
                     }}
                   >
                     <div className="project-thumb-wrapper">
@@ -762,7 +819,7 @@ export default function App() {
             <h2 className="section-title" style={{ color: theme.colors.text }}>{t.reviewsTitle}</h2>
             <p className="section-subtitle" style={{ color: theme.colors.textSecondary }}>{t.reviewsSubtitle}</p>
             <Swiper spaceBetween={12} slidesPerView={"auto"}>
-              {REVIEWS_ITEMS.map((r) => (
+              {REVIEWS_ITEMS.map((r, index) => (
                 <SwiperSlide key={r.id} style={{ width: 250 }}>
                   <div 
                     className="card" 
@@ -775,7 +832,22 @@ export default function App() {
                     <div style={{ fontWeight: "bold", fontSize: "24px", marginBottom: "4px", color: theme.colors.accent }}>
                       {r.name[0]}
                     </div>
-                    <div style={{ color: theme.colors.text }}>{r.name}</div>
+                    {/* Имя клиента теперь кликабельное */}
+                    <div 
+                      onClick={() => openTelegramProfile(r.telegram)}
+                      style={{ 
+                        color: theme.colors.accent,
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                        marginBottom: "4px",
+                        textDecoration: "underline",
+                        transition: "opacity 0.2s"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.opacity = "0.8"}
+                      onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                    >
+                      {r.name}
+                    </div>
                     <div className="hint-text" style={{ color: theme.colors.textSecondary }}>{r.text}</div>
                   </div>
                 </SwiperSlide>
@@ -789,6 +861,7 @@ export default function App() {
                 color: theme.colors.text,
                 border: `1px solid ${theme.colors.border}`
               }}
+              onClick={() => window.open(`https://t.me/Rivaldsg`, "_blank")}
             >
               {t.reviewsAddButton}
             </button>
@@ -801,11 +874,11 @@ export default function App() {
           <div className="card" style={{ background: theme.colors.card, boxShadow: theme.colors.shadow }}>
             <h2 className="section-title" style={{ color: theme.colors.text }}>{t.pricingTitle}</h2>
             <div className="currency-hint" style={{ fontSize: "12px", color: theme.colors.textSecondary, marginBottom: "10px" }}>
-              Цены в {currencyInfo.symbol} (курс: 1$ ≈ {EXCHANGE_RATES[currencyInfo.code]} {currencyInfo.symbol})
+              {getCurrencyHint()}
             </div>
             <ul className="list">
-              {translatedServices.map((item) => (
-                <li key={item.id} style={{ color: theme.colors.text }}>
+              {translatedServices.map((item, index) => (
+                <li key={item.id} style={{ color: theme.colors.text, '--item-index': index }}>
                   {item.translatedService} — от {formatPrice(item.priceUSD)}
                 </li>
               ))}
@@ -827,7 +900,7 @@ export default function App() {
             <h2 className="section-title" style={{ color: theme.colors.text }}>{t.faqTitle}</h2>
             <ul className="list">
               {faqItems.map((item, index) => (
-                <li key={index} style={{ color: theme.colors.text }}>{item}</li>
+                <li key={index} style={{ color: theme.colors.text, '--item-index': index }}>{item}</li>
               ))}
             </ul>
           </div>
@@ -962,7 +1035,7 @@ export default function App() {
                   {Object.entries(LANGUAGE_TO_CURRENCY).map(([langCode, currency]) => (
                     <button
                       key={langCode}
-                      className="tab-btn"
+                      className="tab-btn lang-option"
                       onClick={() => handleLangChange(langCode)}
                       style={{
                         display: "flex",
