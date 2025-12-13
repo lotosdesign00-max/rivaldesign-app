@@ -1677,6 +1677,12 @@ export default function App() {
       `}</style>
       
       <div className="app-shell">
+         maxWidth: '1200px', 
+  margin: '0 auto', 
+  position: 'relative',
+  minHeight: '100vh',
+  paddingBottom: '80px' /* ДОБАВЬ ЭТУ СТРОЧКУ */
+}}>
         {/* Верхняя панель - УЗКАЯ БЕЗ СТАТИСТИКИ */}
         <div 
           className="top-bar" 
@@ -1898,26 +1904,39 @@ export default function App() {
         </nav>
 
         {/* Контент */}
-        <main className="tab-content">
-          {renderContent()}
-        </main>
+        <main className="tab-content" style={{ 
+  padding: '16px',
+  paddingBottom: '100px' /* ДОБАВЬ ЭТУ СТРОЧКУ */
+}}>
+  {renderContent()}
+</main>
 
         {/* Нижняя кнопка */}
-        <button
-          className="primary-btn fixed-order-btn"
-          onClick={handleBottomButton}
-          style={{
-            background: theme.colors.button,
-            color: theme.colors.buttonText,
-            border: `1px solid ${theme.colors.accent}`,
-            animation: 'slideUp 0.4s ease 0.2s forwards',
-            opacity: 0
-          }}
-        >
-          {activeTab === TABS.AI ? t.bottomGenerate : 
-           activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
-        </button>
-      </div>
+<button
+  onClick={handleBottomButton}
+  style={{
+    background: theme.colors.button,
+    color: theme.colors.buttonText,
+    border: `1px solid ${theme.colors.accent}`,
+    position: 'fixed',
+    bottom: '16px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    zIndex: 100,
+    width: 'calc(100% - 32px)',
+    maxWidth: '500px',
+    padding: '14px',
+    fontSize: '16px',
+    fontWeight: 600,
+    borderRadius: '10px',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+    border: 'none',
+    cursor: 'pointer'
+  }}
+>
+  {activeTab === TABS.AI ? t.bottomGenerate : 
+   activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
+</button>
 
       {/* Модальное окно для увеличенной картинки */}
       {selectedImage && (
