@@ -350,35 +350,6 @@ button,
   -webkit-touch-callout: none;
 }
 
-/* 5. КАСТОМНЫЕ ЭФФЕКТЫ ВМЕСТО СТАНДАРТНЫХ (опционально) */
-button:active,
-.tab-btn:active,
-.icon-btn:active,
-.primary-btn:active,
-.project-card:active {
-  opacity: 0.8;
-  transform: scale(0.98);
-  transition: opacity 0.1s, transform 0.1s;
-}
-
-/* 6. ДЛЯ КНОПКИ ЗАКАЗА ВНИЗУ */
-.fixed-order-btn:active {
-  transform: translateX(-50%) scale(0.96) !important;
-  opacity: 0.9;
-}
-
-/* 7. ДЛЯ КНОПОК В ВЕРХНЕЙ ПАНЕЛИ */
-.controls button:active {
-  transform: scale(0.92);
-  opacity: 0.8;
-}
-
-/* 8. ДЛЯ АКТИВНЫХ ВКЛАДОК (чтобы не мигали) */
-.tab-btn-active:active {
-  opacity: 1 !important;
-  transform: none !important;
-}
-
 /* ===== АНИМАЦИИ ДЛЯ ВСЕГО ПРИЛОЖЕНИЯ ===== */
 
 /* 1. Плавное появление всего приложения */
@@ -429,14 +400,15 @@ button:active,
   }
 }
 
-/* 4. Анимация кнопок вкладок при наведении/нажатии */
+/* 4. Анимация кнопок вкладок - ИСПРАВЛЕНО: убираем ::after с фиксированным цветом */
 .tab-btn {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
 
-.tab-btn::after {
+/* УБИРАЕМ ЭТОТ БЛОК ПОЛНОСТЬЮ - он создавал фиксированную подсветку */
+/* .tab-btn::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -451,7 +423,7 @@ button:active,
 .tab-btn:hover::after,
 .tab-btn-active::after {
   width: 80%;
-}
+} */
 
 .tab-btn-active {
   animation: pulseActive 2s infinite;
@@ -509,6 +481,13 @@ button:active,
 .primary-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 16px 32px rgba(255, 40, 70, 0.6);
+}
+
+/* ИСПРАВЛЕНО: Убираем движение кнопки при нажатии на мобилке */
+.fixed-order-btn:active {
+  /* УБИРАЕМ transform: translateX(-50%) scale(0.96) !important; */
+  opacity: 0.9;
+  transform: translateX(-50%) !important; /* Оставляем только центрирование */
 }
 
 .secondary-btn {
@@ -587,9 +566,45 @@ button:active,
   transform: scale(1.02);
 }
 
-/* 11. Анимация переключения категорий в галерее */
-.tabs .tab-btn {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* 11. Исправляем отображение текста в табах на мобилках */
+.tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 6px;
+  padding: 4px 2px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  /* ДОБАВЛЯЕМ: */
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* ИСПРАВЛЕНО: Убираем фиксированную ширину для табов, чтобы текст был полностью виден */
+.tab-btn {
+  white-space: nowrap;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 10, 12, 0.95);
+  color: #f5f5f5;
+  padding: 6px 16px; /* Увеличиваем padding для лучшего отображения */
+  font-size: 11px;
+  cursor: pointer;
+  flex-shrink: 0; /* Не даем кнопкам сжиматься */
+  /* ДОБАВЛЯЕМ: */
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+}
+
+.tab-btn-active {
+  background: linear-gradient(135deg, #ff2846, #ff6b3d);
+  border-color: transparent;
 }
 
 /* 12. Анимация загрузки (скелетоны) - опционально */
@@ -659,18 +674,18 @@ html {
   animation: themeSpin 0.5s ease;
 }
 
-/* 18. Анимация нажатия с отскоком */
-@keyframes bounce {
+/* 18. Анимация нажатия кнопки (только визуальный эффект без движения) */
+@keyframes buttonClick {
   0%, 100% {
-    transform: scale(1);
+    transform: translateX(-50%);
   }
   50% {
-    transform: scale(0.95);
+    transform: translateX(-50%) scale(0.97);
   }
 }
 
-.button-clicked {
-  animation: bounce 0.3s ease;
+.fixed-order-btn:active {
+  animation: buttonClick 0.2s ease;
 }
 
 /* 19. Плавное изменение размера изображений */
@@ -695,5 +710,71 @@ html {
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* 21. Кастомные эффекты нажатия вместо стандартной подсветки */
+button:active,
+.tab-btn:active,
+.icon-btn:active,
+.primary-btn:active,
+.secondary-btn:active,
+.project-card:active {
+  opacity: 0.85;
+  transition: opacity 0.15s ease;
+}
+
+/* 22. Для кнопок в верхней панели (тема/язык) */
+.controls button:active {
+  opacity: 0.7;
+  transform: scale(0.95);
+  transition: all 0.1s ease;
+}
+
+/* 23. Активная вкладка не должна мигать при нажатии */
+.tab-btn-active:active {
+  opacity: 1 !important;
+}
+
+/* 24. УБИРАЕМ ВЫДЕЛЕНИЕ ТЕКСТА ПРИ НАЖАТИИ */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* 25. НО РАЗРЕШАЕМ ВЫДЕЛЕНИЕ ДЛЯ ТЕКСТОВЫХ ЭЛЕМЕНТОВ */
+p, span, div, h1, h2, h3, h4, h5, h6 {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* 26. ДОПОЛНИТЕЛЬНЫЕ ПРАВИЛА ДЛЯ ПЛАНШЕТОВ И СТАРЫХ УСТРОЙСТВ */
+@media (hover: none) and (pointer: coarse) {
+  * {
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  
+  button,
+  [onclick],
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent !important;
+    cursor: pointer;
+  }
+  
+  /* Убираем hover-эффекты на тач-устройствах */
+  .project-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .primary-btn:hover {
+    transform: none;
+    box-shadow: 0 12px 24px rgba(255, 40, 70, 0.6);
+  }
+  
+  .icon-btn:hover {
+    transform: none;
   }
 }
