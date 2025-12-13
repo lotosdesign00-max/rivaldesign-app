@@ -1939,7 +1939,6 @@ export default function App() {
            activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
         </button>
       </div>
-    </div> {/* Закрытие app-shell */}
 
       {/* Модальное окно для увеличенной картинки */}
       {selectedImage && (
