@@ -300,35 +300,62 @@ body {
   right: 6px;
 }
 
-/* ===== АНИМАЦИИ НАЖАТИЯ ДЛЯ ВСЕХ КНОПОК ===== */
+/* ===== УБИРАЕМ БЕЛУЮ ПОДСВЕТКУ НА МОБИЛКАХ ===== */
 
-/* 1. УБИРАЕМ БЕЛУЮ ПОДСВЕТКУ ПРИ КЛИКЕ */
-* {
+/* 1. ОСНОВНОЕ ПРАВИЛО ДЛЯ ВСЕХ ЭЛЕМЕНТОВ */
+html,
+body,
+*,
+*:before,
+*:after {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
   -webkit-tap-highlight-color: transparent !important;
   tap-highlight-color: transparent !important;
 }
 
-button, 
-.tab-btn, 
-.icon-btn, 
-.primary-btn, 
+/* 2. ДЛЯ ВСЕХ КНОПОК И КЛИКАБЕЛЬНЫХ ЭЛЕМЕНТОВ */
+button,
+a,
+.tab-btn,
+.icon-btn,
+.primary-btn,
 .secondary-btn,
 .project-card,
 .theme-option,
 .swiper-slide,
 .swiper-slide > *,
 [role="button"] {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
   -webkit-tap-highlight-color: transparent !important;
   tap-highlight-color: transparent !important;
-  outline: none !important;
+  outline: 0 !important;
   -webkit-touch-callout: none !important;
   -webkit-user-select: none !important;
   user-select: none !important;
 }
 
-/* 2. Анимация нажатия для основных вкладок */
+/* 3. СПЕЦИАЛЬНО ДЛЯ IOS SAFARI */
+@supports (-webkit-touch-callout: none) {
+  button,
+  .tab-btn,
+  .icon-btn {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-user-select: none;
+  }
+}
+
+/* 4. УБИРАЕМ СИНИЙ ПРИ ДОЛГОМ НАЖАТИИ НА IOS */
+button,
+.tab-btn {
+  -webkit-touch-callout: none;
+}
+
+/* ===== АНИМАЦИИ НАЖАТИЯ ДЛЯ ВСЕХ КНОПОК ===== */
+
+/* 1. Анимация нажатия для основных вкладок (Галерея, Отзывы, Прайс и т.д.) */
 .tab-btn:active {
   animation: tabClick 0.2s ease-out;
+  transform: scale(0.95);
 }
 
 @keyframes tabClick {
@@ -343,7 +370,8 @@ button,
   }
 }
 
-/* 3. Анимация нажатия для фильтров галереи */
+/* 2. Анимация нажатия для фильтров галереи (Аватарки, Превью, Баннеры) */
+/* Эти кнопки имеют классы tab-btn внутри .tabs в секции галереи */
 .card .tabs .tab-btn:active {
   animation: filterClick 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -351,16 +379,19 @@ button,
 @keyframes filterClick {
   0% {
     transform: scale(1);
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0.1);
   }
   50% {
     transform: scale(0.92);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
   }
   100% {
     transform: scale(1);
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0.1);
   }
 }
 
-/* 4. Анимация нажатия для активных фильтров */
+/* 3. Анимация нажатия для активных фильтров */
 .card .tabs .tab-btn-active:active {
   animation: activeFilterClick 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -368,16 +399,19 @@ button,
 @keyframes activeFilterClick {
   0% {
     transform: scale(1);
+    box-shadow: 0 4px 12px rgba(255, 40, 70, 0.4);
   }
   50% {
     transform: scale(0.9);
+    box-shadow: 0 8px 20px rgba(255, 40, 70, 0.6);
   }
   100% {
     transform: scale(1);
+    box-shadow: 0 4px 12px rgba(255, 40, 70, 0.4);
   }
 }
 
-/* 5. Анимация нажатия для кнопок в верхней панели */
+/* 4. Анимация нажатия для кнопок в верхней панели (язык, тема) */
 .controls .icon-btn:active {
   animation: iconButtonClick 0.2s ease-out;
 }
@@ -394,7 +428,7 @@ button,
   }
 }
 
-/* 6. Анимация нажатия для нижней кнопки */
+/* 5. Анимация нажатия для нижней кнопки (Оформить заказ / Сгенерировать идею) */
 .fixed-order-btn:active {
   animation: mainButtonClick 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -402,19 +436,23 @@ button,
 @keyframes mainButtonClick {
   0% {
     transform: translateX(-50%) scale(1);
+    box-shadow: 0 12px 24px rgba(255, 40, 70, 0.6);
   }
   30% {
     transform: translateX(-50%) scale(0.94);
+    box-shadow: 0 6px 12px rgba(255, 40, 70, 0.8);
   }
   70% {
     transform: translateX(-50%) scale(0.96);
+    box-shadow: 0 8px 16px rgba(255, 40, 70, 0.7);
   }
   100% {
     transform: translateX(-50%) scale(1);
+    box-shadow: 0 12px 24px rgba(255, 40, 70, 0.6);
   }
 }
 
-/* 7. Анимация нажатия для кнопки "Оставить отзыв" */
+/* 6. Анимация нажатия для кнопки "Оставить отзыв" */
 .secondary-btn:active {
   animation: secondaryButtonClick 0.2s ease-out;
 }
@@ -422,16 +460,19 @@ button,
 @keyframes secondaryButtonClick {
   0% {
     transform: scale(1);
+    border-color: rgba(255, 255, 255, 0.2);
   }
   50% {
     transform: scale(0.95);
+    border-color: rgba(255, 255, 255, 0.4);
   }
   100% {
     transform: scale(1);
+    border-color: rgba(255, 255, 255, 0.2);
   }
 }
 
-/* 8. Анимация нажатия для карточек в галерее */
+/* 7. Анимация нажатия для карточек в галерее */
 .project-card:active {
   animation: cardClick 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -448,7 +489,7 @@ button,
   }
 }
 
-/* 9. Анимация нажатия для элементов в выпадающих меню */
+/* 8. Анимация нажатия для элементов в выпадающих меню (темы, языки) */
 .theme-option:active,
 .lang-option:active {
   animation: menuOptionClick 0.15s ease-out;
@@ -457,6 +498,7 @@ button,
 @keyframes menuOptionClick {
   0% {
     transform: translateX(0);
+    background: transparent;
   }
   50% {
     transform: translateX(4px);
@@ -466,7 +508,7 @@ button,
   }
 }
 
-/* 10. Анимация нажатия для кнопки закрытия модального окна */
+/* 9. Анимация нажатия для кнопки закрытия модального окна */
 .image-modal-close:active {
   animation: closeButtonClick 0.2s ease-out;
 }
@@ -483,7 +525,7 @@ button,
   }
 }
 
-/* 11. Анимация нажатия для слайдов отзывов */
+/* 10. Анимация нажатия для слайдов отзывов */
 .swiper-slide:active > .card {
   animation: reviewCardClick 0.25s ease-out;
 }
@@ -500,7 +542,7 @@ button,
   }
 }
 
-/* 12. Убираем стандартные transition на время анимации */
+/* 11. Убираем стандартные transition на время анимации, чтобы не конфликтовали */
 .tab-btn:active,
 .icon-btn:active,
 .primary-btn:active,
@@ -509,7 +551,16 @@ button,
   transition: none !important;
 }
 
-/* 13. Адаптация для мобильных устройств */
+/* 12. После анимации возвращаем плавные переходы */
+.tab-btn,
+.icon-btn,
+.primary-btn,
+.secondary-btn,
+.project-card {
+  animation-fill-mode: forwards;
+}
+
+/* 13. Адаптация для мобильных устройств (более заметные анимации) */
 @media (max-width: 768px) {
   .tab-btn:active {
     animation: mobileTabClick 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -540,25 +591,51 @@ button,
   @keyframes mobileMainButtonClick {
     0% {
       transform: translateX(-50%) scale(1);
+      box-shadow: 0 12px 24px rgba(255, 40, 70, 0.6);
     }
     30% {
       transform: translateX(-50%) scale(0.92);
+      box-shadow: 0 4px 8px rgba(255, 40, 70, 0.9);
     }
     60% {
       transform: translateX(-50%) scale(0.94);
+      box-shadow: 0 6px 12px rgba(255, 40, 70, 0.8);
     }
     80% {
       transform: translateX(-50%) scale(0.96);
+      box-shadow: 0 8px 16px rgba(255, 40, 70, 0.7);
     }
     100% {
       transform: translateX(-50%) scale(1);
+      box-shadow: 0 12px 24px rgba(255, 40, 70, 0.6);
     }
   }
 }
 
-/* 14. iOS Safari специальные правила */
-@supports (-webkit-touch-callout: none) {
-  * {
-    -webkit-tap-highlight-color: transparent !important;
+/* 14. Эффект "ряби" для активных элементов */
+@keyframes ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.1);
   }
+  100% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+}
+
+.tab-btn-active:active::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple 0.4s ease-out;
+}
+
+/* 15. Плавное восстановление после анимации */
+* {
+  animation-fill-mode: forwards;
 }
