@@ -1912,7 +1912,7 @@ export default function App() {
     border: `1px solid ${theme.colors.accent}`,
     animation: 'slideUp 0.4s ease 0.2s forwards',
     opacity: 0,
-    // Добавьте эти стили:
+    // Исправленные стили:
     position: 'fixed',
     bottom: '20px',
     left: '50%',
