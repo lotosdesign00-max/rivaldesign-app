@@ -11,8 +11,6 @@ const TABS = {
   AI: "ai",
 };
 
-// Убрал полностью блок STATISTICS и STATISTICS_TRANSLATIONS
-
 // ТЕМЫ С ЦВЕТОВЫМИ СХЕМАМИ (фиксированные цвета)
 const THEMES = {
   DARK: {
@@ -172,8 +170,8 @@ const TAB_LABELS = {
     [TABS.GALLERY]: "Галерея",
     [TABS.REVIEWS]: "Отзывы",
     [TABS.PRICING]: "Прайс",
-    [TABS.CART]: "🛒 Корзина", // НОВОЕ - сразу после Прайса
-    [TABS.ABOUT_FAQ]: "Обо мне & FAQ", // Объединенная вкладка
+    [TABS.CART]: "🛒 Корзина",
+    [TABS.ABOUT_FAQ]: "Обо мне & FAQ",
     [TABS.AI]: "AI идеи",
   },
   en: {
@@ -306,7 +304,7 @@ const FAQ_EXPANDED_TRANSLATIONS = {
     },
     {
       question: "Шұғыл тапсырыс беруге бола ма?",
-      answer: "Иә, шұғыл тапсырыстар мүмкін. Шұғыл тапсырыстың құны жеке талқыланады және мерзімдерге байланысты 20-50% жоғары болуы мүмкін. Шұғыл тапсырыстар үшін ең аз мерзім - 24 сағат."
+      answer: "Иә, шұғыл тапсырыстар мүмкін. Шұғыл тапсырыстың құны жеке талқыланады және мерзімдерге байланысты 20-50% жоғары болуі мүмкін. Шұғыл тапсырыстар үшін ең аз мерзім - 24 сағат."
     }
   ],
   by: [
@@ -427,7 +425,7 @@ const TEXTS = {
     aboutSubtitle:
       "Я Rival, профессиональный графический дизайнер с более чем 3-летним опытом работы в сфере дизайна для социальных сетей, стриминга и брендинга. Специализируюсь на создании уникальных аватарок, превью, баннеров и логотипов, которые помогают брендам и контент-мейкерам выделяться в цифровом пространстве.\n\nМой подход к работе основан на глубоком анализе целевой аудитории и трендов современного дизайна. Я убежден, что качественный дизайн — это не просто красивая картинка, а эффективный инструмент коммуникации, который способен увеличить вовлеченность, привлечь внимание и повысить узнаваемость бренда.\n\nРаботаю с клиентами из разных стран, включая Россию, Украину, Казахстан, Беларусь и страны Европы. Постоянно совершенствую свои навыки, слежу за последними тенденциями в дизайне и изучаю новые инструменты для достижения наилучшего результата.\n\nОсновные направления:\n• Дизайн для Twitch, YouTube, TikTok\n• Брендинг и айдентика\n• Дизайн для стримеров и геймеров\n• Социальные сети и реклама",
     faqTitle: "Часто задаваемые вопросы",
-    aboutFaqTitle: "Обо мне & FAQ", // Новый заголовок для объединенной вкладки
+    aboutFaqTitle: "Обо мне & FAQ",
     aiTitle: "AI идеи",
     aiSubtitle:
       "Генератор идей для палитр, референсов и концептов (в разработке).",
@@ -436,7 +434,7 @@ const TEXTS = {
     orderAlert:
       "Скоро здесь будет переход к твоему Telegram для оформления заказа 😉",
     aiAlert: "Скоро здесь будет генератор идей на AI 🚀",
-    ...CART_TEXTS.ru, // Добавляем тексты корзины
+    ...CART_TEXTS.ru,
   },
   en: {
     appTitle: "Rival App",
@@ -781,11 +779,10 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState("Аватарки");
   const [selectedImage, setSelectedImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [cart, setCart] = useState([]); // Состояние корзины
-  const [hoveredCard, setHoveredCard] = useState(null); // Для 3D эффектов
-  const [expandedFaqIndex, setExpandedFaqIndex] = useState(null); // Для аккордеона FAQ
+  const [cart, setCart] = useState([]);
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [expandedFaqIndex, setExpandedFaqIndex] = useState(null);
 
-  // Сохранение темы в localStorage
   useEffect(() => {
     const savedTheme = localStorage.getItem("appTheme");
     if (savedTheme && THEMES[savedTheme.toUpperCase()]) {
@@ -793,7 +790,6 @@ export default function App() {
     }
   }, []);
 
-  // СОХРАНЕНИЕ ЯЗЫКА в localStorage
   useEffect(() => {
     const savedLanguage = localStorage.getItem("appLanguage");
     if (savedLanguage && TEXTS[savedLanguage]) {
@@ -801,22 +797,18 @@ export default function App() {
     }
   }, []);
 
-  // Загрузка корзины из localStorage
   useEffect(() => {
     const savedCart = localStorage.getItem("appCart");
     if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
-    // Имитация загрузки
     setTimeout(() => setIsLoading(false), 800);
   }, []);
 
-  // Сохранение корзины в localStorage
   useEffect(() => {
     localStorage.setItem("appCart", JSON.stringify(cart));
   }, [cart]);
 
-  // Сброс активной категории при смене языка
   useEffect(() => {
     const categories = GALLERY_CATEGORIES_TRANSLATIONS[language];
     if (categories && categories.length > 0) {
@@ -840,19 +832,16 @@ export default function App() {
   const galleryItems = GALLERY_TRANSLATIONS[language] || GALLERY_TRANSLATIONS.ru;
   const zoomHint = ZOOM_HINT_TRANSLATIONS[language] || ZOOM_HINT_TRANSLATIONS.ru;
 
-  // Функция конвертации цены
   const convertPrice = (priceUSD) => {
     const rate = EXCHANGE_RATES[currencyInfo.code];
     return Math.round(priceUSD * rate);
   };
 
-  // Функция форматирования цены
   const formatPrice = (priceUSD) => {
     const converted = convertPrice(priceUSD);
     return `${converted} ${currencyInfo.symbol}`;
   };
 
-  // Функция для получения текста про курс валют
   const getCurrencyHint = () => {
     const hintTemplate = t.pricingCurrencyHint;
     const rate = EXCHANGE_RATES[currencyInfo.code];
@@ -864,7 +853,6 @@ export default function App() {
       .replace("{currency}", symbol);
   };
 
-  // Получение переведенных названий услуг
   const getTranslatedServices = () => {
     return BASE_PRICES.map(item => ({
       ...item,
@@ -872,7 +860,6 @@ export default function App() {
     }));
   };
 
-  // Функции для корзины
   const addToCart = (service) => {
     const existingItem = cart.find(item => item.id === service.id);
     if (existingItem) {
@@ -909,11 +896,8 @@ export default function App() {
   };
 
   const getCartTotal = () => {
-    // Считаем общее количество товаров
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    // Считаем общую стоимость
     const subtotal = cart.reduce((sum, item) => sum + (item.priceUSD * item.quantity), 0);
-    // Скидка 10% если общее количество товаров 2 или больше
     const discount = totalItems >= 2 ? subtotal * 0.1 : 0;
     return {
       subtotal: subtotal,
@@ -923,7 +907,6 @@ export default function App() {
     };
   };
 
-  // Функция для открытия Telegram пользователя из отзыва
   const openTelegramProfile = (username) => {
     window.open(`https://t.me/${username}`, "_blank");
   };
@@ -959,7 +942,6 @@ export default function App() {
     setShowLangMenu(false);
   };
 
-  // Функция для переключения аккордеона FAQ
   const toggleFaq = (index) => {
     if (expandedFaqIndex === index) {
       setExpandedFaqIndex(null);
@@ -972,7 +954,6 @@ export default function App() {
     if (activeTab === TABS.AI) {
       alert(t.aiAlert);
     } else if (activeTab === TABS.CART && cart.length > 0) {
-      // Заказ из корзины
       const cartTotal = getCartTotal();
       const servicesList = cart.map(item => 
         `${item.translatedService || item.service} x${item.quantity}`
@@ -1003,7 +984,6 @@ export default function App() {
     }
   };
 
-  // Функция для 3D эффекта карточки
   const handleCardMouseMove = (e, id) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
@@ -1025,7 +1005,6 @@ export default function App() {
     setHoveredCard(null);
   };
 
-  // Компонент скелетона
   const SkeletonCard = () => (
     <div 
       className="project-card skeleton" 
@@ -1058,11 +1037,21 @@ export default function App() {
     switch (activeTab) {
       case TABS.GALLERY:
         return (
-          <div className="card" style={{ background: theme.colors.card, boxShadow: theme.colors.shadow }}>
-            <h2 className="section-title" style={{ color: theme.colors.text }}>{t.galleryTitle}</h2>
-            <p className="section-subtitle" style={{ color: theme.colors.textSecondary }}>{t.gallerySubtitle}</p>
+          <div className="card" style={{ 
+            background: theme.colors.card, 
+            boxShadow: theme.colors.shadow,
+            animation: 'fadeIn 0.4s ease'
+          }}>
+            <h2 className="section-title" style={{ 
+              color: theme.colors.text,
+              animation: 'slideDown 0.4s ease'
+            }}>{t.galleryTitle}</h2>
+            <p className="section-subtitle" style={{ 
+              color: theme.colors.textSecondary,
+              animation: 'slideDown 0.4s ease 0.1s forwards',
+              opacity: 0
+            }}>{t.gallerySubtitle}</p>
             
-            {/* Кнопки категорий с переводами */}
             <div 
               className="tabs" 
               style={{ 
@@ -1070,10 +1059,12 @@ export default function App() {
                 background: theme.colors.secondary,
                 borderRadius: '8px',
                 padding: '4px',
-                marginBottom: '16px'
+                marginBottom: '16px',
+                animation: 'slideDown 0.4s ease 0.2s forwards',
+                opacity: 0
               }}
             >
-              {galleryCategories.map((cat) => (
+              {galleryCategories.map((cat, index) => (
                 <button
                   key={cat}
                   className={"tab-btn" + (cat === activeCategory ? " tab-btn-active" : "")}
@@ -1081,7 +1072,10 @@ export default function App() {
                   style={{
                     color: cat === activeCategory ? theme.colors.accent : theme.colors.textSecondary,
                     borderBottom: cat === activeCategory ? `2px solid ${theme.colors.accent}` : 'none',
-                    background: 'transparent'
+                    background: 'transparent',
+                    opacity: 0,
+                    animation: 'slideUp 0.3s ease forwards',
+                    animationDelay: `calc(${index} * 0.05s)`
                   }}
                 >
                   {cat}
@@ -1090,7 +1084,6 @@ export default function App() {
             </div>
             <Swiper spaceBetween={12} slidesPerView={"auto"}>
               {isLoading ? (
-                // Скелетоны при загрузке
                 Array.from({ length: 4 }).map((_, index) => (
                   <SwiperSlide key={`skeleton-${index}`} style={{ width: 220 }}>
                     <SkeletonCard />
@@ -1117,7 +1110,9 @@ export default function App() {
                           ? 'perspective(1000px) rotateX(5deg) rotateY(5deg) scale3d(1.05, 1.05, 1.05)' 
                           : 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)',
                         transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                        '--card-index': index
+                        opacity: 0,
+                        animation: 'slideUp 0.3s ease forwards',
+                        animationDelay: `calc(${index} * 0.05s)`
                       }}
                     >
                       <div className="project-thumb-wrapper">
@@ -1141,15 +1136,30 @@ export default function App() {
                 ))
               )}
             </Swiper>
-            <p className="hint-text" style={{ color: theme.colors.textSecondary }}>{t.galleryHint}</p>
+            <p className="hint-text" style={{ 
+              color: theme.colors.textSecondary,
+              animation: 'slideUp 0.4s ease 0.3s forwards',
+              opacity: 0
+            }}>{t.galleryHint}</p>
           </div>
         );
 
       case TABS.REVIEWS:
         return (
-          <div className="card" style={{ background: theme.colors.card, boxShadow: theme.colors.shadow }}>
-            <h2 className="section-title" style={{ color: theme.colors.text }}>{t.reviewsTitle}</h2>
-            <p className="section-subtitle" style={{ color: theme.colors.textSecondary }}>{t.reviewsSubtitle}</p>
+          <div className="card" style={{ 
+            background: theme.colors.card, 
+            boxShadow: theme.colors.shadow,
+            animation: 'fadeIn 0.4s ease'
+          }}>
+            <h2 className="section-title" style={{ 
+              color: theme.colors.text,
+              animation: 'slideDown 0.4s ease'
+            }}>{t.reviewsTitle}</h2>
+            <p className="section-subtitle" style={{ 
+              color: theme.colors.textSecondary,
+              animation: 'slideDown 0.4s ease 0.1s forwards',
+              opacity: 0
+            }}>{t.reviewsSubtitle}</p>
             <Swiper spaceBetween={12} slidesPerView={"auto"}>
               {REVIEWS_ITEMS.map((r, index) => (
                 <SwiperSlide key={r.id} style={{ width: 250 }}>
@@ -1158,13 +1168,20 @@ export default function App() {
                     style={{ 
                       background: theme.colors.card,
                       border: `1px solid ${theme.colors.border}`,
-                      boxShadow: theme.colors.shadow
+                      boxShadow: theme.colors.shadow,
+                      opacity: 0,
+                      animation: 'slideUp 0.3s ease forwards',
+                      animationDelay: `calc(${index} * 0.03s)`
                     }}
                   >
-                    <div style={{ fontWeight: "bold", fontSize: "24px", marginBottom: "4px", color: theme.colors.accent }}>
+                    <div style={{ 
+                      fontWeight: "bold", 
+                      fontSize: "24px", 
+                      marginBottom: "4px", 
+                      color: theme.colors.accent 
+                    }}>
                       {r.name[0]}
                     </div>
-                    {/* Имя клиента теперь кликабельное */}
                     <div 
                       onClick={() => openTelegramProfile(r.telegram)}
                       style={{ 
@@ -1191,7 +1208,9 @@ export default function App() {
                 marginTop: 10,
                 background: theme.colors.secondary,
                 color: theme.colors.text,
-                border: `1px solid ${theme.colors.border}`
+                border: `1px solid ${theme.colors.border}`,
+                animation: 'slideUp 0.4s ease 0.2s forwards',
+                opacity: 0
               }}
               onClick={() => window.open(`https://t.me/Rivaldsg`, "_blank")}
             >
@@ -1203,16 +1222,28 @@ export default function App() {
       case TABS.PRICING:
         const translatedServices = getTranslatedServices();
         return (
-          <div className="card" style={{ background: theme.colors.card, boxShadow: theme.colors.shadow }}>
-            <h2 className="section-title" style={{ color: theme.colors.text }}>{t.pricingTitle}</h2>
-            <div className="currency-hint" style={{ fontSize: "12px", color: theme.colors.textSecondary, marginBottom: "10px" }}>
+          <div className="card" style={{ 
+            background: theme.colors.card, 
+            boxShadow: theme.colors.shadow,
+            animation: 'fadeIn 0.4s ease'
+          }}>
+            <h2 className="section-title" style={{ 
+              color: theme.colors.text,
+              animation: 'slideDown 0.4s ease'
+            }}>{t.pricingTitle}</h2>
+            <div className="currency-hint" style={{ 
+              fontSize: "12px", 
+              color: theme.colors.textSecondary, 
+              marginBottom: "10px",
+              animation: 'slideDown 0.4s ease 0.1s forwards',
+              opacity: 0
+            }}>
               {getCurrencyHint()}
             </div>
             <ul className="list">
               {translatedServices.map((item, index) => (
                 <li key={item.id} style={{ 
                   color: theme.colors.text, 
-                  '--item-index': index,
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
@@ -1220,7 +1251,7 @@ export default function App() {
                   padding: '4px 0',
                   opacity: 0,
                   animation: 'slideUp 0.3s ease forwards',
-                  animationDelay: `calc(var(--item-index) * 0.05s)`
+                  animationDelay: `calc(${index} * 0.05s)`
                 }}>
                   <span>
                     {item.translatedService} — от {formatPrice(item.priceUSD)}
@@ -1253,8 +1284,18 @@ export default function App() {
         const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
         
         return (
-          <div className="card" style={{ background: theme.colors.card, boxShadow: theme.colors.shadow }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <div className="card" style={{ 
+            background: theme.colors.card, 
+            boxShadow: theme.colors.shadow,
+            animation: 'fadeIn 0.4s ease'
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              marginBottom: '12px',
+              animation: 'slideDown 0.4s ease'
+            }}>
               <h2 className="section-title" style={{ color: theme.colors.text }}>
                 {t.cartTitle} {cartItemsCount > 0 && `(${cartItemsCount})`}
               </h2>
@@ -1382,7 +1423,6 @@ export default function App() {
                   ))}
                 </div>
                 
-                {/* Итоговая сумма */}
                 <div style={{
                   background: theme.colors.secondary,
                   borderRadius: '8px',
@@ -1449,7 +1489,6 @@ export default function App() {
               animation: 'slideDown 0.4s ease'
             }}>{t.aboutFaqTitle}</h2>
             
-            {/* Секция "Обо мне" */}
             <div style={{ 
               marginBottom: '32px',
               animation: 'slideUp 0.5s ease 0.1s forwards',
@@ -1476,7 +1515,6 @@ export default function App() {
               </div>
             </div>
             
-            {/* Секция "FAQ" с аккордеоном */}
             <div style={{
               animation: 'slideUp 0.5s ease 0.2s forwards',
               opacity: 0
@@ -1565,9 +1603,20 @@ export default function App() {
 
       case TABS.AI:
         return (
-          <div className="card" style={{ background: theme.colors.card, boxShadow: theme.colors.shadow }}>
-            <h2 className="section-title" style={{ color: theme.colors.text }}>{t.aiTitle}</h2>
-            <p className="section-subtitle" style={{ color: theme.colors.textSecondary }}>{t.aiSubtitle}</p>
+          <div className="card" style={{ 
+            background: theme.colors.card, 
+            boxShadow: theme.colors.shadow,
+            animation: 'fadeIn 0.4s ease'
+          }}>
+            <h2 className="section-title" style={{ 
+              color: theme.colors.text,
+              animation: 'slideDown 0.4s ease'
+            }}>{t.aiTitle}</h2>
+            <p className="section-subtitle" style={{ 
+              color: theme.colors.textSecondary,
+              animation: 'slideDown 0.4s ease 0.1s forwards',
+              opacity: 0
+            }}>{t.aiSubtitle}</p>
           </div>
         );
 
@@ -1581,7 +1630,6 @@ export default function App() {
       background: theme.colors.primary,
       position: 'relative'
     }}>
-      {/* Добавляем инлайн стили для анимаций */}
       <style>{`
         @keyframes slideUp {
           from {
@@ -1626,15 +1674,6 @@ export default function App() {
           }
         }
         
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-5px);
-          }
-        }
-        
         .section-title {
           animation: slideDown 0.4s ease;
         }
@@ -1643,30 +1682,25 @@ export default function App() {
           animation: fadeIn 0.4s ease;
         }
         
-        /* Анимация для кнопок в прайсе */
         .list li {
           opacity: 0;
           animation: slideUp 0.3s ease forwards;
         }
         
-        /* Анимация для элементов корзины */
         .cart-item {
           opacity: 0;
           animation: slideUp 0.3s ease forwards;
         }
         
-        /* Анимация для FAQ */
         .faq-item {
           opacity: 0;
           animation: slideUp 0.3s ease forwards;
         }
         
-        /* Анимация для галереи */
         .project-card {
           transition: all 0.3s ease;
         }
         
-        /* Анимация для кнопок */
         button {
           transition: all 0.2s ease;
         }
@@ -1677,14 +1711,13 @@ export default function App() {
       `}</style>
       
       <div className="app-shell">
-        {/* Верхняя панель - УЗКАЯ БЕЗ СТАТИСТИКИ */}
         <div 
           className="top-bar" 
           style={{ 
             background: theme.colors.secondary,
             borderBottom: `1px solid ${theme.colors.border}`,
-            padding: '8px 16px', // Уменьшил отступы для узкой панели
-            minHeight: '50px', // Уменьшил высоту
+            padding: '8px 16px',
+            minHeight: '50px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -1710,7 +1743,6 @@ export default function App() {
           </div>
 
           <div className="controls" style={{ display: 'flex', gap: '8px' }}>
-            {/* Меню тем */}
             <div style={{ position: "relative" }}>
               <button 
                 className="icon-btn" 
@@ -1782,7 +1814,6 @@ export default function App() {
               )}
             </div>
 
-            {/* Меню языка */}
             <div style={{ position: "relative" }}>
               <button 
                 className="icon-btn" 
@@ -1868,7 +1899,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Основные вкладки */}
         <nav 
           className="tabs" 
           style={{ 
@@ -1897,45 +1927,34 @@ export default function App() {
           ))}
         </nav>
 
-        {/* Контент */}
         <main className="tab-content">
           {renderContent()}
         </main>
 
-        {/* Нижняя кнопка */}
-<div style={{
-  position: 'fixed',
-  bottom: '20px',
-  left: '0',
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'center',
-  zIndex: 100,
-  padding: '0 16px'
-}}>
-  <button
-    className="primary-btn"
-    onClick={handleBottomButton}
-    style={{
-      background: theme.colors.button,
-      color: theme.colors.buttonText,
-      border: `1px solid ${theme.colors.accent}`,
-      padding: '12px 32px',
-      borderRadius: '25px',
-      fontWeight: 'bold',
-      fontSize: '16px',
-      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-      cursor: 'pointer',
-      width: '100%',
-      maxWidth: '400px'
-    }}
-  >
-    {activeTab === TABS.AI ? t.bottomGenerate : 
-     activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
-  </button>
-</div>
-        
-      {/* Модальное окно для увеличенной картинки */}
+        {/* Кнопка внизу (как в старом коде) */}
+        <button
+          className="primary-btn"
+          onClick={handleBottomButton}
+          style={{
+            background: theme.colors.button,
+            color: theme.colors.buttonText,
+            border: `1px solid ${theme.colors.accent}`,
+            padding: '12px 24px',
+            borderRadius: '8px',
+            margin: '20px 16px',
+            width: 'calc(100% - 32px)',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            animation: 'slideUp 0.4s ease 0.2s forwards',
+            opacity: 0
+          }}
+        >
+          {activeTab === TABS.AI ? t.bottomGenerate : 
+           activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
+        </button>
+      </div>
+
       {selectedImage && (
         <div 
           className="image-modal-backdrop" 
