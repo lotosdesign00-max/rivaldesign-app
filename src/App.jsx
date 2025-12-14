@@ -651,37 +651,37 @@ const REVIEWS_ITEMS = [
     id: "r3", 
     name: "Butter", 
     text: "Качество работы на высшем уровне, оценка 10/10.",
-    telegram: "butter_tg"
+    telegram: "BUTTE6"
   },
   { 
     id: "r4", 
     name: "scarlet roses", 
     text: "Благодарю за проделанную работу, всё выполнено профессионально.",
-    telegram: "scarlet_roses"
+    telegram: "hoskefromheviz"
   },
   { 
     id: "r5", 
     name: "Solevoy", 
     text: "Рекомендую всем — работа выполнена безупречно.",
-    telegram: "Solevoy"
+    telegram: "fazenemoy"
   },
   { 
     id: "r6", 
     name: "Aero", 
     text: "Отличный результат, спасибо за качественную работу.",
-    telegram: "Aero_tg"
+    telegram: "AeroDesig"
   },
   { 
     id: "r7", 
     name: "Firessk", 
     text: "Большое спасибо, обязательно порекомендую вас своим знакомым.",
-    telegram: "Firessk"
+    telegram: "firessk"
   },
   { 
     id: "r8", 
     name: "Helvite", 
     text: "Работа выполнена на оценку 10/10, всё качественно.",
-    telegram: "Helvite"
+    telegram: "Helvite0"
   },
   { 
     id: "r9", 
