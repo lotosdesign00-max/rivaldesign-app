@@ -1573,7 +1573,7 @@ export default function App() {
                 marginBottom: '20px'
               }}>
                 {/* TikTok */}
-                <a href="https://tiktok.com/@ваш_ник" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                <a href="https://www.tiktok.com/@rival.design" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                   <div style={{
                     width: '40px',
                     height: '40px',
@@ -1596,7 +1596,7 @@ export default function App() {
                 </a>
 
                 {/* Telegram */}
-                <a href="https://t.me/Rivaldsg" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                <a href="https://t.me/Rivaldsgn" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                   <div style={{
                     width: '40px',
                     height: '40px',
@@ -1619,7 +1619,7 @@ export default function App() {
                 </a>
 
                 {/* YouTube */}
-                <a href="https://youtube.com/@ваш_ник" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                <a href="https://www.youtube.com/@RivalDesign" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                   <div style={{
                     width: '40px',
                     height: '40px',
@@ -1642,7 +1642,7 @@ export default function App() {
                 </a>
 
                 {/* Pinterest */}
-                <a href="https://pinterest.com/@ваш_ник" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                <a href="https://ru.pinterest.com/lotosdesign00/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                   <div style={{
                     width: '40px',
                     height: '40px',
