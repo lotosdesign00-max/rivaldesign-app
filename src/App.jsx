@@ -639,7 +639,7 @@ const REVIEWS_ITEMS = [
     id: "r1", 
     name: "W1tex", 
     text: "Работа выполнена превосходно, очень доволен результатом.",
-    telegram: "@w1tex_dsg"
+    telegram: "w1tex_dsg"
   },
   { 
     id: "r2", 
