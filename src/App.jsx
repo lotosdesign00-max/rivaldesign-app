@@ -563,11 +563,11 @@ const TEXTS = {
 
 // Исходные данные галереи (на русском)
 const GALLERY_ITEMS_RU = [
+  { id: "5", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 5.png", description: "«Воплоти свою идею в дизайн вместе с нами» " },
   { id: "4", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 4.png", description: "«Воплоти свою идею в дизайн вместе с нами» " },
   { id: "1", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 1.jpg", description: "«Воплоти свою идею в дизайн вместе с нами» " },
   { id: "2", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 2.jpg", description: "«Воплоти свою идею в дизайн вместе с нами» " },
   { id: "3", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 3.jpg", description: "«Воплоти свою идею в дизайн вместе с нами» " },
-  { id: "4", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 5.png", description: "«Воплоти свою идею в дизайн вместе с нами» " },
   { id: "25", category: "Превью", title: "Свежая Подборка Работ", image: "/images/мокап для превьюшек.png", description: "«Воплоти свою идею в дизайн вместе с нами»" },
   { id: "20", category: "Превью", title: "Свежая Подборка Работ", image: "/images/podborka prewiew 1.jpg", description: "«Воплоти свою идею в дизайн вместе с нами»" },
   { id: "21", category: "Превью", title: "Свежая Подборка Работ", image: "/images/podborka prewiew 2.jpg", description: "«Воплоти свою идею в дизайн вместе с нами»" },
@@ -581,11 +581,11 @@ const GALLERY_ITEMS_RU = [
 const GALLERY_TRANSLATIONS = {
   ru: GALLERY_ITEMS_RU,
   en: [ 
+    { id: "5", category: "Avatars", title: "Fresh Selection of Works", image: "/images/podborka av 5.jpg", description: "Bring your idea to life in design with us" },
     { id: "4", category: "Avatars", title: "Fresh Selection of Works", image: "/images/podborka av 4.png", description: "Bring your idea to life in design with us" },
     { id: "1", category: "Avatars", title: "Fresh Selection of Works", image: "/images/podborka av 1.jpg", description: "Bring your idea to life in design with us" },
     { id: "2", category: "Avatars", title: "Fresh Selection of Works", image: "/images/podborka av 2.jpg", description: "Bring your idea to life in design with us" },
     { id: "3", category: "Avatars", title: "Fresh Selection of Works", image: "/images/podborka av 3.jpg", description: "Bring your idea to life in design with us" },
-    { id: "5", category: "Avatars", title: "Fresh Selection of Works", image: "/images/podborka av 5.jpg", description: "Bring your idea to life in design with us" },
     { id: "25", category: "Previews", title: "Fresh Selection of Works", image: "/images/мокап для превьюшек.png", description: "Bring your idea to life in design with us" },
     { id: "20", category: "Previews", title: "Fresh Selection of Works", image: "/images/podborka prewiew 1.jpg", description: "Bring your idea to life in design with us" },
     { id: "21", category: "Previews", title: "Fresh Selection of Works", image: "/images/podborka prewiew 2.jpg", description: "Bring your idea to life in design with us" },
@@ -595,11 +595,11 @@ const GALLERY_TRANSLATIONS = {
     { id: "3", category: "Banners", title: "Banner 1", image: "/images/banner1.jpg", description: "Banner description 1" },
   ],
   ua: [
+    { id: "5", category: "Аватарки", title: "Свіжа підбірка робіт", image: "/images/podborka av 5.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
     { id: "4", category: "Аватарки", title: "Свіжа підбірка робіт", image: "/images/podborka av 4.png", description: "Втіли свою ідею в дизайн разом з нами" },
     { id: "1", category: "Аватарки", title: "Свіжа підбірка робіт", image: "/images/podborka av 1.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
     { id: "2", category: "Аватарки", title: "Свіжа підбірка робіт", image: "/images/podborka av 2.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
     { id: "3", category: "Аватарки", title: "Свіжа підбірка робіт", image: "/images/podborka av 3.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
-    { id: "5", category: "Аватарки", title: "Свіжа підбірка робіт", image: "/images/podborka av 5.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
     { id: "25", category: "Прев'ю", title: "Свіжа підбірка робіт", image: "/images/мокап для превьюшек.png", description: "Втіли свою ідею в дизайн разом з нами" },
     { id: "20", category: "Прев'ю", title: "Свіжа підбірка робіт", image: "/images/podborka prewiew 1.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
     { id: "21", category: "Прев'ю", title: "Свіжа підбірка робіт", image: "/images/podborka prewiew 2.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
@@ -609,11 +609,11 @@ const GALLERY_TRANSLATIONS = {
     { id: "3", category: "Банери", title: "Банер 1", image: "/images/banner1.jpg", description: "Опис банера 1" },
   ],
   kz: [
+    { id: "5", category: "Аватарлар", title: "Жаңа таңдау шолуы", image: "/images/podborka av 5.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
     { id: "4", category: "Аватарлар", title: "Жаңа таңдау шолуы", image: "/images/podborka av 4.png", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
     { id: "1", category: "Аватарлар", title: "Жаңа таңдау шолуы", image: "/images/podborka av 1.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
     { id: "2", category: "Аватарлар", title: "Жаңа таңдау шолуы", image: "/images/podborka av 2.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
     { id: "3", category: "Аватарлар", title: "Жаңа таңдау шолуы", image: "/images/podborka av 3.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
-    { id: "5", category: "Аватарлар", title: "Жаңа таңдау шолуы", image: "/images/podborka av 5.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
     { id: "25", category: "Превью", title: "Жаңа таңдау шолуы", image: "/images/мокап для превьюшек.png", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
     { id: "20", category: "Превью", title: "Жаңа таңдау шолуы", image: "/images/podborka prewiew 1.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
     { id: "21", category: "Превью", title: "Жаңа таңдау шолуы", image: "/images/podborka prewiew 2.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
@@ -623,11 +623,11 @@ const GALLERY_TRANSLATIONS = {
     { id: "3", category: "Баннерлер", title: "Баннер 1", image: "/images/banner1.jpg", description: "Баннер сипаттамасы 1" },
   ],
   by: [
+    { id: "5", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 5.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
     { id: "4", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 4.png", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
     { id: "1", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 1.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
     { id: "2", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 2.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
     { id: "3", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 3.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
-    { id: "5", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 5.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
     { id: "25", category: "Прэв'ю", title: "Свежы падбор твораў", image: "/images/мокап для превьюшек.png", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
     { id: "20", category: "Прэв'ю", title: "Свежы падбор твораў", image: "/images/podborka prewiew 1.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
     { id: "21", category: "Прэв'ю", title: "Свежы падбор твораў", image: "/images/podborka prewiew 2.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
