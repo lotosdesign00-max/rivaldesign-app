@@ -1,2151 +1,1081 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import { motion, AnimatePresence } from "framer-motion";
 
-const TABS = {
-  GALLERY: "gallery",
-  REVIEWS: "reviews",
-  PRICING: "pricing",
-  CART: "cart", // Перемещено сразу после PRICING
-  ABOUT_FAQ: "about_faq", // Объединенная вкладка "Обо мне" и "FAQ"
-  AI: "ai",
-};
-
-// ТЕМЫ С ЦВЕТОВЫМИ СХЕМАМИ (фиксированные цвета)
-const THEMES = {
-  DARK: {
-    id: "dark",
-    name: "Темная",
-    icon: "🌙",
-    colors: {
-      primary: "#0a0a0a",
-      secondary: "#1a1a1a",
-      accent: "#7c3aed",
-      text: "#f8fafc",
-      textSecondary: "#94a3b8",
-      border: "#2d3748",
-      card: "#1a1a1a",
-      button: "#7c3aed",
-      buttonText: "#ffffff",
-      tabActive: "#7c3aed",
-      shadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-      gradient: "linear-gradient(145deg, #0a0a0a, #1a1a1a)"
-    }
-  },
-  LIGHT: {
-    id: "light", 
-    name: "Светлая",
-    icon: "☀️",
-    colors: {
-      primary: "#f1f5f9",
-      secondary: "#ffffff",
-      accent: "#2563eb",
-      text: "#1e293b",
-      textSecondary: "#64748b",
-      border: "#e2e8f0",
-      card: "#ffffff",
-      button: "#2563eb",
-      buttonText: "#ffffff",
-      tabActive: "#2563eb",
-      shadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
-      gradient: "linear-gradient(145deg, #f1f5f9, #e2e8f0)"
-    }
-  },
-  RED: {
-    id: "red",
-    name: "Красная",
-    icon: "🔴",
-    colors: {
-      primary: "#1a0000",
-      secondary: "#2a0000",
-      accent: "#dc2626",
-      text: "#fef2f2",
-      textSecondary: "#fca5a5",
-      border: "#7f1d1d",
-      card: "#2a0000",
-      button: "#dc2626",
-      buttonText: "#ffffff",
-      tabActive: "#dc2626",
-      shadow: "0 4px 12px rgba(220, 38, 38, 0.15)",
-      gradient: "linear-gradient(145deg, #1a0000, #2a0000)"
-    }
-  },
-  BLUE: {
-    id: "blue",
-    name: "Синяя",
-    icon: "🔵",
-    colors: {
-      primary: "#0c1a2d",
-      secondary: "#1e293b",
-      accent: "#0ea5e9",
-      text: "#e2e8f0",
-      textSecondary: "#94a3b8",
-      border: "#334155",
-      card: "#1e293b",
-      button: "#0ea5e9",
-      buttonText: "#ffffff",
-      tabActive: "#0ea5e9",
-      shadow: "0 4px 12px rgba(14, 165, 233, 0.1)",
-      gradient: "linear-gradient(145deg, #0c1a2d, #1e293b)"
-    }
-  },
-  PURPLE: {
-    id: "purple",
-    name: "Фиолетовая",
-    icon: "🟣",
-    colors: {
-      primary: "#1e0b3a",
-      secondary: "#2d1b4e",
-      accent: "#a855f7",
-      text: "#f5f3ff",
-      textSecondary: "#c4b5fd",
-      border: "#4c1d95",
-      card: "#2d1b4e",
-      button: "#a855f7",
-      buttonText: "#ffffff",
-      tabActive: "#a855f7",
-      shadow: "0 4px 12px rgba(168, 85, 247, 0.1)",
-      gradient: "linear-gradient(145deg, #1e0b3a, #2d1b4e)"
-    }
-  },
-  GRADIENT: {
-    id: "gradient",
-    name: "Градиент",
-    icon: "🌈",
-    colors: {
-      primary: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)",
-      secondary: "linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%)",
-      accent: "#ffd166",
-      text: "#ffffff",
-      textSecondary: "rgba(255,255,255,0.85)",
-      border: "rgba(255,255,255,0.25)",
-      card: "rgba(255,255,255,0.12)",
-      button: "#ffd166",
-      buttonText: "#000000",
-      tabActive: "#ffd166",
-      shadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-      gradient: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)"
-    }
-  },
-  NEON: {
-    id: "neon",
-    name: "Неон",
-    icon: "💡",
-    colors: {
-      primary: "#000000",
-      secondary: "#0a0a0a",
-      accent: "#00ff9d",
-      text: "#ffffff",
-      textSecondary: "#00ff9d",
-      border: "#00ff9d",
-      card: "#0a0a0a",
-      button: "#00ff9d",
-      buttonText: "#000000",
-      tabActive: "#00ff9d",
-      shadow: "0 0 10px rgba(0, 255, 157, 0.3)",
-      gradient: "linear-gradient(145deg, #000000, #0a0a0a)"
-    }
+// ==================== SOUND DESIGN (optional) ====================
+// Simple beep sound using Web Audio API
+const playSound = (type = 'click') => {
+  if (!window.soundEnabled) return;
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    oscillator.frequency.value = type === 'click' ? 800 : type === 'success' ? 1000 : 400;
+    gainNode.gain.value = 0.1;
+    
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 0.1);
+  } catch (e) {
+    // Fallback if AudioContext fails
   }
 };
 
-// Курсы валют (примерные)
-const EXCHANGE_RATES = {
-  USD: 1,
-  RUB: 95,
-  UAH: 40,
-  BYN: 3.2,
-  KZT: 450,
+// ==================== CONSTANTS ====================
+
+const TABS = {
+  HOME: "home",
+  PORTFOLIO: "portfolio",
+  SHOP: "shop",
+  CART: "cart",
+  LEARN: "learn",
+  PROFILE: "profile",
+  MORE: "more",
 };
 
-const LANGUAGE_TO_CURRENCY = {
-  ru: { symbol: "₽", code: "RUB" },
-  ua: { symbol: "₴", code: "UAH" },
-  en: { symbol: "$", code: "USD" },
-  by: { symbol: "Br", code: "BYN" },
-  kz: { symbol: "₸", code: "KZT" },
+const SUB_TABS = {
+  INSPIRATION: "inspiration",
+  COLLECTIONS: "collections",
+  CONTESTS: "contests",
+  FRIENDS: "friends",
+  CHAT: "chat",
+  NFT: "nft",
+  CALENDAR: "calendar",
+  ACHIEVEMENTS: "achievements",
+  SETTINGS: "settings",
+  HELP: "help",
+  STATS: "stats",
+  BADGES: "badges",
+  CERTIFICATES: "certificates",
+  PROJECTS: "projects",
+  REVIEWS: "reviews",
+  QUESTIONS: "questions",
 };
+
+// 10 professional color themes
+const THEMES = {
+  DARK: { id: "dark", name: "Dark", icon: "🌙", colors: { primary: "#0a0a0f", secondary: "#1a1a24", accent: "#a78bfa", text: "#ffffff", textSecondary: "#a1a1b0", border: "#2d2d3a", card: "rgba(25,25,35,0.9)", button: "#a78bfa", buttonText: "#000000", tabActive: "#a78bfa", shadow: "0 20px 40px rgba(167,139,250,0.2)", gradient: "linear-gradient(145deg, #0a0a0f, #1a1a24)" } },
+  LIGHT: { id: "light", name: "Light", icon: "☀️", colors: { primary: "#f8fafc", secondary: "#ffffff", accent: "#3b82f6", text: "#0f172a", textSecondary: "#475569", border: "#e2e8f0", card: "rgba(255,255,255,0.9)", button: "#3b82f6", buttonText: "#ffffff", tabActive: "#3b82f6", shadow: "0 20px 40px rgba(59,130,246,0.1)", gradient: "linear-gradient(145deg, #f1f5f9, #ffffff)" } },
+  PURPLE: { id: "purple", name: "Purple", icon: "🟣", colors: { primary: "#1e1029", secondary: "#2d1b38", accent: "#d8b4fe", text: "#f5f0ff", textSecondary: "#c4b5fd", border: "#4c2a5c", card: "rgba(45,27,56,0.9)", button: "#d8b4fe", buttonText: "#000000", tabActive: "#d8b4fe", shadow: "0 20px 40px rgba(216,180,254,0.2)", gradient: "linear-gradient(145deg, #1e1029, #2d1b38)" } },
+  NEON: { id: "neon", name: "Neon", icon: "💡", colors: { primary: "#0b0b0f", secondary: "#14141c", accent: "#00ffaa", text: "#ffffff", textSecondary: "#70ffd0", border: "#00ffaa", card: "rgba(10,20,15,0.9)", button: "#00ffaa", buttonText: "#000000", tabActive: "#00ffaa", shadow: "0 0 40px #00ffaa", gradient: "linear-gradient(145deg, #0b0b0f, #14141c)" } },
+  OCEAN: { id: "ocean", name: "Ocean", icon: "🌊", colors: { primary: "#0b1a2e", secondary: "#1a2f3f", accent: "#38bdf8", text: "#ffffff", textSecondary: "#b0d4f0", border: "#2d4a62", card: "rgba(20,40,60,0.9)", button: "#38bdf8", buttonText: "#000000", tabActive: "#38bdf8", shadow: "0 20px 40px rgba(56,189,248,0.2)", gradient: "linear-gradient(145deg, #0b1a2e, #1a2f3f)" } },
+  SUNSET: { id: "sunset", name: "Sunset", icon: "🌅", colors: { primary: "#2d1b1b", secondary: "#3d2a2a", accent: "#f97316", text: "#fff7ed", textSecondary: "#fed7aa", border: "#7f2d0f", card: "rgba(61,42,42,0.9)", button: "#f97316", buttonText: "#000000", tabActive: "#f97316", shadow: "0 20px 40px rgba(249,115,22,0.2)", gradient: "linear-gradient(145deg, #2d1b1b, #3d2a2a)" } },
+  FOREST: { id: "forest", name: "Forest", icon: "🌲", colors: { primary: "#0f2b1f", secondary: "#1f3f2f", accent: "#4ade80", text: "#f0fdf4", textSecondary: "#bbf7d0", border: "#166534", card: "rgba(31,63,47,0.9)", button: "#4ade80", buttonText: "#000000", tabActive: "#4ade80", shadow: "0 20px 40px rgba(74,222,128,0.2)", gradient: "linear-gradient(145deg, #0f2b1f, #1f3f2f)" } },
+  COSMIC: { id: "cosmic", name: "Cosmic", icon: "🚀", colors: { primary: "#0e0b1f", secondary: "#1e1b2f", accent: "#c084fc", text: "#f5f0ff", textSecondary: "#d8b4fe", border: "#4c1d95", card: "rgba(30,27,47,0.9)", button: "#c084fc", buttonText: "#000000", tabActive: "#c084fc", shadow: "0 20px 40px rgba(192,132,252,0.2)", gradient: "linear-gradient(145deg, #0e0b1f, #1e1b2f)" } },
+  LAVENDER: { id: "lavender", name: "Lavender", icon: "🌸", colors: { primary: "#1f1729", secondary: "#2f1f39", accent: "#e879f9", text: "#faf5ff", textSecondary: "#f5d0fe", border: "#86198f", card: "rgba(47,31,57,0.9)", button: "#e879f9", buttonText: "#000000", tabActive: "#e879f9", shadow: "0 20px 40px rgba(232,121,249,0.2)", gradient: "linear-gradient(145deg, #1f1729, #2f1f39)" } },
+  RETRO: { id: "retro", name: "Retro", icon: "📼", colors: { primary: "#2b1f1a", secondary: "#3b2f2a", accent: "#fbbf24", text: "#fef3c7", textSecondary: "#fde68a", border: "#92400e", card: "rgba(59,47,42,0.9)", button: "#fbbf24", buttonText: "#000000", tabActive: "#fbbf24", shadow: "0 20px 40px rgba(251,191,36,0.2)", gradient: "linear-gradient(145deg, #2b1f1a, #3b2f2a)" } },
+};
+
+// Currency rates
+const EXCHANGE_RATES = { USD: 1, RUB: 95, UAH: 40, BYN: 3.2, KZT: 450, EUR: 0.92, CNY: 7.2, GBP: 0.8, JPY: 150, INR: 83 };
+
+const LANGUAGE_TO_CURRENCY = {
+  ru: { symbol: "₽", code: "RUB" }, ua: { symbol: "₴", code: "UAH" }, en: { symbol: "$", code: "USD" },
+  by: { symbol: "Br", code: "BYN" }, kz: { symbol: "₸", code: "KZT" }, de: { symbol: "€", code: "EUR" },
+  fr: { symbol: "€", code: "EUR" }, es: { symbol: "€", code: "EUR" }, zh: { symbol: "¥", code: "CNY" }, jp: { symbol: "¥", code: "JPY" },
+};
+
+const LANGUAGES = [
+  { code: "ru", name: "Русский", flag: "🇷🇺" }, { code: "en", name: "English", flag: "🇺🇸" }, { code: "ua", name: "Українська", flag: "🇺🇦" },
+  { code: "kz", name: "Қазақша", flag: "🇰🇿" }, { code: "by", name: "Беларуская", flag: "🇧🇾" }, { code: "de", name: "Deutsch", flag: "🇩🇪" },
+  { code: "fr", name: "Français", flag: "🇫🇷" }, { code: "es", name: "Español", flag: "🇪🇸" }, { code: "zh", name: "中文", flag: "🇨🇳" }, { code: "jp", name: "日本語", flag: "🇯🇵" },
+];
 
 const TAB_LABELS = {
   ru: {
-    [TABS.GALLERY]: "Галерея",
-    [TABS.REVIEWS]: "Отзывы",
-    [TABS.PRICING]: "Прайс",
-    [TABS.CART]: "🛒 Корзина",
-    [TABS.ABOUT_FAQ]: "Обо мне & FAQ",
-    [TABS.AI]: "AI идеи",
+    [TABS.HOME]: { label: "Главная", icon: "🏠" },
+    [TABS.PORTFOLIO]: { label: "Портфолио", icon: "🎨" },
+    [TABS.SHOP]: { label: "Магазин", icon: "🛍️" },
+    [TABS.CART]: { label: "Корзина", icon: "🛒" },
+    [TABS.LEARN]: { label: "Курсы", icon: "📚" },
+    [TABS.PROFILE]: { label: "Профиль", icon: "👤" },
+    [TABS.MORE]: { label: "Ещё", icon: "⋯" },
   },
   en: {
-    [TABS.GALLERY]: "Gallery",
-    [TABS.REVIEWS]: "Reviews",
-    [TABS.PRICING]: "Pricing",
-    [TABS.CART]: "🛒 Cart",
-    [TABS.ABOUT_FAQ]: "About & FAQ",
-    [TABS.AI]: "AI Ideas",
-  },
-  ua: {
-    [TABS.GALLERY]: "Галерея",
-    [TABS.REVIEWS]: "Відгуки",
-    [TABS.PRICING]: "Прайс",
-    [TABS.CART]: "🛒 Кошик",
-    [TABS.ABOUT_FAQ]: "Про мене & FAQ",
-    [TABS.AI]: "AI ідеї",
-  },
-  kz: {
-    [TABS.GALLERY]: "Галерея",
-    [TABS.REVIEWS]: "Пікірлер",
-    [TABS.PRICING]: "Прайс",
-    [TABS.CART]: "🛒 Себет",
-    [TABS.ABOUT_FAQ]: "Мен туралы & FAQ",
-    [TABS.AI]: "AI идеялар",
-  },
-  by: {
-    [TABS.GALLERY]: "Галерэя",
-    [TABS.REVIEWS]: "Водгукі",
-    [TABS.PRICING]: "Прайс",
-    [TABS.CART]: "🛒 Кошык",
-    [TABS.ABOUT_FAQ]: "Пра мяне & FAQ",
-    [TABS.AI]: "AI ідэі",
+    [TABS.HOME]: { label: "Home", icon: "🏠" },
+    [TABS.PORTFOLIO]: { label: "Portfolio", icon: "🎨" },
+    [TABS.SHOP]: { label: "Shop", icon: "🛍️" },
+    [TABS.CART]: { label: "Cart", icon: "🛒" },
+    [TABS.LEARN]: { label: "Learn", icon: "📚" },
+    [TABS.PROFILE]: { label: "Profile", icon: "👤" },
+    [TABS.MORE]: { label: "More", icon: "⋯" },
   },
 };
 
-// Категории галереи для разных языков
-const GALLERY_CATEGORIES_TRANSLATIONS = {
-  ru: ["Аватарки", "Превью", "Баннеры"],
-  en: ["Avatars", "Previews", "Banners"],
-  ua: ["Аватарки", "Прев'ю", "Банери"],
-  kz: ["Аватарлар", "Превью", "Баннерлер"],
-  by: ["Аватаркі", "Прэв'ю", "Банеры"]
+const PORTFOLIO_CATEGORIES = {
+  ru: ["Все", "Аватарки", "Превью", "Баннеры", "Логотипы", "3D", "Анимация", "Иллюстрации", "NFT"],
+  en: ["All", "Avatars", "Previews", "Banners", "Logos", "3D", "Animation", "Illustrations", "NFT"],
 };
 
-// FAQ вопросы для разных языков (обновленные с короткими ответами)
-const FAQ_TRANSLATIONS = {
-  ru: [
-    {
-      question: "📝 Как проходит работа?",
-      answer: "1. Приветствие\n2. Обсуждение проекта\n3. Согласование\n4. Оплата\n5. Ожидание выполнения заказа (от 1 до 3х дней, если срочный то быстрее)\n6. Получение товара\n6. Правки (если есть)\n7. Отзыв"
-    },
-    {
-      question: "💾 Что я получу?",
-      answer: "✅ Качественную работу\n✅ Вежливое общение\n✅ Исходные PSD/AEP файлы\n✅ 3 бесплатные правки"
-    },
-    {
-      question: "✏️ Сколько правок?",
-      answer: "🔄 В стоимость входит до 3 бесплатных правок\n💰 Дополнительные — обсуждаем отдельно"
-    },
-    {
-      question: "💳 Как оплатить?",
-      answer: "💳 Карта любой страны\n💸 Криптовалюта, CryptoBot (USDT)\n\n💵 50% предоплата + 50% после"
-    },
-    {
-      question: "⚡ Срочный заказ?",
-      answer: "🔥 Срок выполнения может достигать до 3 часов, в зависимости от сложности и объема\n💸 +20-50% за срочность"
-    }
-  ],
-  en: [
-    {
-      question: "📝 How does the process work?",
-      answer: "1. Greeting\n2. Project discussion\n3. Agreement\n4. Payment\n5. Waiting for order completion (1-3 days, faster for urgent orders)\n6. Receiving the product\n7. Revisions (if needed)\n8. Review"
-    },
-    {
-      question: "💾 What will I receive?",
-      answer: "✅ Quality work\n✅ Polite communication\n✅ Source PSD/AEP files\n✅ 3 free revisions"
-    },
-    {
-      question: "✏️ How many revisions?",
-      answer: "🔄 Price includes up to 3 free revisions\n💰 Additional revisions discussed separately"
-    },
-    {
-      question: "💳 How to pay?",
-      answer: "💳 Card from any country\n💸 Cryptocurrency, CryptoBot (USDT)\n\n💵 50% prepayment + 50% after"
-    },
-    {
-      question: "⚡ Urgent order?",
-      answer: "🔥 Completion time can be up to 3 hours, depending on complexity and volume\n💸 +20-50% for urgency"
-    }
-  ],
-  ua: [
-    {
-      question: "📝 Як проходить робота?",
-      answer: "1. Вітання\n2. Обговорення проекту\n3. Узгодження\n4. Оплата\n5. Очікування виконання замовлення (від 1 до 3 днів, якщо термінове то швидше)\n6. Отримання товару\n7. Правки (якщо потрібно)\n8. Відгук"
-    },
-    {
-      question: "💾 Що я отримаю?",
-      answer: "✅ Якісну роботу\n✅ Ввічливе спілкування\n✅ Вихідні PSD/AEP файли\n✅ 3 безкоштовні правки"
-    },
-    {
-      question: "✏️ Скільки правок?",
-      answer: "🔄 У вартість входить до 3 безкоштовних правок\n💰 Додаткові — обговорюємо окремо"
-    },
-    {
-      question: "💳 Як оплатити?",
-      answer: "💳 Карта будь-якої країни\n💸 Криптовалюта, CryptoBot (USDT)\n\n💵 50% передоплата + 50% після"
-    },
-    {
-      question: "⚡ Термінове замовлення?",
-      answer: "🔥 Термін виконання може досягати до 3 годин, залежно від складності та обсягу\n💸 +20-50% за терміновість"
-    }
-  ],
-  kz: [
-    {
-      question: "📝 Жұмыс қалай өтеді?",
-      answer: "1. Сәлемдесу\n2. Жобаны талқылау\n3. Келісім\n4. Төлем\n5. Тапсырысты орындауды күту (1-3 күн, шұғыл болса жылдам)\n6. Тауарды алу\n7. Өзгерістер (қажет болса)\n8. Пікір"
-    },
-    {
-      question: "💾 Мен не аламын?",
-      answer: "✅ Сапалы жұмыс\n✅ Әдепті қарым-қатынас\n✅ Бастапқы PSD/AEP файлдар\n✅ 3 тегін өзгеріс"
-    },
-    {
-      question: "✏️ Қанша өзгеріс?",
-      answer: "🔄 Бағаға дейін 3 тегін өзгеріс кіреді\n💰 Қосымша өзгерістер бөлек талқыланады"
-    },
-    {
-      question: "💳 Қалай төлем жасауға болады?",
-      answer: "💳 Кез келген елдің картасы\n💸 Криптовалюта, CryptoBot (USDT)\n\n💵 50% алдын ала төлем + 50% кейін"
-    },
-    {
-      question: "⚡ Шұғыл тапсырыс?",
-      answer: "🔥 Орындау мерзімі 3 сағатқа дейін жетуі мүмкін, күрделілігі мен көлеміне байланысты\n💸 Шұғылдық үшін +20-50%"
-    }
-  ],
-  by: [
-    {
-      question: "📝 Як праходзіць работа?",
-      answer: "1. Прывітанне\n2. Абмеркаванне праекта\n3. Узгадненне\n4. Аплата\n5. Чаканне выканання замовы (ад 1 да 3 дзён, калі тэрміновае то хутчэй)\n6. Атрыманне тавару\n7. Праўкі (калі трэба)\n8. Водгук"
-    },
-    {
-      question: "💾 Што я атрымаю?",
-      answer: "✅ Якасную працу\n✅ Ветлівае зносіны\n✅ Зыходныя PSD/AEP файлы\n✅ 3 бясплатныя праўкі"
-    },
-    {
-      question: "✏️ Колькі праўкі?",
-      answer: "🔄 У кошт уваходзіць да 3 бясплатных праўкі\n💰 Дадатковыя — абмяркоўваем асобна"
-    },
-    {
-      question: "💳 Як аплаціць?",
-      answer: "💳 Карта любой краіны\n💸 Крыптавалюта, CryptoBot (USDT)\n\n💵 50% папярэдняя аплата + 50% пасля"
-    },
-    {
-      question: "⚡ Тэрміновая замова?",
-      answer: "🔥 Тэрмін выканання можа дасягаць да 3 гадзін, у залежнасці ад складанасці і аб'ёму\n💸 +20-50% за тэрміновасць"
-    }
-  ]
-};
+// Professional placeholder images
+const PORTFOLIO_ITEMS = Array.from({ length: 50 }, (_, i) => ({
+  id: `p${i}`,
+  category: ["Аватарки", "Превью", "Баннеры", "Логотипы", "3D", "Анимация", "Иллюстрации", "NFT"][i % 8],
+  title: `Work ${i + 1}`,
+  image: `https://picsum.photos/400/300?random=${i}`,
+  description: `Professional design work ${i + 1}`,
+  price: 5 + (i % 20),
+  rating: (4 + Math.random() * 1).toFixed(1),
+  likes: Math.floor(Math.random() * 1000),
+  views: Math.floor(Math.random() * 5000),
+  author: "Rival",
+  tags: ["design", "professional"],
+}));
 
-// Текст для секции "Обо мне" на разных языках
-const ABOUT_ME_TRANSLATIONS = {
-  ru: {
-    title: "Обо мне",
-    content: "Я Rival — графический дизайнер, с опытом более 1 года, который превращает идеи в стильные и запоминающиеся визуалы.\n\nЧто делаю:\n• Аватарки, превью, баннеры\n• Логотипы и брендинг\n• Дизайн для Twitch/YouTube/TikTok",
-    socialTitle: "🌐 Мои соцсети",
-    socialDescription: "Подписывайся, чтобы следить за моими работами и быть в курсе новых проектов!",
-    socialWait: "Жду только тебя! 🚀"
-  },
-  en: {
-    title: "About me",
-    content: "I'm Rival — a graphic designer with over 1 year of experience who turns ideas into stylish and memorable visuals.\n\nWhat I do:\n• Avatars, previews, banners\n• Logos and branding\n• Design for Twitch/YouTube/TikTok",
-    socialTitle: "🌐 My social media",
-    socialDescription: "Subscribe to follow my works and stay updated on new projects!",
-    socialWait: "Waiting just for you! 🚀"
-  },
-  ua: {
-    title: "Про мене",
-    content: "Я Rival — графічний дизайнер, з досвідом понад 1 рік, який перетворює ідеї на стильні та запам'ятовуючі візуали.\n\nЩо роблю:\n• Аватарки, прев'ю, банери\n• Логотипи та брендинг\n• Дизайн для Twitch/YouTube/TikTok",
-    socialTitle: "🌐 Мої соцмережі",
-    socialDescription: "Підписуйся, щоб слідкувати за моїми роботами та бути в курсі нових проектів!",
-    socialWait: "Чекаю тільки на тебе! 🚀"
-  },
-  kz: {
-    title: "Мен туралы",
-    content: "Мен Rival — 1 жылдан астам тәжірибесі бар графикалық дизайнер, идеяларды стильді және есте қаларлық визуалдарға айналдырамын.\n\nНе істеймін:\n• Аватарлар, превью, баннерлер\n• Логотиптер және брендинг\n• Twitch/YouTube/TikTok үшін дизайн",
-    socialTitle: "🌐 Менің әлеуметтік желілерім",
-    socialDescription: "Менің жұмыстарымды қадағалау және жаңа жобалардан хабардар болу үшін жазылыңыз!",
-    socialWait: "Тек сені күтемін! 🚀"
-  },
-  by: {
-    title: "Пра мяне",
-    content: "Я Rival — графічны дызайнер, з досведам больш за 1 год, які ператварае ідэі ў стыльныя і запамінальныя візуалы.\n\nШто раблю:\n• Аватаркі, прэв'ю, банеры\n• Лагатыпы і брэндынг\n• Дызайн для Twitch/YouTube/TikTok",
-    socialTitle: "🌐 Мае сацсеткі",
-    socialDescription: "Падпісвайся, каб сачыць за маімі працамі і быць у курсе новых праектаў!",
-    socialWait: "Чакаю толькі цябе! 🚀"
-  }
-};
+const REVIEWS = Array.from({ length: 30 }, (_, i) => ({
+  id: `r${i}`,
+  name: `Client ${i + 1}`,
+  text: `Excellent designer! Professional work delivered on time. Very satisfied!`,
+  rating: 4 + Math.floor(Math.random() * 2),
+  avatar: "",
+  date: new Date(Date.now() - i * 86400000).toISOString().split("T")[0],
+}));
 
-// Текст для кнопки "нажми, чтобы увеличить"
-const ZOOM_HINT_TRANSLATIONS = {
-  ru: "🔍 нажми, чтобы увеличить",
-  en: "🔍 click to zoom",
-  ua: "🔍 натисніть, щоб збільшити",
-  kz: "🔍 үлкейту үшін басыңыз",
-  by: "🔍 націсніце, каб павялічыць"
-};
-
-// Тексты для корзины (обновленные для скидки по количеству)
-const CART_TEXTS = {
-  ru: {
-    cartTitle: "Корзина",
-    cartEmpty: "Корзина пуста",
-    cartItems: "Товары в корзине",
-    total: "Итого",
-    clearCart: "Очистить корзину",
-    orderAll: "Заказать всё",
-    addToCart: "В корзину",
-    remove: "Удалить",
-    quantity: "Кол-во",
-    discountNote: "При заказе 2+ товаров скидка 10%",
-    finalPrice: "Итоговая цена",
-  },
-  en: {
-    cartTitle: "Cart",
-    cartEmpty: "Cart is empty",
-    cartItems: "Items in cart",
-    total: "Total",
-    clearCart: "Clear cart",
-    orderAll: "Order all",
-    addToCart: "Add to cart",
-    remove: "Remove",
-    quantity: "Qty",
-    discountNote: "10% discount for 2+ items",
-    finalPrice: "Final price",
-  },
-  ua: {
-    cartTitle: "Кошик",
-    cartEmpty: "Кошик порожній",
-    cartItems: "Товари у кошику",
-    total: "Всього",
-    clearCart: "Очистити кошик",
-    orderAll: "Замовити все",
-    addToCart: "У кошик",
-    remove: "Видалити",
-    quantity: "Кількість",
-    discountNote: "Знижка 10% при замовленні 2+ товарів",
-    finalPrice: "Фінальна ціна",
-  },
-  kz: {
-    cartTitle: "Себет",
-    cartEmpty: "Себет бос",
-    cartItems: "Себеттегі тауарлар",
-    total: "Барлығы",
-    clearCart: "Себетті тазалау",
-    orderAll: "Барлығын тапсыру",
-    addToCart: "Себетке қосу",
-    remove: "Жою",
-    quantity: "Саны",
-    discountNote: "2+ тауарға 10% жеңілдік",
-    finalPrice: "Соңғы баға",
-  },
-  by: {
-    cartTitle: "Кошык",
-    cartEmpty: "Кошык пусты",
-    cartItems: "Тавары ў кошыку",
-    total: "Усяго",
-    clearCart: "Ачысціць кошык",
-    orderAll: "Замовіць усё",
-    addToCart: "У кошык",
-    remove: "Выдаліць",
-    quantity: "Колькасць",
-    discountNote: "Зніжка 10% пры замове 2+ тавараў",
-    finalPrice: "Канчатковая цана",
-  }
-};
-
-const TEXTS = {
-  ru: {
-    appTitle: "Rival App",
-    galleryTitle: "Галерея работ",
-    gallerySubtitle: "Аватарки, превью, баннеры и другие проекты.",
-    galleryHint: "Выбери категорию сверху и листай работы свайпом.",
-    reviewsTitle: "Отзывы клиентов",
-    reviewsSubtitle: "Настоящие отзывы моих клиентов.",
-    reviewsAddButton: "Оставить отзыв",
-    pricingTitle: "Прайс / Услуги",
-    pricingCurrencyHint: "Цены в {currency} (курс: 1$ ≈ {rate} {currency})",
-    aboutTitle: "Обо мне",
-    aboutSubtitle: "Я Rival — графический дизайнер, с опытом более 1 года, который превращает идеи в стильные и запоминающиеся визуалы.\n\nЧто делаю:\n• Аватарки, превью, баннеры\n• Логотипы и брендинг\n• Дизайн для Twitch/YouTube/TikTok",
-    faqTitle: "Часто задаваемые вопросы",
-    aboutFaqTitle: "Обо мне & FAQ",
-    aiTitle: "AI идеи",
-    aiSubtitle: "Генератор идей для палитр, референсов и концептов (в разработке).",
-    bottomOrder: "Оформить заказ",
-    bottomGenerate: "Сгенерировать идею",
-    orderAlert: "Скоро здесь будет переход к твоему Telegram для оформления заказа 😉",
-    aiAlert: "Скоро здесь будет генератор идей на AI 🚀",
-    ...CART_TEXTS.ru,
-  },
-  en: {
-    appTitle: "Rival App",
-    galleryTitle: "Portfolio",
-    gallerySubtitle: "Avatars, thumbnails, banners and other projects.",
-    galleryHint: "Choose a category above and swipe through your works.",
-    reviewsTitle: "Client reviews",
-    reviewsSubtitle: "Real feedback from my clients.",
-    reviewsAddButton: "Leave a review",
-    pricingTitle: "Pricing / Services",
-    pricingCurrencyHint: "Prices in {currency} (rate: 1$ ≈ {rate} {currency})",
-    aboutTitle: "About me",
-    aboutSubtitle: "I'm Rival — a graphic designer with over 1 year of experience who turns ideas into stylish and memorable visuals.\n\nWhat I do:\n• Avatars, previews, banners\n• Logos and branding\n• Design for Twitch/YouTube/TikTok",
-    faqTitle: "Frequently Asked Questions",
-    aboutFaqTitle: "About & FAQ",
-    aiTitle: "AI ideas",
-    aiSubtitle: "Idea generator for palettes, references and concepts (coming soon).",
-    bottomOrder: "Place an order",
-    bottomGenerate: "Generate idea",
-    orderAlert: "Soon this will open your Telegram for orders 😉",
-    aiAlert: "Soon this will be an AI idea generator 🚀",
-    ...CART_TEXTS.en,
-  },
-  ua: {
-    appTitle: "Rival App",
-    galleryTitle: "Галерея робіт",
-    gallerySubtitle: "Аватарки, прев'ю, банери та інші проєкти.",
-    galleryHint: "Обери категорію зверху та гортай роботи свайпом.",
-    reviewsTitle: "Відгуки клієнтів",
-    reviewsSubtitle: "Реальні відгуки моїх клієнтів.",
-    reviewsAddButton: "Залишити відгук",
-    pricingTitle: "Прайс / Послуги",
-    pricingCurrencyHint: "Ціни в {currency} (курс: 1$ ≈ {rate} {currency})",
-    aboutTitle: "Про мене",
-    aboutSubtitle: "Я Rival — графічний дизайнер, з досвідом понад 1 рік, який перетворює ідеї на стильні та запам'ятовуючі візуали.\n\nЩо роблю:\n• Аватарки, прев'ю, банери\n• Логотипи та брендинг\n• Дизайн для Twitch/YouTube/TikTok",
-    faqTitle: "Часто задавані питання",
-    aboutFaqTitle: "Про мене & FAQ",
-    aiTitle: "AI ідеї",
-    aiSubtitle: "Генератор ідей для палітр, референсів та концептів (у розробці).",
-    bottomOrder: "Замовити дизайн",
-    bottomGenerate: "Згенерувати ідею",
-    orderAlert: "Скоро тут буде перехід у твій Telegram для замовлення 😉",
-    aiAlert: "Скоро тут буде AI-генератор ідей 🚀",
-    ...CART_TEXTS.ua,
-  },
-  kz: {
-    appTitle: "Rival App",
-    galleryTitle: "Жұмыстар галереясы",
-    gallerySubtitle: "Аватарлар, превью, баннерлер және басқа жобалар.",
-    galleryHint: "Жоғарыдан санатты таңда да, жұмыстарды свайппен қара.",
-    reviewsTitle: "Клиенттерімнің пікірлері",
-    reviewsSubtitle: "Нағыз клиенттерден пікірлер.",
-    reviewsAddButton: "Пікір қалдыру",
-    pricingTitle: "Прайс / Қызметтер",
-    pricingCurrencyHint: "Бағалар {currency} (курс: 1$ ≈ {rate} {currency})",
-    aboutTitle: "Мен туралы",
-    aboutSubtitle: "Мен Rival — 1 жылдан астам тәжірибесі бар графикалық дизайнер, идеяларды стильді және есте қаларлық визуалдарға айналдырамын.\n\nНе істеймін:\n• Аватарлар, превью, баннерлер\n• Логотиптер және брендинг\n• Twitch/YouTube/TikTok үшін дизайн",
-    faqTitle: "Жиі қойылатын сұрақтар",
-    aboutFaqTitle: "Мен туралы & FAQ",
-    aiTitle: "AI идеялар",
-    aiSubtitle: "Палитралар, референстер және концепттер үшін идея генераторы (әзірлеуде).",
-    bottomOrder: "Дизайнға тапсырыс беру",
-    bottomGenerate: "Идея генерациялау",
-    orderAlert: "Жақында мұнда тапсырыс беру үшін сенің Telegram-ыңа өтуді қосамыз 😉",
-    aiAlert: "Жақында мұнда AI идея генераторы болады 🚀",
-    ...CART_TEXTS.kz,
-  },
-  by: {
-    appTitle: "Rival App",
-    galleryTitle: "Галерэя работ",
-    gallerySubtitle: "Аватаркі, прэв'ю, банеры і іншыя праекты.",
-    galleryHint: "Абяры катэгорыю зверху і ліставай работы свайпам.",
-    reviewsTitle: "Водгукі маіх кліентаў",
-    reviewsSubtitle: "Сапраўдныя водгукі маіх кліентаў.",
-    reviewsAddButton: "Пакінуць водгук",
-    pricingTitle: "Прайс / Паслугі",
-    pricingCurrencyHint: "Цэны ў {currency} (курс: 1$ ≈ {rate} {currency})",
-    aboutTitle: "Пра мяне",
-    aboutSubtitle: "Я Rival — графічны дызайнер, з досведам больш за 1 год, які ператварае ідэі ў стыльныя і запамінальныя візуалы.\n\nШто раблю:\n• Аватаркі, прэв'ю, банеры\n• Лагатыпы і брэндынг\n• Дызайн для Twitch/YouTube/TikTok",
-    faqTitle: "Часта задаваныя пытанні",
-    aboutFaqTitle: "Пра мяне & FAQ",
-    aiTitle: "AI ідэі",
-    aiSubtitle: "Генератар ідэй для палітр, рэферансаў і канцэптаў (у распрацоўцы).",
-    bottomOrder: "Замовіць дызайн",
-    bottomGenerate: "Згенераваць ідэю",
-    orderAlert: "Хутка тут будзе пераход у твой Telegram для замовы 😉",
-    aiAlert: "Хутка тут буде AI-генератар ідэй 🚀",
-    ...CART_TEXTS.by,
-  },
-};
-
-// Исходные данные галереи (на русском)
-const GALLERY_ITEMS_RU = [
-  { id: "5", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 5.png", description: "«Воплоти свою идею в дизайн вместе с нами» " },
-  { id: "4", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 4.png", description: "«Воплоти свою идею в дизайн вместе с нами» " },
-  { id: "1", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 1.jpg", description: "«Воплоти свою идею в дизайн вместе с нами» " },
-  { id: "2", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 2.jpg", description: "«Воплоти свою идею в дизайн вместе с нами» " },
-  { id: "3", category: "Аватарки", title: "Свежая Подборка Работ", image: "/images/podborka av 3.jpg", description: "«Воплоти свою идею в дизайн вместе с нами» " },
-  { id: "25", category: "Превью", title: "Свежая Подборка Работ", image: "/images/мокап для превьюшек.png", description: "«Воплоти свою идею в дизайн вместе с нами»" },
-  { id: "20", category: "Превью", title: "Свежая Подборка Работ", image: "/images/podborka prewiew 1.jpg", description: "«Воплоти свою идею в дизайн вместе с нами»" },
-  { id: "21", category: "Превью", title: "Свежая Подборка Работ", image: "/images/podborka prewiew 2.jpg", description: "«Воплоти свою идею в дизайн вместе с нами»" },
-  { id: "22", category: "Превью", title: "Свежая Подборка Работ", image: "/images/podborka prewiew 3.jpg", description: "«Воплоти свою идею в дизайн вместе с нами»" },
-  { id: "23", category: "Превью", title: "Свежая Подборка Работ", image: "/images/podborka prewiew 4.jpg", description: "«Воплоти свою идею в дизайн вместе с нами»" },
-  { id: "24", category: "Превью", title: "Свежая Подборка Работ", image: "/images/podborka prewiew 5.jpg", description: "«Воплоти свою идею в дизайн вместе с нами»" },
-  { id: "3", category: "Баннеры", title: "Баннер 1", image: "/images/banner1.jpg", description: "Описание баннера 1" },
+const COURSES = [
+  { id: "c1", title: "Photoshop Fundamentals", lessons: 10, price: 50, image: "https://picsum.photos/400/300?random=101", level: "Beginner", duration: "10h", students: 1234, rating: 4.8 },
+  { id: "c2", title: "Advanced Design", lessons: 15, price: 80, image: "https://picsum.photos/400/300?random=102", level: "Intermediate", duration: "15h", students: 856, rating: 4.7 },
+  { id: "c3", title: "3D Modeling", lessons: 20, price: 120, image: "https://picsum.photos/400/300?random=103", level: "Advanced", duration: "20h", students: 567, rating: 4.9 },
+  { id: "c4", title: "Avatar Creation", lessons: 8, price: 40, image: "https://picsum.photos/400/300?random=104", level: "Beginner", duration: "8h", students: 2345, rating: 4.6 },
+  { id: "c5", title: "Motion Design", lessons: 12, price: 90, image: "https://picsum.photos/400/300?random=105", level: "Intermediate", duration: "12h", students: 432, rating: 4.8 },
+  { id: "c6", title: "UI/UX Basics", lessons: 10, price: 60, image: "https://picsum.photos/400/300?random=106", level: "Beginner", duration: "10h", students: 1567, rating: 4.7 },
+  { id: "c7", title: "Illustrator Mastery", lessons: 12, price: 70, image: "https://picsum.photos/400/300?random=107", level: "Intermediate", duration: "12h", students: 987, rating: 4.6 },
+  { id: "c8", title: "Figma Workflow", lessons: 8, price: 45, image: "https://picsum.photos/400/300?random=108", level: "Beginner", duration: "8h", students: 2134, rating: 4.9 },
+  { id: "c9", title: "Logo Design", lessons: 6, price: 35, image: "https://picsum.photos/400/300?random=109", level: "Beginner", duration: "6h", students: 1876, rating: 4.5 },
+  { id: "c10", title: "After Effects", lessons: 15, price: 100, image: "https://picsum.photos/400/300?random=110", level: "Advanced", duration: "15h", students: 654, rating: 4.8 },
 ];
 
-// Трансляции для галереи
-const GALLERY_TRANSLATIONS = {
-  ru: GALLERY_ITEMS_RU,
-  en: [ 
-    { id: "5", category: "Avatars", title: "Fresh Selection of Works", image: "/images/podborka av 5.jpg", description: "Bring your idea to life in design with us" },
-    { id: "4", category: "Avatars", title: "Fresh Selection of Works", image: "/images/podborka av 4.png", description: "Bring your idea to life in design with us" },
-    { id: "1", category: "Avatars", title: "Fresh Selection of Works", image: "/images/podborka av 1.jpg", description: "Bring your idea to life in design with us" },
-    { id: "2", category: "Avatars", title: "Fresh Selection of Works", image: "/images/podborka av 2.jpg", description: "Bring your idea to life in design with us" },
-    { id: "3", category: "Avatars", title: "Fresh Selection of Works", image: "/images/podborka av 3.jpg", description: "Bring your idea to life in design with us" },
-    { id: "25", category: "Previews", title: "Fresh Selection of Works", image: "/images/мокап для превьюшек.png", description: "Bring your idea to life in design with us" },
-    { id: "20", category: "Previews", title: "Fresh Selection of Works", image: "/images/podborka prewiew 1.jpg", description: "Bring your idea to life in design with us" },
-    { id: "21", category: "Previews", title: "Fresh Selection of Works", image: "/images/podborka prewiew 2.jpg", description: "Bring your idea to life in design with us" },
-    { id: "22", category: "Previews", title: "Fresh Selection of Works", image: "/images/podborka prewiew 3.jpg", description: "Bring your idea to life in design with us" },
-    { id: "23", category: "Previews", title: "Fresh Selection of Works", image: "/images/podborka prewiew 4.jpg", description: "Bring your idea to life in design with us" },
-    { id: "24", category: "Previews", title: "Fresh Selection of Works", image: "/images/podborka prewiew 5.jpg", description: "Bring your idea to life in design with us" },
-    { id: "3", category: "Banners", title: "Banner 1", image: "/images/banner1.jpg", description: "Banner description 1" },
-  ],
-  ua: [
-    { id: "5", category: "Аватарки", title: "Свіжа підбірка робіт", image: "/images/podborka av 5.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
-    { id: "4", category: "Аватарки", title: "Свіжа підбірка робіт", image: "/images/podborka av 4.png", description: "Втіли свою ідею в дизайн разом з нами" },
-    { id: "1", category: "Аватарки", title: "Свіжа підбірка робіт", image: "/images/podborka av 1.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
-    { id: "2", category: "Аватарки", title: "Свіжа підбірка робіт", image: "/images/podborka av 2.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
-    { id: "3", category: "Аватарки", title: "Свіжа підбірка робіт", image: "/images/podborka av 3.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
-    { id: "25", category: "Прев'ю", title: "Свіжа підбірка робіт", image: "/images/мокап для превьюшек.png", description: "Втіли свою ідею в дизайн разом з нами" },
-    { id: "20", category: "Прев'ю", title: "Свіжа підбірка робіт", image: "/images/podborka prewiew 1.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
-    { id: "21", category: "Прев'ю", title: "Свіжа підбірка робіт", image: "/images/podborka prewiew 2.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
-    { id: "22", category: "Прев'ю", title: "Свіжа підбірка робіт", image: "/images/podborka prewiew 3.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
-    { id: "23", category: "Прев'ю", title: "Свіжа підбірка робіт", image: "/images/podborka prewiew 4.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
-    { id: "24", category: "Прев'ю", title: "Свіжа підбірка робіт", image: "/images/podborka prewiew 5.jpg", description: "Втіли свою ідею в дизайн разом з нами" },
-    { id: "3", category: "Банери", title: "Банер 1", image: "/images/banner1.jpg", description: "Опис банера 1" },
-  ],
-  kz: [
-    { id: "5", category: "Аватарлар", title: "Жаңа таңдау шолуы", image: "/images/podborka av 5.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
-    { id: "4", category: "Аватарлар", title: "Жаңа таңдау шолуы", image: "/images/podborka av 4.png", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
-    { id: "1", category: "Аватарлар", title: "Жаңа таңдау шолуы", image: "/images/podborka av 1.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
-    { id: "2", category: "Аватарлар", title: "Жаңа таңдау шолуы", image: "/images/podborka av 2.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
-    { id: "3", category: "Аватарлар", title: "Жаңа таңдау шолуы", image: "/images/podborka av 3.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
-    { id: "25", category: "Превью", title: "Жаңа таңдау шолуы", image: "/images/мокап для превьюшек.png", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
-    { id: "20", category: "Превью", title: "Жаңа таңдау шолуы", image: "/images/podborka prewiew 1.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
-    { id: "21", category: "Превью", title: "Жаңа таңдау шолуы", image: "/images/podborka prewiew 2.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
-    { id: "22", category: "Превью", title: "Жаңа таңдау шолуы", image: "/images/podborka prewiew 3.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
-    { id: "23", category: "Превью", title: "Жаңа таңдау шолуы", image: "/images/podborka prewiew 4.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
-    { id: "24", category: "Превью", title: "Жаңа таңдау шолуы", image: "/images/podborka prewiew 5.jpg", description: "Бізбен бірге идеяңызды дизайн арқылы өмірге әкеліңіз" },
-    { id: "3", category: "Баннерлер", title: "Баннер 1", image: "/images/banner1.jpg", description: "Баннер сипаттамасы 1" },
-  ],
-  by: [
-    { id: "5", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 5.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
-    { id: "4", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 4.png", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
-    { id: "1", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 1.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
-    { id: "2", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 2.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
-    { id: "3", category: "Аватаркі", title: "Свежы падбор твораў", image: "/images/podborka av 3.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
-    { id: "25", category: "Прэв'ю", title: "Свежы падбор твораў", image: "/images/мокап для превьюшек.png", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
-    { id: "20", category: "Прэв'ю", title: "Свежы падбор твораў", image: "/images/podborka prewiew 1.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
-    { id: "21", category: "Прэв'ю", title: "Свежы падбор твораў", image: "/images/podborka prewiew 2.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
-    { id: "22", category: "Прэв'ю", title: "Свежы падбор твораў", image: "/images/podborka prewiew 3.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
-    { id: "23", category: "Прэв'ю", title: "Свежы падбор твораў", image: "/images/podborka prewiew 4.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
-    { id: "24", category: "Прэв'ю", title: "Свежы падбор твораў", image: "/images/podborka prewiew 5.jpg", description: "Ажыццявіце сваю ідэю ў дызайне з намі" },
-    { id: "3", category: "Банеры", title: "Банер 1", image: "/images/banner1.jpg", description: "Апісанне банеру 1" },
-  ]
-};
-
-// Отзывы с ссылками на Telegram
-const REVIEWS_ITEMS = [
-  { 
-    id: "r1", 
-    name: "W1tex", 
-    text: "Работа выполнена превосходно, очень доволен результатом.",
-    telegram: "w1tex_dsg"
-  },
-  { 
-    id: "r2", 
-    name: "Shyngyzx", 
-    text: "Отличный специалист, рекомендую к сотрудничеству.",
-    telegram: "Shyngyzx"
-  },
-  { 
-    id: "r3", 
-    name: "Butter", 
-    text: "Качество работы на высшем уровне, оценка 10/10.",
-    telegram: "BUTTE6"
-  },
-  { 
-    id: "r4", 
-    name: "scarlet roses", 
-    text: "Благодарю за проделанную работу, всё выполнено профессионально.",
-    telegram: "hoskefromheviz"
-  },
-  { 
-    id: "r5", 
-    name: "Solevoy", 
-    text: "Рекомендую всем — работа выполнена безупречно.",
-    telegram: "fazenemoy"
-  },
-  { 
-    id: "r6", 
-    name: "Aero", 
-    text: "Отличный результат, спасибо за качественную работу.",
-    telegram: "AeroDesig"
-  },
-  { 
-    id: "r7", 
-    name: "Firessk", 
-    text: "Большое спасибо, обязательно порекомендую вас своим знакомым.",
-    telegram: "firessk"
-  },
-  { 
-    id: "r8", 
-    name: "Helvite", 
-    text: "Работа выполнена на оценку 10/10, всё качественно.",
-    telegram: "Helvite0"
-  },
-  { 
-    id: "r9", 
-    name: "Usepsyho", 
-    text: "Всё выполнено быстро и профессионально, 10/10.",
-    telegram: "Usepsyho"
-  },
-  { 
-    id: "r10", 
-    name: "Filling", 
-    text: "Отличная работа, оценка 9/10, очень качественно.",
-    telegram: "Filling_tg"
-  },
-  { 
-    id: "r11", 
-    name: "Arthur", 
-    text: "Благодарю за профессиональный подход.",
-    telegram: "Arthur_dsg"
-  },
-  { 
-    id: "r12", 
-    name: "Kupiz", 
-    text: "Всё выполнено чётко и качественно.",
-    telegram: "Kupiz"
-  },
-  { 
-    id: "r13", 
-    name: "Du", 
-    text: "Полностью доволен результатом, получил всё что хотел.",
-    telegram: "Du_tg"
-  },
-  { 
-    id: "r14", 
-    name: "ZetaMert", 
-    text: "Всё отлично, работа выполнена качественно.",
-    telegram: "ZetaMert"
-  },
-  { 
-    id: "r15", 
-    name: "Rare", 
-    text: "Работа выполнена в указанные сроки, даже быстрее. Рекомендую специалиста @Rivaldsg.",
-    telegram: "Rare_user"
-  },
-  { 
-    id: "r16", 
-    name: "Xyi v tapke", 
-    text: "Отличный результат, очень доволен.",
-    telegram: "xyi_v_tapke"
-  },
-  { 
-    id: "r17", 
-    name: "Yvonne", 
-    text: "Работа выполнена именно так, как я и хотел.",
-    telegram: "Yvonne_dsg"
-  },
-  { 
-    id: "r18", 
-    name: "Wised", 
-    text: "Заказывал баннер и аватарку — рекомендую специалиста @Rivaldsg, работа выполнена профессионально.",
-    telegram: "Wised_tg"
-  },
-  { 
-    id: "r19", 
-    name: "Zahar", 
-    text: "@Rivaldsg оперативно выполнил заказ, всё чётко и быстро.",
-    telegram: "Zahar_user"
-  }
+const MERCH = [
+  { id: "m1", name: "Design T-Shirt", price: 25, image: "https://picsum.photos/400/300?random=20" },
+  { id: "m2", name: "Ceramic Mug", price: 15, image: "https://picsum.photos/400/300?random=21" },
+  { id: "m3", name: "Sticker Pack", price: 10, image: "https://picsum.photos/400/300?random=22" },
+  { id: "m4", name: "Premium Hoodie", price: 45, image: "https://picsum.photos/400/300?random=23" },
+  { id: "m5", name: "Enamel Pin", price: 5, image: "https://picsum.photos/400/300?random=24" },
 ];
 
-// Базовые цены в USD
-const BASE_PRICES = [
-  { id: 1, service: "Аватарка", priceUSD: 5 },
-  { id: 2, service: "Превью", priceUSD: 5 },
-  { id: 3, service: "Баннеры", priceUSD: 5 },
-  { id: 4, service: "Логотип", priceUSD: 5 },
-];
+const ACHIEVEMENTS = Array.from({ length: 50 }, (_, i) => ({
+  id: `a${i}`,
+  name: `Achievement ${i + 1}`,
+  description: `Description for achievement ${i + 1}`,
+  icon: ["🌟", "❤️", "📝", "🧭", "👥", "💰", "💡", "🎥", "🖼️", "🏆"][i % 10],
+  xp: 10 + (i % 20),
+}));
 
-const SERVICES_TRANSLATIONS = {
-  ru: {
-    "Аватарка": "Аватарка",
-    "Превью": "Превью",
-    "Баннеры": "Баннеры",
-    "Логотип": "Логотип"
-  },
-  en: {
-    "Аватарка": "Avatar",
-    "Превью": "Preview",
-    "Баннеры": "Banner",
-    "Логотип": "Logo"
-  },
-  ua: {
-    "Аватарка": "Аватарка",
-    "Превью": "Прев'ю",
-    "Баннеры": "Банер",
-    "Логотип": "Логотип"
-  },
-  kz: {
-    "Аватарка": "Аватар",
-    "Превью": "Алдын ала қарау",
-    "Баннеры": "Баннер",
-    "Логотип": "Логотипі"
-  },
-  by: {
-    "Аватарка": "Аватарка",
-    "Превью": "Папярэдні прагляд",
-    "Баннеры": "Банэр",
-    "Логотип": "Лагатып"
-  }
-};
+// ==================== MAIN COMPONENT ====================
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState(TABS.GALLERY);
+  const [activeTab, setActiveTab] = useState(TABS.HOME);
+  const [activeSubTab, setActiveSubTab] = useState(null);
   const [theme, setTheme] = useState(THEMES.DARK);
   const [language, setLanguage] = useState("ru");
-  const [showLangMenu, setShowLangMenu] = useState(false);
-  const [showThemeMenu, setShowThemeMenu] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("Аватарки");
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [showDrawer, setShowDrawer] = useState(false);
   const [cart, setCart] = useState([]);
-  const [hoveredCard, setHoveredCard] = useState(null);
-  const [expandedFaqIndex, setExpandedFaqIndex] = useState(null);
+  const [favorites, setFavorites] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [user, setUser] = useState({ name: "Guest", avatar: null, level: 1, xp: 0, achievements: [] });
+  const [viewedItems, setViewedItems] = useState([]);
+  const [collections, setCollections] = useState([]);
+  const [friends, setFriends] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [premium, setPremium] = useState(false);
+  const [filter, setFilter] = useState({ category: "All", minPrice: 0, maxPrice: 1000, rating: 0 });
+  const [showFilters, setShowFilters] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiResult, setAiResult] = useState(null);
+  const [imageErrors, setImageErrors] = useState({});
+  const [sortBy, setSortBy] = useState("newest");
+  const [courseFilter, setCourseFilter] = useState({ level: "All", priceRange: [0, 200] });
+  const [myCourses, setMyCourses] = useState([]);
+  const [courseProgress, setCourseProgress] = useState({});
+  const [activeCourse, setActiveCourse] = useState(null);
+  const [comments, setComments] = useState({});
+  const [likedItems, setLikedItems] = useState({});
+  const [followers, setFollowers] = useState(0);
+  const [following, setFollowing] = useState(0);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [hapticEnabled, setHapticEnabled] = useState(true);
+  const [certificates, setCertificates] = useState([]);
+  const [badges, setBadges] = useState([]);
+  const [stats, setStats] = useState({ orders: 0, totalSpent: 0, coursesCompleted: 0, projectsCreated: 0 });
 
+  // Enable sound globally
   useEffect(() => {
-    const savedTheme = localStorage.getItem("appTheme");
-    if (savedTheme && THEMES[savedTheme.toUpperCase()]) {
-      setTheme(THEMES[savedTheme.toUpperCase()]);
-    }
-  }, []);
+    window.soundEnabled = soundEnabled;
+  }, [soundEnabled]);
 
+  // Simulate haptic feedback
+  const triggerHaptic = () => {
+    if (hapticEnabled && window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(10);
+    }
+  };
+
+  // Enhanced click handler with sound and haptic
+  const handleClick = useCallback((action, soundType = 'click') => {
+    if (soundEnabled) playSound(soundType);
+    triggerHaptic();
+    if (action) action();
+  }, [soundEnabled, hapticEnabled]);
+
+  // Load from localStorage
   useEffect(() => {
-    const savedLanguage = localStorage.getItem("appLanguage");
-    if (savedLanguage && TEXTS[savedLanguage]) {
-      setLanguage(savedLanguage);
-    }
-  }, []);
-
-  useEffect(() => {
-    const savedCart = localStorage.getItem("appCart");
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
-    setTimeout(() => setIsLoading(false), 800);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("appCart", JSON.stringify(cart));
-  }, [cart]);
-
-  useEffect(() => {
-    const categories = GALLERY_CATEGORIES_TRANSLATIONS[language];
-    if (categories && categories.length > 0) {
-      setActiveCategory(categories[0]);
-    }
-  }, [language]);
-
-  const saveTheme = (themeId) => {
-    localStorage.setItem("appTheme", themeId);
-  };
-
-  const saveLanguage = (lang) => {
-    localStorage.setItem("appLanguage", lang);
-  };
-
-  const currencyInfo = LANGUAGE_TO_CURRENCY[language];
-  const t = TEXTS[language];
-  const labels = TAB_LABELS[language];
-  const galleryCategories = GALLERY_CATEGORIES_TRANSLATIONS[language] || GALLERY_CATEGORIES_TRANSLATIONS.ru;
-  const faqItems = FAQ_TRANSLATIONS[language] || FAQ_TRANSLATIONS.ru;
-  const aboutMe = ABOUT_ME_TRANSLATIONS[language] || ABOUT_ME_TRANSLATIONS.ru;
-  const galleryItems = GALLERY_TRANSLATIONS[language] || GALLERY_TRANSLATIONS.ru;
-  const zoomHint = ZOOM_HINT_TRANSLATIONS[language] || ZOOM_HINT_TRANSLATIONS.ru;
-
-  const convertPrice = (priceUSD) => {
-    const rate = EXCHANGE_RATES[currencyInfo.code];
-    return Math.round(priceUSD * rate);
-  };
-
-  const formatPrice = (priceUSD) => {
-    const converted = convertPrice(priceUSD);
-    return `${converted} ${currencyInfo.symbol}`;
-  };
-
-  const getCurrencyHint = () => {
-    const hintTemplate = t.pricingCurrencyHint;
-    const rate = EXCHANGE_RATES[currencyInfo.code];
-    const symbol = currencyInfo.symbol;
-    
-    return hintTemplate
-      .replace("{currency}", symbol)
-      .replace("{rate}", rate)
-      .replace("{currency}", symbol);
-  };
-
-  const getTranslatedServices = () => {
-    return BASE_PRICES.map(item => ({
-      ...item,
-      translatedService: SERVICES_TRANSLATIONS[language][item.service] || item.service
-    }));
-  };
-
-  const addToCart = (service) => {
-    const existingItem = cart.find(item => item.id === service.id);
-    if (existingItem) {
-      setCart(cart.map(item => 
-        item.id === service.id 
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      ));
-    } else {
-      setCart([...cart, { 
-        ...service, 
-        quantity: 1,
-        priceUSD: service.priceUSD
-      }]);
-    }
-  };
-
-  const removeFromCart = (id) => {
-    setCart(cart.filter(item => item.id !== id));
-  };
-
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) {
-      removeFromCart(id);
-      return;
-    }
-    setCart(cart.map(item => 
-      item.id === id ? { ...item, quantity: newQuantity } : item
-    ));
-  };
-
-  const clearCart = () => {
-    setCart([]);
-  };
-
-  const getCartTotal = () => {
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const subtotal = cart.reduce((sum, item) => sum + (item.priceUSD * item.quantity), 0);
-    const discount = totalItems >= 2 ? subtotal * 0.1 : 0;
-    return {
-      subtotal: subtotal,
-      discount: discount,
-      total: subtotal - discount,
-      totalItems: totalItems
+    const loadData = () => {
+      try {
+        const savedCart = localStorage.getItem("cart"); if (savedCart) setCart(JSON.parse(savedCart));
+        const savedFav = localStorage.getItem("favorites"); if (savedFav) setFavorites(JSON.parse(savedFav));
+        const savedHistory = localStorage.getItem("history"); if (savedHistory) setHistory(JSON.parse(savedHistory));
+        const savedCollections = localStorage.getItem("collections"); if (savedCollections) setCollections(JSON.parse(savedCollections));
+        const savedFriends = localStorage.getItem("friends"); if (savedFriends) setFriends(JSON.parse(savedFriends));
+        const savedMessages = localStorage.getItem("messages"); if (savedMessages) setMessages(JSON.parse(savedMessages));
+        const savedUser = localStorage.getItem("user"); if (savedUser) setUser(JSON.parse(savedUser));
+        const savedTheme = localStorage.getItem("theme"); if (savedTheme && THEMES[savedTheme.toUpperCase()]) setTheme(THEMES[savedTheme.toUpperCase()]);
+        const savedLang = localStorage.getItem("language"); if (savedLang) setLanguage(savedLang);
+        const savedPremium = localStorage.getItem("premium"); if (savedPremium) setPremium(JSON.parse(savedPremium));
+        const savedMyCourses = localStorage.getItem("myCourses"); if (savedMyCourses) setMyCourses(JSON.parse(savedMyCourses));
+        const savedCourseProgress = localStorage.getItem("courseProgress"); if (savedCourseProgress) setCourseProgress(JSON.parse(savedCourseProgress));
+        const savedCertificates = localStorage.getItem("certificates"); if (savedCertificates) setCertificates(JSON.parse(savedCertificates));
+        const savedBadges = localStorage.getItem("badges"); if (savedBadges) setBadges(JSON.parse(savedBadges));
+        const savedStats = localStorage.getItem("stats"); if (savedStats) setStats(JSON.parse(savedStats));
+      } catch (e) { console.error("Error loading data", e); } finally { setIsLoading(false); }
     };
-  };
+    loadData();
+  }, []);
 
-  const openTelegramProfile = (username) => {
-    window.open(`https://t.me/${username}`, "_blank");
-  };
+  // Save to localStorage
+  useEffect(() => { localStorage.setItem("cart", JSON.stringify(cart)); }, [cart]);
+  useEffect(() => { localStorage.setItem("favorites", JSON.stringify(favorites)); }, [favorites]);
+  useEffect(() => { localStorage.setItem("history", JSON.stringify(history)); }, [history]);
+  useEffect(() => { localStorage.setItem("collections", JSON.stringify(collections)); }, [collections]);
+  useEffect(() => { localStorage.setItem("friends", JSON.stringify(friends)); }, [friends]);
+  useEffect(() => { localStorage.setItem("messages", JSON.stringify(messages)); }, [messages]);
+  useEffect(() => { localStorage.setItem("user", JSON.stringify(user)); }, [user]);
+  useEffect(() => { localStorage.setItem("theme", theme.id); }, [theme]);
+  useEffect(() => { localStorage.setItem("language", language); }, [language]);
+  useEffect(() => { localStorage.setItem("premium", JSON.stringify(premium)); }, [premium]);
+  useEffect(() => { localStorage.setItem("myCourses", JSON.stringify(myCourses)); }, [myCourses]);
+  useEffect(() => { localStorage.setItem("courseProgress", JSON.stringify(courseProgress)); }, [courseProgress]);
+  useEffect(() => { localStorage.setItem("certificates", JSON.stringify(certificates)); }, [certificates]);
+  useEffect(() => { localStorage.setItem("badges", JSON.stringify(badges)); }, [badges]);
+  useEffect(() => { localStorage.setItem("stats", JSON.stringify(stats)); }, [stats]);
 
-  const toggleTheme = () => {
-    const themeKeys = Object.keys(THEMES);
-    const currentIndex = themeKeys.findIndex(key => THEMES[key].id === theme.id);
-    const nextIndex = (currentIndex + 1) % themeKeys.length;
-    const newTheme = THEMES[themeKeys[nextIndex]];
-    setTheme(newTheme);
-    saveTheme(newTheme.id);
-  };
+  // Notifications
+  const addNotification = useCallback((message, type = "info") => {
+    const id = Date.now();
+    setNotifications((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => setNotifications((prev) => prev.filter((n) => n.id !== id)), 3000);
+  }, []);
 
-  const selectTheme = (themeObj) => {
-    setTheme(themeObj);
-    saveTheme(themeObj.id);
-    setShowThemeMenu(false);
-  };
+  // XP System
+  const addXP = useCallback((amount) => {
+    setUser((prev) => {
+      const newXP = prev.xp + amount;
+      const newLevel = Math.floor(newXP / 100) + 1;
+      return { ...prev, xp: newXP, level: newLevel };
+    });
+  }, []);
 
-  const toggleLangMenu = () => {
-    setShowLangMenu(prev => !prev);
-    setShowThemeMenu(false);
-  };
-
-  const toggleThemeMenu = () => {
-    setShowThemeMenu(prev => !prev);
-    setShowLangMenu(false);
-  };
-
-  const handleLangChange = (lang) => {
-    setLanguage(lang);
-    saveLanguage(lang);
-    setShowLangMenu(false);
-  };
-
-  const toggleFaq = (index) => {
-    if (expandedFaqIndex === index) {
-      setExpandedFaqIndex(null);
-    } else {
-      setExpandedFaqIndex(index);
-    }
-  };
-
-  const handleBottomButton = () => {
-    if (activeTab === TABS.AI) {
-      alert(t.aiAlert);
-    } else if (activeTab === TABS.CART && cart.length > 0) {
-      const cartTotal = getCartTotal();
-      const servicesList = cart.map(item => 
-        `${item.translatedService || item.service} x${item.quantity}`
-      ).join(', ');
-      
-      const message = encodeURIComponent(
-        `Привет! Хочу заказать из корзины:\n` +
-        `${servicesList}\n` +
-        `Итоговая сумма: ${formatPrice(cartTotal.total)}\n` +
-        `Язык интерфейса: ${labels[TABS.ABOUT_FAQ] === "Обо мне & FAQ" ? "русский" : language}`
-      );
-      
-      window.open(`https://t.me/Rivaldsg?text=${message}`, "_blank");
-    } else {
-      let serviceType = "дизайн";
-      if (activeTab === TABS.PRICING) {
-        serviceType = "услугу из прайса";
-      } else if (activeTab === TABS.GALLERY) {
-        serviceType = "работу из галереи";
+  // Favorites
+  const toggleFavorite = useCallback((item) => {
+    setFavorites((prev) => {
+      const exists = prev.some((f) => f.id === item.id);
+      if (exists) {
+        addNotification("Removed from favorites", "warning");
+        return prev.filter((f) => f.id !== item.id);
+      } else {
+        addNotification("Added to favorites", "success");
+        addXP(5);
+        return [...prev, item];
       }
-      
-      const message = encodeURIComponent(
-        `Привет! Я с твоего портфолио. Хочу заказать ${serviceType}. ` +
-        `Язык интерфейса: ${labels[TABS.ABOUT_FAQ] === "Обо мне & FAQ" ? "русский" : language}`
-      );
-      
-      window.open(`https://t.me/Rivaldsg?text=${message}`, "_blank");
+    });
+  }, [addNotification, addXP]);
+
+  // Like
+  const toggleLike = useCallback((itemId) => {
+    setLikedItems((prev) => ({ ...prev, [itemId]: !prev[itemId] }));
+    if (!likedItems[itemId]) addXP(1);
+  }, [likedItems, addXP]);
+
+  // History
+  const addToHistory = useCallback((item) => {
+    setHistory((prev) => {
+      const filtered = prev.filter((h) => h.id !== item.id);
+      return [item, ...filtered].slice(0, 50);
+    });
+    setViewedItems((prev) => {
+      const filtered = prev.filter((v) => v.id !== item.id);
+      return [item, ...filtered].slice(0, 20);
+    });
+  }, []);
+
+  // Cart
+  const addToCart = useCallback((item, quantity = 1) => {
+    setCart((prev) => {
+      const existing = prev.find((i) => i.id === item.id);
+      if (existing) {
+        return prev.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i));
+      } else {
+        return [...prev, { ...item, quantity }];
+      }
+    });
+    addNotification("Item added to cart", "success");
+    addXP(2);
+  }, [addNotification, addXP]);
+
+  const removeFromCart = useCallback((id) => {
+    setCart((prev) => prev.filter((i) => i.id !== id));
+    addNotification("Item removed from cart", "info");
+  }, [addNotification]);
+
+  const updateQuantity = useCallback((id, delta) => {
+    setCart((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, quantity: Math.max(1, i.quantity + delta) } : i))
+    );
+  }, []);
+
+  const clearCart = useCallback(() => {
+    setCart([]);
+    addNotification("Cart cleared", "warning");
+  }, [addNotification]);
+
+  // Promo
+  const applyPromo = useCallback(() => {
+    if (promoCode.toLowerCase() === "rival20") {
+      setPromoApplied(true);
+      addNotification("20% promo applied!", "success");
+    } else if (promoCode.toLowerCase() === "rival10") {
+      setPromoApplied(true);
+      addNotification("10% promo applied!", "success");
+    } else {
+      addNotification("Invalid promo code", "error");
     }
-  };
+  }, [promoCode, addNotification]);
 
-  const handleCardMouseMove = (e, id) => {
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    const rotateY = ((x - centerX) / centerX) * 5;
-    const rotateX = ((centerY - y) / centerY) * 5;
-    
-    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
-    setHoveredCard(id);
-  };
+  // Cart total
+  const cartTotal = useMemo(() => {
+    const subtotal = cart.reduce((sum, i) => sum + (i.price || i.priceUSD || 0) * i.quantity, 0);
+    let discount = 0;
+    if (promoApplied) discount += subtotal * 0.1;
+    if (cart.length >= 3) discount += subtotal * 0.05;
+    if (premium) discount += subtotal * 0.15;
+    return { subtotal, discount, total: subtotal - discount, itemsCount: cart.reduce((s, i) => s + i.quantity, 0) };
+  }, [cart, promoApplied, premium]);
 
-  const handleCardMouseLeave = (e) => {
-    e.currentTarget.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-    setHoveredCard(null);
-  };
+  // Currency
+  const currencyInfo = LANGUAGE_TO_CURRENCY[language] || LANGUAGE_TO_CURRENCY.en;
+  const convertPrice = useCallback((usd) => Math.round(usd * EXCHANGE_RATES[currencyInfo.code]), [currencyInfo]);
+  const formatPrice = useCallback((usd) => `${convertPrice(usd)} ${currencyInfo.symbol}`, [convertPrice, currencyInfo]);
 
-  const SkeletonCard = () => (
-    <div 
-      className="project-card skeleton" 
-      style={{ 
-        background: theme.colors.card,
-        border: `1px solid ${theme.colors.border}`,
-        boxShadow: theme.colors.shadow
-      }}
+  // Image error handler
+  const handleImageError = (id) => setImageErrors((prev) => ({ ...prev, [id]: true }));
+
+  // Follow
+  const follow = useCallback(() => {
+    setFollowers((f) => f + 1);
+    addNotification("Followed successfully", "success");
+  }, [addNotification]);
+
+  // ========== TAB COMPONENTS ==========
+
+  const HomeTab = () => (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className="tab-pane home"
     >
-      <div className="project-thumb-wrapper skeleton" style={{ background: theme.colors.border }}></div>
-      <div className="project-info">
-        <div className="skeleton" style={{ 
-          width: '80%', 
-          height: '12px', 
-          background: theme.colors.border,
-          marginBottom: '6px',
-          borderRadius: '4px'
-        }}></div>
-        <div className="skeleton" style={{ 
-          width: '60%', 
-          height: '10px', 
-          background: theme.colors.border,
-          borderRadius: '4px'
-        }}></div>
+      <div className="welcome-card glass">
+        <h2>Welcome back, {user.name}!</h2>
+        <p>Level {user.level} • {user.xp} XP • Followers: {followers}</p>
+        <div className="xp-bar"><motion.div 
+          initial={{ width: 0 }}
+          animate={{ width: `${user.xp % 100}%` }}
+          transition={{ duration: 0.5 }}
+        /></div>
+        <motion.button 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="follow-btn" 
+          onClick={() => handleClick(follow)}
+        >➕ Follow</motion.button>
       </div>
-    </div>
+      <h3>Recommendations</h3>
+      <Swiper spaceBetween={12} slidesPerView={"auto"} className="feed-swiper">
+        {PORTFOLIO_ITEMS.slice(0, 10).map((item) => (
+          <SwiperSlide key={item.id} style={{ width: 200 }}>
+            <motion.div
+              whileHover={{ y: -5, boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}
+              className="feed-card glass"
+              onClick={() => handleClick(() => { addToHistory(item); setSelectedItem(item); })}
+            >
+              {imageErrors[item.id] ? <div className="image-placeholder">🖼️</div> : <img src={item.image} alt={item.title} onError={() => handleImageError(item.id)} />}
+              <h4>{item.title}</h4>
+              <p>{formatPrice(item.price)}</p>
+              <div className="card-actions-small">
+                <motion.button 
+                  whileTap={{ scale: 0.9 }}
+                  onClick={(e) => { e.stopPropagation(); handleClick(() => toggleLike(item.id)); }}
+                >{likedItems[item.id] ? "❤️" : "🤍"}</motion.button>
+                <span>{item.likes}</span>
+              </div>
+            </motion.div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </motion.div>
   );
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case TABS.GALLERY:
-        return (
-          <div className="card" style={{ 
-            background: theme.colors.card, 
-            boxShadow: theme.colors.shadow,
-            animation: 'fadeIn 0.4s ease'
-          }}>
-            <h2 className="section-title" style={{ 
-              color: theme.colors.text,
-              animation: 'slideDown 0.4s ease'
-            }}>{t.galleryTitle}</h2>
-            <p className="section-subtitle" style={{ 
-              color: theme.colors.textSecondary,
-              animation: 'slideDown 0.4s ease 0.1s forwards',
-              opacity: 0
-            }}>{t.gallerySubtitle}</p>
-            
-            <div 
-              className="tabs" 
-              style={{ 
-                borderBottom: `1px solid ${theme.colors.border}`,
-                background: theme.colors.secondary,
-                borderRadius: '8px',
-                padding: '4px',
-                marginBottom: '16px',
-                animation: 'slideDown 0.4s ease 0.2s forwards',
-                opacity: 0
-              }}
+  const PortfolioTab = () => {
+    const [category, setCategory] = useState("All");
+    const [filtered, setFiltered] = useState(PORTFOLIO_ITEMS);
+
+    useEffect(() => {
+      let f = PORTFOLIO_ITEMS;
+      if (category !== "All") f = f.filter((i) => i.category === category);
+      if (searchQuery) {
+        f = f.filter((i) =>
+          i.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          i.description.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+      f = f.filter((i) => i.price >= filter.minPrice && i.price <= filter.maxPrice);
+      if (filter.rating > 0) f = f.filter((i) => i.rating >= filter.rating);
+      if (sortBy === "priceAsc") f.sort((a, b) => a.price - b.price);
+      if (sortBy === "priceDesc") f.sort((a, b) => b.price - a.price);
+      if (sortBy === "rating") f.sort((a, b) => b.rating - a.rating);
+      if (sortBy === "popular") f.sort((a, b) => b.likes - a.likes);
+      setFiltered(f);
+    }, [category, searchQuery, filter, sortBy]);
+
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="tab-pane portfolio"
+      >
+        <div className="search-section">
+          <input 
+            type="text" 
+            placeholder="Search..." 
+            value={searchQuery} 
+            onChange={(e) => setSearchQuery(e.target.value)} 
+          />
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleClick(() => setShowFilters(!showFilters))}
+          >🔍</motion.button>
+        </div>
+        <AnimatePresence>
+          {showFilters && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="filters glass"
             >
-              {galleryCategories.map((cat, index) => (
-                <button
-                  key={cat}
-                  className={"tab-btn" + (cat === activeCategory ? " tab-btn-active" : "")}
-                  onClick={() => setActiveCategory(cat)}
-                  style={{
-                    color: cat === activeCategory ? theme.colors.accent : theme.colors.textSecondary,
-                    borderBottom: cat === activeCategory ? `2px solid ${theme.colors.accent}` : 'none',
-                    background: 'transparent',
-                    opacity: 0,
-                    animation: 'slideUp 0.3s ease forwards',
-                    animationDelay: `calc(${index} * 0.05s)`
-                  }}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-            <Swiper spaceBetween={12} slidesPerView={"auto"}>
-              {isLoading ? (
-                Array.from({ length: 4 }).map((_, index) => (
-                  <SwiperSlide key={`skeleton-${index}`} style={{ width: 220 }}>
-                    <SkeletonCard />
-                  </SwiperSlide>
-                ))
-              ) : (
-                galleryItems
-                  .filter((p) => p.category === activeCategory)
-                  .map((p, index) => (
-                  <SwiperSlide key={p.id} style={{ width: 220 }}>
-                    <div 
-                      className="project-card" 
-                      onClick={() => setSelectedImage(p)} 
-                      onMouseMove={(e) => handleCardMouseMove(e, p.id)}
-                      onMouseLeave={handleCardMouseLeave}
-                      style={{ 
-                        cursor: "pointer",
-                        background: theme.colors.card,
-                        border: `1px solid ${theme.colors.border}`,
-                        boxShadow: hoveredCard === p.id 
-                          ? `0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px ${theme.colors.accent}40`
-                          : theme.colors.shadow,
-                        transform: hoveredCard === p.id 
-                          ? 'perspective(1000px) rotateX(5deg) rotateY(5deg) scale3d(1.05, 1.05, 1.05)' 
-                          : 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)',
-                        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                        opacity: 0,
-                        animation: 'slideUp 0.3s ease forwards',
-                        animationDelay: `calc(${index} * 0.05s)`
-                      }}
-                    >
-                      <div className="project-thumb-wrapper">
-                        <img 
-                          src={p.image} 
-                          alt={p.title} 
-                          className="project-thumb-img"
-                          style={{
-                            transform: hoveredCard === p.id ? 'scale(1.05)' : 'scale(1)',
-                            transition: 'transform 0.5s ease'
-                          }}
-                        />
-                      </div>
-                      <div className="project-info">
-                        <div className="project-title" style={{ color: theme.colors.text }}>{p.title}</div>
-                        <p className="hint-text" style={{ color: theme.colors.textSecondary }}>{p.description}</p>
-                        <span className="hint-text" style={{ color: theme.colors.accent }}>{zoomHint}</span>
-                      </div>
-                    </div>
-                  </SwiperSlide>
-                ))
-              )}
-            </Swiper>
-            <p className="hint-text" style={{ 
-              color: theme.colors.textSecondary,
-              animation: 'slideUp 0.4s ease 0.3s forwards',
-              opacity: 0
-            }}>{t.galleryHint}</p>
-          </div>
-        );
-
-      case TABS.REVIEWS:
-        return (
-          <div className="card" style={{ 
-            background: theme.colors.card, 
-            boxShadow: theme.colors.shadow,
-            animation: 'fadeIn 0.4s ease'
-          }}>
-            <h2 className="section-title" style={{ 
-              color: theme.colors.text,
-              animation: 'slideDown 0.4s ease'
-            }}>{t.reviewsTitle}</h2>
-            <p className="section-subtitle" style={{ 
-              color: theme.colors.textSecondary,
-              animation: 'slideDown 0.4s ease 0.1s forwards',
-              opacity: 0
-            }}>{t.reviewsSubtitle}</p>
-            <Swiper spaceBetween={12} slidesPerView={"auto"}>
-              {REVIEWS_ITEMS.map((r, index) => (
-                <SwiperSlide key={r.id} style={{ width: 250 }}>
-                  <div 
-                    className="card" 
-                    style={{ 
-                      background: theme.colors.card,
-                      border: `1px solid ${theme.colors.border}`,
-                      boxShadow: theme.colors.shadow,
-                      opacity: 0,
-                      animation: 'slideUp 0.3s ease forwards',
-                      animationDelay: `calc(${index} * 0.03s)`
-                    }}
-                  >
-                    <div style={{ 
-                      fontWeight: "bold", 
-                      fontSize: "24px", 
-                      marginBottom: "4px", 
-                      color: theme.colors.accent 
-                    }}>
-                      {r.name[0]}
-                    </div>
-                    <div 
-                      onClick={() => openTelegramProfile(r.telegram)}
-                      style={{ 
-                        color: theme.colors.accent,
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                        marginBottom: "4px",
-                        textDecoration: "underline",
-                        transition: "opacity 0.2s"
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.opacity = "0.8"}
-                      onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
-                    >
-                      {r.name}
-                    </div>
-                    <div className="hint-text" style={{ color: theme.colors.textSecondary }}>{r.text}</div>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-            <button 
-              className="secondary-btn" 
-              style={{ 
-                marginTop: 10,
-                background: theme.colors.secondary,
-                color: theme.colors.text,
-                border: `1px solid ${theme.colors.border}`,
-                animation: 'slideUp 0.4s ease 0.2s forwards',
-                opacity: 0
-              }}
-              onClick={() => window.open(`https://t.me/Rivaldsg`, "_blank")}
+              <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                {PORTFOLIO_CATEGORIES[language].map((c) => (<option key={c}>{c}</option>))}
+              </select>
+              <input type="number" placeholder="Min" value={filter.minPrice} onChange={(e) => setFilter({ ...filter, minPrice: +e.target.value })} />
+              <input type="number" placeholder="Max" value={filter.maxPrice} onChange={(e) => setFilter({ ...filter, maxPrice: +e.target.value })} />
+              <select value={filter.rating} onChange={(e) => setFilter({ ...filter, rating: +e.target.value })}>
+                <option value={0}>Any</option><option value={4}>4+</option><option value={4.5}>4.5+</option><option value={5}>5</option>
+              </select>
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                <option value="newest">Newest</option><option value="priceAsc">Price ↑</option><option value="priceDesc">Price ↓</option>
+                <option value="rating">Rating</option><option value="popular">Popular</option>
+              </select>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="portfolio-grid">
+          {filtered.map((item) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              whileHover={{ y: -5, boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}
+              className="portfolio-card"
+              onClick={() => handleClick(() => { addToHistory(item); setSelectedItem(item); })}
             >
-              {t.reviewsAddButton}
-            </button>
-          </div>
-        );
-
-      case TABS.PRICING:
-        const translatedServices = getTranslatedServices();
-        return (
-          <div className="card" style={{ 
-            background: theme.colors.card, 
-            boxShadow: theme.colors.shadow,
-            animation: 'fadeIn 0.4s ease'
-          }}>
-            <h2 className="section-title" style={{ 
-              color: theme.colors.text,
-              animation: 'slideDown 0.4s ease'
-            }}>{t.pricingTitle}</h2>
-            <div className="currency-hint" style={{ 
-              fontSize: "12px", 
-              color: theme.colors.textSecondary, 
-              marginBottom: "10px",
-              animation: 'slideDown 0.4s ease 0.1s forwards',
-              opacity: 0
-            }}>
-              {getCurrencyHint()}
-            </div>
-            <ul className="list">
-              {translatedServices.map((item, index) => (
-                <li key={item.id} style={{ 
-                  color: theme.colors.text, 
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '8px',
-                  padding: '4px 0',
-                  opacity: 0,
-                  animation: 'slideUp 0.3s ease forwards',
-                  animationDelay: `calc(${index} * 0.05s)`
-                }}>
-                  <span>
-                    {item.translatedService} — от {formatPrice(item.priceUSD)}
-                  </span>
-                  <button
-                    onClick={() => addToCart(item)}
-                    style={{
-                      background: theme.colors.accent,
-                      color: theme.colors.buttonText,
-                      border: 'none',
-                      borderRadius: '6px',
-                      padding: '4px 8px',
-                      fontSize: '11px',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
-                    onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-                  >
-                    {t.addToCart}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        );
-
-      case TABS.CART:
-        const cartTotal = getCartTotal();
-        const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-        
-        return (
-          <div className="card" style={{ 
-            background: theme.colors.card, 
-            boxShadow: theme.colors.shadow,
-            animation: 'fadeIn 0.4s ease'
-          }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              marginBottom: '12px',
-              animation: 'slideDown 0.4s ease'
-            }}>
-              <h2 className="section-title" style={{ color: theme.colors.text }}>
-                {t.cartTitle} {cartItemsCount > 0 && `(${cartItemsCount})`}
-              </h2>
-              {cart.length > 0 && (
-                <button
-                  onClick={clearCart}
-                  style={{
-                    background: 'transparent',
-                    color: theme.colors.accent,
-                    border: `1px solid ${theme.colors.accent}`,
-                    borderRadius: '6px',
-                    padding: '4px 8px',
-                    fontSize: '11px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {t.clearCart}
-                </button>
-              )}
-            </div>
-            
-            {cart.length === 0 ? (
-              <div style={{ 
-                textAlign: 'center', 
-                padding: '20px',
-                color: theme.colors.textSecondary,
-                animation: 'fadeIn 0.5s ease'
-              }}>
-                {t.cartEmpty}
+              {imageErrors[item.id] ? <div className="image-placeholder">🖼️</div> : <img src={item.image} alt={item.title} onError={() => handleImageError(item.id)} />}
+              <h4>{item.title}</h4>
+              <p>{item.description}</p>
+              <div className="card-footer">
+                <span className="price">{formatPrice(item.price)}</span>
+                <span className="rating">⭐ {item.rating}</span>
               </div>
-            ) : (
-              <>
-                <div style={{ marginBottom: '16px' }}>
-                  <h3 style={{ 
-                    fontSize: '13px', 
-                    color: theme.colors.textSecondary,
-                    marginBottom: '8px',
-                    animation: 'slideDown 0.3s ease'
-                  }}>
-                    {t.cartItems}
-                  </h3>
-                  {cart.map((item, index) => (
-                    <div key={item.id} style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '8px 0',
-                      borderBottom: `1px solid ${theme.colors.border}`,
-                      opacity: 0,
-                      animation: 'slideUp 0.3s ease forwards',
-                      animationDelay: `calc(${index} * 0.05s)`
-                    }}>
-                      <div>
-                        <div style={{ color: theme.colors.text, fontSize: '12px' }}>
-                          {item.translatedService || item.service}
-                        </div>
-                        <div style={{ fontSize: '11px', color: theme.colors.textSecondary }}>
-                          {formatPrice(item.priceUSD)} × {item.quantity}
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            style={{
-                              background: theme.colors.secondary,
-                              color: theme.colors.text,
-                              border: `1px solid ${theme.colors.border}`,
-                              borderRadius: '4px',
-                              width: '20px',
-                              height: '20px',
-                              cursor: 'pointer',
-                              fontSize: '12px'
-                            }}
-                          >
-                            -
-                          </button>
-                          <span style={{ 
-                            color: theme.colors.text,
-                            fontSize: '12px',
-                            minWidth: '20px',
-                            textAlign: 'center'
-                          }}>
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            style={{
-                              background: theme.colors.secondary,
-                              color: theme.colors.text,
-                              border: `1px solid ${theme.colors.border}`,
-                              borderRadius: '4px',
-                              width: '20px',
-                              height: '20px',
-                              cursor: 'pointer',
-                              fontSize: '12px'
-                            }}
-                          >
-                            +
-                          </button>
-                        </div>
-                        <div style={{ 
-                          color: theme.colors.accent,
-                          fontSize: '12px',
-                          minWidth: '60px',
-                          textAlign: 'right'
-                        }}>
-                          {formatPrice(item.priceUSD * item.quantity)}
-                        </div>
-                        <button
-                          onClick={() => removeFromCart(item.id)}
-                          style={{
-                            background: 'transparent',
-                            color: theme.colors.textSecondary,
-                            border: 'none',
-                            cursor: 'pointer',
-                            fontSize: '12px',
-                            padding: '4px'
-                          }}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                <div style={{
-                  background: theme.colors.secondary,
-                  borderRadius: '8px',
-                  padding: '12px',
-                  border: `1px solid ${theme.colors.border}`,
-                  animation: 'slideUp 0.4s ease'
-                }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between',
-                    marginBottom: '4px'
-                  }}>
-                    <span style={{ color: theme.colors.textSecondary, fontSize: '12px' }}>{t.total}:</span>
-                    <span style={{ color: theme.colors.text, fontSize: '12px' }}>
-                      {formatPrice(cartTotal.subtotal)}
-                    </span>
-                  </div>
-                  
-                  {cartTotal.discount > 0 && (
-                    <div style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between',
-                      marginBottom: '4px',
-                      animation: 'pulse 0.5s ease'
-                    }}>
-                      <span style={{ color: '#10b981', fontSize: '11px' }}>
-                        {t.discountNote} ({cartTotal.totalItems} шт.):
-                      </span>
-                      <span style={{ color: '#10b981', fontSize: '11px' }}>
-                        -{formatPrice(cartTotal.discount)}
-                      </span>
-                    </div>
-                  )}
-                  
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between',
-                    marginTop: '8px',
-                    paddingTop: '8px',
-                    borderTop: `1px solid ${theme.colors.border}`
-                  }}>
-                    <span style={{ color: theme.colors.accent, fontSize: '14px', fontWeight: 'bold' }}>
-                      {t.finalPrice}:
-                    </span>
-                    <span style={{ color: theme.colors.accent, fontSize: '14px', fontWeight: 'bold' }}>
-                      {formatPrice(cartTotal.total)}
-                    </span>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        );
-
-      case TABS.ABOUT_FAQ:
-        return (
-          <div className="card" style={{ 
-            background: theme.colors.card, 
-            boxShadow: theme.colors.shadow,
-            animation: 'fadeIn 0.5s ease'
-          }}>
-            <h2 className="section-title" style={{ 
-              color: theme.colors.text,
-              animation: 'slideDown 0.4s ease'
-            }}>{t.aboutFaqTitle}</h2>
-            
-            {/* Секция "Обо мне" */}
-            <div style={{ 
-              marginBottom: '32px',
-              animation: 'slideUp 0.5s ease 0.1s forwards',
-              opacity: 0
-            }}>
-              <h3 style={{ 
-                color: theme.colors.accent, 
-                fontSize: '16px',
-                marginBottom: '12px'
-              }}>
-                {aboutMe.title}
-              </h3>
-              <div 
-                style={{ 
-                  color: theme.colors.textSecondary,
-                  whiteSpace: 'pre-line',
-                  lineHeight: '1.6',
-                  fontSize: '14px',
-                  animation: 'fadeIn 0.8s ease 0.2s forwards',
-                  opacity: 0
-                }}
-              >
-                {aboutMe.content}
+              <div className="card-actions">
+                <motion.button whileTap={{ scale: 0.9 }} onClick={(e) => { e.stopPropagation(); handleClick(() => toggleLike(item.id)); }}>{likedItems[item.id] ? "❤️" : "🤍"}</motion.button>
+                <motion.button whileTap={{ scale: 0.9 }} onClick={(e) => { e.stopPropagation(); handleClick(() => toggleFavorite(item)); }}>{favorites.some((f) => f.id === item.id) ? "★" : "☆"}</motion.button>
+                <motion.button whileTap={{ scale: 0.9 }} onClick={(e) => { e.stopPropagation(); handleClick(() => addToCart(item)); }}>🛒</motion.button>
               </div>
-            </div>
-
-            {/* Мои соцсети */}
-            <div style={{
-              animation: 'slideUp 0.5s ease 0.4s forwards',
-              opacity: 0,
-              marginTop: '30px'
-            }}>
-              <h3 style={{ 
-                color: theme.colors.accent, 
-                fontSize: '16px',
-                marginBottom: '10px',
-                textAlign: 'center'
-              }}>
-                {aboutMe.socialTitle}
-              </h3>
-              
-              <div style={{
-                color: theme.colors.textSecondary,
-                fontSize: '14px',
-                textAlign: 'center',
-                marginBottom: '20px',
-                lineHeight: '1.5'
-              }}>
-                {aboutMe.socialDescription}
-              </div>
-              
-              <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '25px',
-                flexWrap: 'wrap',
-                marginBottom: '20px'
-              }}>
-                {/* TikTok */}
-                <a href="https://www.tiktok.com/@rival.design" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                  }} onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.2) translateY(-3px)';
-                  }} onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1) translateY(0)';
-                  }}>
-                    <img 
-                      src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" 
-                      alt="TikTok"
-                      style={{ width: '30px', height: '30px' }}
-                    />
-                  </div>
-                </a>
-
-                {/* Telegram */}
-                <a href="https://t.me/Rivaldsgn" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                  }} onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.2) translateY(-3px)';
-                  }} onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1) translateY(0)';
-                  }}>
-                    <img 
-                      src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" 
-                      alt="Telegram"
-                      style={{ width: '30px', height: '30px' }}
-                    />
-                  </div>
-                </a>
-
-                {/* YouTube */}
-                <a href="https://www.youtube.com/@RivalDesign" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                  }} onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.2) translateY(-3px)';
-                  }} onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1) translateY(0)';
-                  }}>
-                    <img 
-                      src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" 
-                      alt="YouTube"
-                      style={{ width: '30px', height: '30px' }}
-                    />
-                  </div>
-                </a>
-
-                {/* Pinterest */}
-                <a href="https://ru.pinterest.com/lotosdesign00/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                  }} onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.2) translateY(-3px)';
-                  }} onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1) translateY(0)';
-                  }}>
-                    <img 
-                      src="https://cdn-icons-png.flaticon.com/512/174/174863.png" 
-                      alt="Pinterest"
-                      style={{ width: '30px', height: '30px' }}
-                    />
-                  </div>
-                </a>
-              </div>
-              
-              <div style={{
-                color: theme.colors.textSecondary,
-                fontSize: '12px',
-                textAlign: 'center',
-                marginTop: '15px',
-                fontStyle: 'italic',
-                opacity: 0.8
-              }}>
-                {aboutMe.socialWait}
-              </div>
-            </div>
-            
-            {/* Секция "FAQ" с аккордеоном */}
-            <div style={{
-              animation: 'slideUp 0.5s ease 0.2s forwards',
-              opacity: 0
-            }}>
-              <h3 style={{ 
-                color: theme.colors.accent, 
-                fontSize: '16px',
-                marginBottom: '16px'
-              }}>
-                ❓ {t.faqTitle}
-              </h3>
-              <div className="faq-list">
-                {faqItems.map((item, index) => (
-                  <div 
-                    key={index} 
-                    className="faq-item"
-                    style={{ 
-                      border: `1px solid ${theme.colors.border}`,
-                      borderRadius: '8px',
-                      marginBottom: '10px',
-                      overflow: 'hidden',
-                      transition: 'all 0.3s ease',
-                      opacity: 0,
-                      animation: 'slideUp 0.3s ease forwards',
-                      animationDelay: `calc(${index} * 0.05s)`
-                    }}
-                  >
-                    <button
-                      onClick={() => toggleFaq(index)}
-                      style={{
-                        width: '100%',
-                        padding: '12px 16px',
-                        background: expandedFaqIndex === index 
-                          ? theme.colors.accent + '10' 
-                          : theme.colors.secondary,
-                        border: 'none',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
-                      }}
-                    >
-                      <span style={{ 
-                        color: expandedFaqIndex === index 
-                          ? theme.colors.accent 
-                          : theme.colors.text,
-                        fontSize: '14px',
-                        fontWeight: '500',
-                        textAlign: 'left'
-                      }}>
-                        {item.question}
-                      </span>
-                      <span style={{ 
-                        color: theme.colors.accent,
-                        fontSize: '18px',
-                        transition: 'transform 0.3s ease',
-                        transform: expandedFaqIndex === index ? 'rotate(180deg)' : 'rotate(0deg)'
-                      }}>
-                        ▼
-                      </span>
-                    </button>
-                    
-                    {expandedFaqIndex === index && (
-                      <div 
-                        style={{
-                          padding: '16px',
-                          background: theme.colors.card,
-                          color: theme.colors.textSecondary,
-                          whiteSpace: 'pre-line',
-                          lineHeight: '1.5',
-                          fontSize: '13px',
-                          borderTop: `1px solid ${theme.colors.border}`,
-                          animation: 'slideDown 0.3s ease'
-                        }}
-                      >
-                        {item.answer}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-
-      default:
-        return null;
-    }
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    );
   };
 
-  return (
-    <div className={`app-root theme-${theme.id}`} style={{ 
-      background: theme.colors.primary,
-      position: 'relative'
-    }}>
-      <style>{`
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-        
-        @keyframes pulse {
-          0% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.02);
-          }
-          100% {
-            transform: scale(1);
-          }
-        }
-        
-        .section-title {
-          animation: slideDown 0.4s ease;
-        }
-        
-        .card {
-          animation: fadeIn 0.4s ease;
-        }
-        
-        .list li {
-          opacity: 0;
-          animation: slideUp 0.3s ease forwards;
-        }
-        
-        .cart-item {
-          opacity: 0;
-          animation: slideUp 0.3s ease forwards;
-        }
-        
-        .faq-item {
-          opacity: 0;
-          animation: slideUp 0.3s ease forwards;
-        }
-        
-        .project-card {
-          transition: all 0.3s ease;
-        }
-        
-        button {
-          transition: all 0.2s ease;
-        }
-        
-        button:hover {
-          transform: translateY(-1px);
-        }
-      `}</style>
-      
-      <div className="app-shell">
-        <div 
-          className="top-bar" 
-          style={{ 
-            background: theme.colors.secondary,
-            borderBottom: `1px solid ${theme.colors.border}`,
-            padding: '8px 16px',
-            minHeight: '50px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            animation: 'slideDown 0.3s ease'
-          }}
+  const ShopTab = () => (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="tab-pane shop"
+    >
+      <h2>Merch Store</h2>
+      <div className="shop-categories">
+        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="shop-cat active">Merch</motion.button>
+        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="shop-cat">NFT</motion.button>
+        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="shop-cat">Gifts</motion.button>
+      </div>
+      <div className="shop-grid">
+        {MERCH.map((item) => (
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ y: -5 }}
+            className="shop-card"
+            onClick={() => setSelectedItem(item)}
+          >
+            <img src={item.image} alt={item.name} />
+            <h4>{item.name}</h4>
+            <p className="price">{formatPrice(item.price)}</p>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={(e) => { e.stopPropagation(); handleClick(() => addToCart({ ...item, priceUSD: item.price })); }}>Buy</motion.button>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+
+  const CartTab = () => {
+    if (cart.length === 0) {
+      return (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="tab-pane cart-empty"
         >
-          <div className="top-bar-left" style={{ display: 'flex', alignItems: 'center' }}>
-            <div style={{ paddingLeft: '20px' }}>
-              <span className="app-title" style={{ 
-                color: theme.colors.text, 
-                fontSize: '18px',
-                fontWeight: 'bold',
-                animation: 'slideDown 0.4s ease'
-              }}>{t.appTitle}</span>
-              <span className="app-subtitle" style={{ 
-                color: theme.colors.textSecondary,
-                fontSize: '14px',
-                marginLeft: '8px',
-                animation: 'slideDown 0.4s ease 0.1s forwards',
-                opacity: 0
-              }}>{t.appSubtitle}</span>
-            </div>
-          </div>
-
-          <div className="controls" style={{ display: 'flex', gap: '8px' }}>
-            <div style={{ position: "relative" }}>
-              <button 
-                className="icon-btn" 
-                onClick={toggleThemeMenu}
-                style={{ 
-                  background: theme.colors.accent,
-                  color: theme.colors.buttonText,
-                  border: `1px solid ${theme.colors.border}`,
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer'
-                }}
-              >
-                {theme.icon}
-              </button>
-
-              {showThemeMenu && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "40px",
-                    right: 0,
-                    background: theme.colors.card,
-                    borderRadius: "12px",
-                    padding: "8px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "6px",
-                    boxShadow: theme.colors.shadow,
-                    border: `1px solid ${theme.colors.border}`,
-                    zIndex: 20,
-                    minWidth: "140px",
-                    animation: 'slideDown 0.2s ease'
-                  }}
-                >
-                  {Object.values(THEMES).map((themeOption) => (
-                    <button
-                      key={themeOption.id}
-                      className="theme-option"
-                      onClick={() => selectTheme(themeOption)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                        padding: "8px 12px",
-                        borderRadius: "8px",
-                        background: theme.id === themeOption.id ? theme.colors.accent + "20" : "transparent",
-                        border: "none",
-                        color: theme.id === themeOption.id ? theme.colors.accent : theme.colors.text,
-                        cursor: "pointer",
-                        fontSize: "14px",
-                        transition: "all 0.2s ease"
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = theme.colors.accent + "10"}
-                      onMouseLeave={(e) => e.currentTarget.style.background = theme.id === themeOption.id ? theme.colors.accent + "20" : "transparent"}
-                    >
-                      <span style={{ fontSize: "16px" }}>{themeOption.icon}</span>
-                      <span>{themeOption.name}</span>
-                      {theme.id === themeOption.id && (
-                        <span style={{ marginLeft: "auto", color: theme.colors.accent }}>✓</span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div style={{ position: "relative" }}>
-              <button 
-                className="icon-btn" 
-                onClick={toggleLangMenu}
-                style={{ 
-                  background: theme.colors.secondary,
-                  color: theme.colors.text,
-                  border: `1px solid ${theme.colors.border}`,
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer'
-                }}
-              >
-                🌐
-              </button>
-
-              {showLangMenu && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "40px",
-                    right: 0,
-                    background: theme.colors.card,
-                    borderRadius: "12px",
-                    padding: "8px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "6px",
-                    boxShadow: theme.colors.shadow,
-                    border: `1px solid ${theme.colors.border}`,
-                    zIndex: 10,
-                    minWidth: "140px",
-                    animation: 'slideDown 0.2s ease'
-                  }}
-                >
-                  {Object.entries(LANGUAGE_TO_CURRENCY).map(([langCode, currency]) => (
-                    <button
-                      key={langCode}
-                      className="tab-btn lang-option"
-                      onClick={() => handleLangChange(langCode)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                        padding: "8px 12px",
-                        borderRadius: "8px",
-                        background: language === langCode ? theme.colors.accent + "20" : "transparent",
-                        border: "none",
-                        color: language === langCode ? theme.colors.accent : theme.colors.text,
-                        cursor: "pointer",
-                        fontSize: "14px",
-                        transition: "all 0.2s ease"
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = theme.colors.accent + "10"}
-                      onMouseLeave={(e) => e.currentTarget.style.background = language === langCode ? theme.colors.accent + "20" : "transparent"}
-                    >
-                      <span>
-                        {langCode === "ru" && "🇷🇺"}
-                        {langCode === "ua" && "🇺🇦"}
-                        {langCode === "en" && "🇺🇸"}
-                        {langCode === "kz" && "🇰🇿"}
-                        {langCode === "by" && "🇧🇾"}
-                      </span>
-                      <span>
-                        {langCode === "ru" && "Русский"}
-                        {langCode === "ua" && "Українська"}
-                        {langCode === "en" && "English"}
-                        {langCode === "kz" && "Қазақша"}
-                        {langCode === "by" && "Беларуская"}
-                      </span>
-                      {language === langCode && (
-                        <span style={{ marginLeft: "auto", color: theme.colors.accent }}>✓</span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+          <h2>Your cart is empty</h2>
+          <p>Add items from portfolio or shop</p>
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="primary-btn" 
+            onClick={() => handleClick(() => setActiveTab(TABS.PORTFOLIO))}
+          >Go to Portfolio</motion.button>
+        </motion.div>
+      );
+    }
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="tab-pane cart"
+      >
+        <div className="cart-header">
+          <h2>Cart ({cartTotal.itemsCount})</h2>
+          <motion.button whileTap={{ scale: 0.95 }} className="clear-cart" onClick={() => handleClick(clearCart)}>Clear</motion.button>
         </div>
-
-        <nav 
-          className="tabs" 
-          style={{ 
-            borderBottom: `1px solid ${theme.colors.border}`,
-            background: theme.colors.secondary,
-            animation: 'slideDown 0.3s ease 0.1s forwards',
-            opacity: 0
-          }}
-        >
-          {Object.values(TABS).map((tab, index) => (
-            <button
-              key={tab}
-              className={"tab-btn" + (activeTab === tab ? " tab-btn-active" : "")}
-              onClick={() => setActiveTab(tab)}
-              style={{
-                color: activeTab === tab ? theme.colors.accent : theme.colors.textSecondary,
-                borderBottom: activeTab === tab ? `2px solid ${theme.colors.accent}` : 'none',
-                background: 'transparent',
-                opacity: 0,
-                animation: 'slideDown 0.3s ease forwards',
-                animationDelay: `calc(${index} * 0.05s)`
-              }}
+        <div className="cart-items">
+          {cart.map((item) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="cart-item"
             >
-              {labels[tab]}
-            </button>
+              <div className="cart-item-image">
+                {imageErrors[item.id] ? <div className="image-placeholder-small">🖼️</div> : <img src={item.image} alt={item.title || item.name} onError={() => handleImageError(item.id)} />}
+              </div>
+              <div className="cart-item-info">
+                <h4>{item.title || item.name}</h4>
+                <p className="cart-item-price">{formatPrice(item.price || item.priceUSD || 0)}</p>
+              </div>
+              <div className="cart-item-actions">
+                <div className="quantity-control">
+                  <motion.button whileTap={{ scale: 0.9 }} onClick={() => handleClick(() => updateQuantity(item.id, -1))}>-</motion.button>
+                  <span>{item.quantity}</span>
+                  <motion.button whileTap={{ scale: 0.9 }} onClick={() => handleClick(() => updateQuantity(item.id, 1))}>+</motion.button>
+                </div>
+                <div className="cart-item-total">{formatPrice((item.price || item.priceUSD || 0) * item.quantity)}</div>
+                <motion.button whileTap={{ scale: 0.9 }} className="remove-item" onClick={() => handleClick(() => removeFromCart(item.id))}>✕</motion.button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        <div className="promo-section">
+          <input type="text" placeholder="Promo code" value={promoCode} onChange={(e) => setPromoCode(e.target.value)} disabled={promoApplied} />
+          <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleClick(applyPromo)} disabled={promoApplied}>Apply</motion.button>
+        </div>
+        <div className="cart-summary">
+          <div className="summary-row"><span>Subtotal:</span><span>{formatPrice(cartTotal.subtotal)}</span></div>
+          {cartTotal.discount > 0 && <div className="summary-row discount"><span>Discount:</span><span>-{formatPrice(cartTotal.discount)}</span></div>}
+          <div className="summary-row final"><span>Total:</span><span>{formatPrice(cartTotal.total)}</span></div>
+        </div>
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="checkout-btn" 
+          onClick={() => handleClick(() => alert("Checkout simulation"))}
+        >Checkout</motion.button>
+      </motion.div>
+    );
+  };
+
+  const LearnTab = () => {
+    const [filteredCourses, setFilteredCourses] = useState(COURSES);
+    useEffect(() => {
+      let f = COURSES.filter(c => c.price >= courseFilter.priceRange[0] && c.price <= courseFilter.priceRange[1]);
+      if (courseFilter.level !== "All") f = f.filter(c => c.level === courseFilter.level);
+      setFilteredCourses(f);
+    }, [courseFilter]);
+
+    const enrollCourse = (course) => {
+      if (!myCourses.some(c => c.id === course.id)) {
+        setMyCourses([...myCourses, course]);
+        addNotification(`Enrolled in "${course.title}"`, "success");
+        addXP(10);
+        setStats(prev => ({ ...prev, coursesCompleted: prev.coursesCompleted + 1 }));
+      } else {
+        addNotification("Already enrolled", "info");
+      }
+    };
+
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="tab-pane learn"
+      >
+        <h2>Learning Center</h2>
+        <div className="learn-filters glass">
+          <select onChange={(e) => setCourseFilter({ ...courseFilter, level: e.target.value })}>
+            <option value="All">All Levels</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+          <input type="range" min="0" max="200" value={courseFilter.priceRange[1]} onChange={(e) => setCourseFilter({ ...courseFilter, priceRange: [0, +e.target.value] })} />
+          <span>up to {formatPrice(courseFilter.priceRange[1])}</span>
+        </div>
+        <div className="courses-grid">
+          {filteredCourses.map((course) => (
+            <motion.div
+              key={course.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ y: -5 }}
+              className="course-card glass"
+              onClick={() => setActiveCourse(course)}
+            >
+              <img src={course.image} alt={course.title} />
+              <h4>{course.title}</h4>
+              <p>{course.level} • {course.lessons} lessons</p>
+              <p className="price">{formatPrice(course.price)}</p>
+              <motion.button whileTap={{ scale: 0.95 }} onClick={(e) => { e.stopPropagation(); handleClick(() => enrollCourse(course)); }}>Enroll</motion.button>
+            </motion.div>
+          ))}
+        </div>
+        <AnimatePresence>
+          {activeCourse && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="course-detail glass"
+            >
+              <h3>{activeCourse.title}</h3>
+              <p>Level: {activeCourse.level}</p>
+              <p>Duration: {activeCourse.duration}</p>
+              <p>Students: {activeCourse.students}</p>
+              <p>Rating: ⭐ {activeCourse.rating}</p>
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => setActiveCourse(null)}>Close</motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {myCourses.length > 0 && (
+          <div className="my-courses">
+            <h3>My Courses</h3>
+            {myCourses.map(c => (
+              <div key={c.id} className="my-course-item">
+                <span>{c.title}</span>
+                <progress value={courseProgress[c.id] || 0} max="100"></progress>
+                <motion.button whileTap={{ scale: 0.95 }} onClick={() => {
+                  const newProgress = Math.min(100, (courseProgress[c.id] || 0) + 10);
+                  setCourseProgress({ ...courseProgress, [c.id]: newProgress });
+                  if (newProgress === 100) {
+                    addNotification(`Course "${c.title}" completed!`, "success");
+                    setCertificates([...certificates, { id: Date.now(), course: c.title, date: new Date().toLocaleDateString() }]);
+                    addXP(50);
+                  }
+                }}>Progress +10%</motion.button>
+              </div>
+            ))}
+          </div>
+        )}
+      </motion.div>
+    );
+  };
+
+  const ProfileTab = () => (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="tab-pane profile"
+    >
+      <div className="profile-header glass">
+        <div className="avatar-large">{user.name[0]}</div>
+        <h2>{user.name}</h2>
+        <p>Level {user.level} • {user.xp} XP • Followers: {followers}</p>
+        <div className="xp-bar"><motion.div 
+          initial={{ width: 0 }}
+          animate={{ width: `${user.xp % 100}%` }}
+          transition={{ duration: 0.5 }}
+        /></div>
+        <motion.button whileTap={{ scale: 0.95 }} className="premium-btn" onClick={() => handleClick(() => setPremium(!premium))}>
+          {premium ? "Premium ✓" : "Become Premium"}
+        </motion.button>
+        <motion.button whileTap={{ scale: 0.95 }} className="follow-btn" onClick={() => handleClick(follow)}>➕ Follow</motion.button>
+      </div>
+      <div className="stats-grid">
+        <motion.div whileHover={{ scale: 1.05 }} className="stat-card"><span>❤️</span> {favorites.length}</motion.div>
+        <motion.div whileHover={{ scale: 1.05 }} className="stat-card"><span>🛒</span> {cart.length}</motion.div>
+        <motion.div whileHover={{ scale: 1.05 }} className="stat-card"><span>👀</span> {history.length}</motion.div>
+        <motion.div whileHover={{ scale: 1.05 }} className="stat-card"><span>📚</span> {myCourses.length}</motion.div>
+        <motion.div whileHover={{ scale: 1.05 }} className="stat-card"><span>🎓</span> {certificates.length}</motion.div>
+        <motion.div whileHover={{ scale: 1.05 }} className="stat-card"><span>🏅</span> {badges.length}</motion.div>
+      </div>
+      <h3>Achievements</h3>
+      <div className="badge-grid">
+        {ACHIEVEMENTS.slice(0, 12).map((a) => (
+          <motion.div key={a.id} whileHover={{ scale: 1.05, y: -5 }} className="badge">
+            <span className="badge-icon">{a.icon}</span>
+            <span>{a.name}</span>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+
+  const MoreTab = () => {
+    const subItems = [
+      { id: SUB_TABS.INSPIRATION, icon: "💡", label: "Inspiration" },
+      { id: SUB_TABS.COLLECTIONS, icon: "📁", label: "Collections" },
+      { id: SUB_TABS.CONTESTS, icon: "🏆", label: "Contests" },
+      { id: SUB_TABS.FRIENDS, icon: "👥", label: "Friends" },
+      { id: SUB_TABS.CHAT, icon: "💬", label: "Chat" },
+      { id: SUB_TABS.NFT, icon: "🖼️", label: "NFT" },
+      { id: SUB_TABS.CALENDAR, icon: "📅", label: "Calendar" },
+      { id: SUB_TABS.ACHIEVEMENTS, icon: "🎖️", label: "Achievements" },
+      { id: SUB_TABS.STATS, icon: "📊", label: "Statistics" },
+      { id: SUB_TABS.BADGES, icon: "🏅", label: "Badges" },
+      { id: SUB_TABS.CERTIFICATES, icon: "📜", label: "Certificates" },
+      { id: SUB_TABS.PROJECTS, icon: "🛠️", label: "Projects" },
+      { id: SUB_TABS.REVIEWS, icon: "⭐", label: "Reviews" },
+      { id: SUB_TABS.QUESTIONS, icon: "❓", label: "Questions" },
+      { id: SUB_TABS.SETTINGS, icon: "⚙️", label: "Settings" },
+      { id: SUB_TABS.HELP, icon: "❓", label: "Help" },
+    ];
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="tab-pane more"
+      >
+        <div className="more-grid">
+          {subItems.map((s) => (
+            <motion.button
+              key={s.id}
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className={`more-item ${activeSubTab === s.id ? "active" : ""}`}
+              onClick={() => handleClick(() => setActiveSubTab(s.id))}
+            >
+              <span className="more-icon">{s.icon}</span><span>{s.label}</span>
+            </motion.button>
+          ))}
+        </div>
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={activeSubTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+            className="sub-content glass"
+          >
+            {activeSubTab === SUB_TABS.SETTINGS && (
+              <div className="settings">
+                <h3>Settings</h3>
+                <div className="setting-item"><span>Theme</span>
+                  <select value={theme.id} onChange={(e) => setTheme(THEMES[e.target.value.toUpperCase()])}>
+                    {Object.values(THEMES).map((th) => (<option key={th.id} value={th.id}>{th.name}</option>))}
+                  </select>
+                </div>
+                <div className="setting-item"><span>Language</span>
+                  <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+                    {LANGUAGES.map((l) => (<option key={l.code} value={l.code}>{l.flag} {l.name}</option>))}
+                  </select>
+                </div>
+                <div className="setting-item"><span>Sound</span><input type="checkbox" checked={soundEnabled} onChange={() => setSoundEnabled(!soundEnabled)} /></div>
+                <div className="setting-item"><span>Haptic</span><input type="checkbox" checked={hapticEnabled} onChange={() => setHapticEnabled(!hapticEnabled)} /></div>
+              </div>
+            )}
+            {activeSubTab === SUB_TABS.INSPIRATION && (
+              <div className="inspiration">
+                <h3>AI Idea Generator</h3>
+                <textarea placeholder="Describe your idea..." value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)}></textarea>
+                <motion.button whileTap={{ scale: 0.95 }} onClick={() => { setAiResult({ text: `Idea based on "${aiPrompt}": vibrant colors, geometric shapes, minimalism` }); addXP(3); }}>Generate</motion.button>
+                {aiResult && <div className="ai-result glass">{aiResult.text}</div>}
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </motion.div>
+    );
+  };
+
+  // ========== MODAL ==========
+  const Modal = () => {
+    if (!selectedItem) return null;
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="modal-backdrop show"
+        onClick={() => setSelectedItem(null)}
+      >
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.8, opacity: 0 }}
+          transition={{ type: "spring", damping: 20 }}
+          className="modal-content"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <motion.button 
+            whileHover={{ rotate: 90 }}
+            className="modal-close" 
+            onClick={() => handleClick(() => setSelectedItem(null))}
+          >✕</motion.button>
+          {imageErrors[selectedItem.id] ? <div className="modal-image-placeholder">🖼️</div> : <img src={selectedItem.image} alt={selectedItem.title || selectedItem.name} onError={() => handleImageError(selectedItem.id)} />}
+          <h2>{selectedItem.title || selectedItem.name}</h2>
+          <p>{selectedItem.description || ""}</p>
+          <p>Price: {formatPrice(selectedItem.price || selectedItem.priceUSD || 0)}</p>
+          <div className="modal-actions">
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleClick(() => toggleLike(selectedItem.id))}>{likedItems[selectedItem.id] ? "❤️ Unlike" : "🤍 Like"}</motion.button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleClick(() => toggleFavorite(selectedItem))}>{favorites.some((f) => f.id === selectedItem.id) ? "★ Remove" : "☆ Favorite"}</motion.button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleClick(() => addToCart(selectedItem))}>🛒 Add to cart</motion.button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => { window.open(`https://t.me/share/url?url=${window.location.href}&text=${selectedItem.title}`, '_blank'); }}>🔗 Share</motion.button>
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  };
+
+  // ========== UI STATE ==========
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
+  const [showLangMenu, setShowLangMenu] = useState(false);
+
+  return (
+    <div className="app-root" style={{
+      "--color-primary": theme.colors.primary,
+      "--color-secondary": theme.colors.secondary,
+      "--color-accent": theme.colors.accent,
+      "--color-text": theme.colors.text,
+      "--color-text-secondary": theme.colors.textSecondary,
+      "--color-border": theme.colors.border,
+      "--color-card": theme.colors.card,
+      "--color-button": theme.colors.button,
+      "--color-button-text": theme.colors.buttonText,
+      "--color-tab-active": theme.colors.tabActive,
+      "--shadow": theme.colors.shadow,
+      "--gradient": theme.colors.gradient,
+    }}>
+      <div className="app-shell">
+        <header className="top-bar">
+          <motion.button 
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="menu-btn" 
+            onClick={() => handleClick(() => setShowDrawer(true))}
+          >☰</motion.button>
+          <motion.h1 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="app-title"
+          >Rival Universe</motion.h1>
+          <div className="header-actions">
+            <div className="control-wrapper">
+              <motion.button 
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="icon-btn" 
+                onClick={() => handleClick(() => setShowThemeMenu(!showThemeMenu))}
+              >{theme.icon}</motion.button>
+              <AnimatePresence>
+                {showThemeMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="dropdown-menu"
+                  >
+                    {Object.values(THEMES).map((th) => (
+                      <motion.button
+                        key={th.id}
+                        whileHover={{ x: 5 }}
+                        className={`dropdown-item ${theme.id === th.id ? "active" : ""}`}
+                        onClick={() => { handleClick(() => { setTheme(th); setShowThemeMenu(false); }); }}
+                      >{th.icon} {th.name}</motion.button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            <div className="control-wrapper">
+              <motion.button 
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="icon-btn" 
+                onClick={() => handleClick(() => setShowLangMenu(!showLangMenu))}
+              >🌐</motion.button>
+              <AnimatePresence>
+                {showLangMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="dropdown-menu"
+                  >
+                    {LANGUAGES.map((l) => (
+                      <motion.button
+                        key={l.code}
+                        whileHover={{ x: 5 }}
+                        className={`dropdown-item ${language === l.code ? "active" : ""}`}
+                        onClick={() => { handleClick(() => { setLanguage(l.code); setShowLangMenu(false); }); }}
+                      >{l.flag} {l.name}</motion.button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </header>
+
+        <main className="main-content">
+          <AnimatePresence mode="wait">
+            {activeTab === TABS.HOME && <HomeTab key="home" />}
+            {activeTab === TABS.PORTFOLIO && <PortfolioTab key="portfolio" />}
+            {activeTab === TABS.SHOP && <ShopTab key="shop" />}
+            {activeTab === TABS.CART && <CartTab key="cart" />}
+            {activeTab === TABS.LEARN && <LearnTab key="learn" />}
+            {activeTab === TABS.PROFILE && <ProfileTab key="profile" />}
+            {activeTab === TABS.MORE && <MoreTab key="more" />}
+          </AnimatePresence>
+        </main>
+
+        <nav className="bottom-nav">
+          {[
+            { id: TABS.HOME, icon: "🏠", label: TAB_LABELS[language]?.[TABS.HOME]?.label },
+            { id: TABS.PORTFOLIO, icon: "🎨", label: TAB_LABELS[language]?.[TABS.PORTFOLIO]?.label },
+            { id: TABS.SHOP, icon: "🛍️", label: TAB_LABELS[language]?.[TABS.SHOP]?.label },
+            { id: TABS.CART, icon: "🛒", label: TAB_LABELS[language]?.[TABS.CART]?.label, badge: cart.length },
+            { id: TABS.LEARN, icon: "📚", label: TAB_LABELS[language]?.[TABS.LEARN]?.label },
+            { id: TABS.PROFILE, icon: "👤", label: TAB_LABELS[language]?.[TABS.PROFILE]?.label },
+            { id: TABS.MORE, icon: "⋯", label: TAB_LABELS[language]?.[TABS.MORE]?.label },
+          ].map((tab) => (
+            <motion.button
+              key={tab.id}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className={`nav-item ${activeTab === tab.id ? "active" : ""}`}
+              onClick={() => handleClick(() => { setActiveTab(tab.id); setActiveSubTab(null); })}
+            >
+              <span className="nav-icon">{tab.icon}</span>
+              <span className="nav-label">{tab.label}</span>
+              {tab.badge > 0 && <span className="nav-badge">{tab.badge}</span>}
+            </motion.button>
           ))}
         </nav>
 
-        <main className="tab-content">
-          {renderContent()}
-        </main>
-
-        {/* Кнопка внизу (как в старом коде) */}
-        <button
-          className="primary-btn"
-          onClick={handleBottomButton}
-          style={{
-            background: theme.colors.button,
-            color: theme.colors.buttonText,
-            border: `1px solid ${theme.colors.accent}`,
-            padding: '12px 24px',
-            borderRadius: '8px',
-            margin: '20px 16px',
-            width: 'calc(100% - 32px)',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            animation: 'slideUp 0.4s ease 0.2s forwards',
-            opacity: 0
-          }}
-        >
-          {activeTab === TABS.AI ? t.bottomGenerate : 
-           activeTab === TABS.CART && cart.length > 0 ? t.orderAll : t.bottomOrder}
-        </button>
-      </div>
-
-      {selectedImage && (
-        <div 
-          className="image-modal-backdrop" 
-          onClick={() => setSelectedImage(null)}
-          style={{ 
-            background: 'rgba(0,0,0,0.9)',
-            animation: 'fadeIn 0.3s ease'
-          }}
-        >
-          <div 
-            className="image-modal-content" 
-            onClick={(e) => e.stopPropagation()}
-            style={{ 
-              background: theme.colors.card,
-              border: `1px solid ${theme.colors.border}`,
-              boxShadow: theme.colors.shadow,
-              animation: 'slideUp 0.3s ease'
-            }}
-          >
-            <button 
-              className="icon-btn image-modal-close" 
-              onClick={() => setSelectedImage(null)}
-              style={{ 
-                background: theme.colors.accent,
-                color: theme.colors.buttonText,
-                border: `1px solid ${theme.colors.border}`
-              }}
+        <AnimatePresence>
+          {showDrawer && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="drawer-backdrop"
+              onClick={() => setShowDrawer(false)}
             >
-              ✖
-            </button>
-            <img
-              src={selectedImage.image}
-              alt={selectedImage.title}
-              className="image-modal-img"
-            />
-            <div className="image-modal-text">
-              <h3 style={{ color: theme.colors.text }}>{selectedImage.title}</h3>
-              <p style={{ color: theme.colors.textSecondary }}>{selectedImage.description}</p>
-            </div>
-          </div>
+              <motion.div
+                initial={{ x: -300 }}
+                animate={{ x: 0 }}
+                exit={{ x: -300 }}
+                transition={{ type: "spring", damping: 25 }}
+                className="drawer"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="drawer-header"><h3>Menu</h3><motion.button whileTap={{ scale: 0.9 }} onClick={() => setShowDrawer(false)}>✕</motion.button></div>
+                <ul>
+                  {[
+                    TABS.HOME, TABS.PORTFOLIO, TABS.SHOP, TABS.CART, TABS.LEARN, TABS.PROFILE,
+                    ...Object.values(SUB_TABS)
+                  ].map((item) => (
+                    <motion.li
+                      key={item}
+                      whileHover={{ x: 10 }}
+                      onClick={() => {
+                        if (Object.values(TABS).includes(item)) {
+                          setActiveTab(item);
+                          setActiveSubTab(null);
+                        } else {
+                          setActiveSubTab(item);
+                          setActiveTab(TABS.MORE);
+                        }
+                        setShowDrawer(false);
+                      }}
+                    >{item}</motion.li>
+                  ))}
+                </ul>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="notifications">
+          <AnimatePresence>
+            {notifications.map((n) => (
+              <motion.div
+                key={n.id}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 100 }}
+                className={`notification ${n.type}`}
+              >{n.message}</motion.div>
+            ))}
+          </AnimatePresence>
         </div>
-      )}
+      </div>
+      <AnimatePresence>
+        {selectedItem && <Modal key="modal" />}
+      </AnimatePresence>
     </div>
   );
 }
