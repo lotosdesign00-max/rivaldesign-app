@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ==================== SOUND DESIGN (optional) ====================
-// Simple beep sound using Web Audio API
 const playSound = (type = 'click') => {
   if (!window.soundEnabled) return;
   try {
@@ -20,9 +19,7 @@ const playSound = (type = 'click') => {
     
     oscillator.start();
     oscillator.stop(audioCtx.currentTime + 0.1);
-  } catch (e) {
-    // Fallback if AudioContext fails
-  }
+  } catch (e) {}
 };
 
 // ==================== CONSTANTS ====================
@@ -56,7 +53,6 @@ const SUB_TABS = {
   QUESTIONS: "questions",
 };
 
-// 10 professional color themes
 const THEMES = {
   DARK: { id: "dark", name: "Dark", icon: "🌙", colors: { primary: "#0a0a0f", secondary: "#1a1a24", accent: "#a78bfa", text: "#ffffff", textSecondary: "#a1a1b0", border: "#2d2d3a", card: "rgba(25,25,35,0.9)", button: "#a78bfa", buttonText: "#000000", tabActive: "#a78bfa", shadow: "0 20px 40px rgba(167,139,250,0.2)", gradient: "linear-gradient(145deg, #0a0a0f, #1a1a24)" } },
   LIGHT: { id: "light", name: "Light", icon: "☀️", colors: { primary: "#f8fafc", secondary: "#ffffff", accent: "#3b82f6", text: "#0f172a", textSecondary: "#475569", border: "#e2e8f0", card: "rgba(255,255,255,0.9)", button: "#3b82f6", buttonText: "#ffffff", tabActive: "#3b82f6", shadow: "0 20px 40px rgba(59,130,246,0.1)", gradient: "linear-gradient(145deg, #f1f5f9, #ffffff)" } },
@@ -70,7 +66,6 @@ const THEMES = {
   RETRO: { id: "retro", name: "Retro", icon: "📼", colors: { primary: "#2b1f1a", secondary: "#3b2f2a", accent: "#fbbf24", text: "#fef3c7", textSecondary: "#fde68a", border: "#92400e", card: "rgba(59,47,42,0.9)", button: "#fbbf24", buttonText: "#000000", tabActive: "#fbbf24", shadow: "0 20px 40px rgba(251,191,36,0.2)", gradient: "linear-gradient(145deg, #2b1f1a, #3b2f2a)" } },
 };
 
-// Currency rates
 const EXCHANGE_RATES = { USD: 1, RUB: 95, UAH: 40, BYN: 3.2, KZT: 450, EUR: 0.92, CNY: 7.2, GBP: 0.8, JPY: 150, INR: 83 };
 
 const LANGUAGE_TO_CURRENCY = {
@@ -111,7 +106,6 @@ const PORTFOLIO_CATEGORIES = {
   en: ["All", "Avatars", "Previews", "Banners", "Logos", "3D", "Animation", "Illustrations", "NFT"],
 };
 
-// Professional placeholder images
 const PORTFOLIO_ITEMS = Array.from({ length: 50 }, (_, i) => ({
   id: `p${i}`,
   category: ["Аватарки", "Превью", "Баннеры", "Логотипы", "3D", "Анимация", "Иллюстрации", "NFT"][i % 8],
@@ -164,8 +158,6 @@ const ACHIEVEMENTS = Array.from({ length: 50 }, (_, i) => ({
   xp: 10 + (i % 20),
 }));
 
-// ==================== MAIN COMPONENT ====================
-
 export default function App() {
   const [activeTab, setActiveTab] = useState(TABS.HOME);
   const [activeSubTab, setActiveSubTab] = useState(null);
@@ -207,26 +199,22 @@ export default function App() {
   const [badges, setBadges] = useState([]);
   const [stats, setStats] = useState({ orders: 0, totalSpent: 0, coursesCompleted: 0, projectsCreated: 0 });
 
-  // Enable sound globally
   useEffect(() => {
     window.soundEnabled = soundEnabled;
   }, [soundEnabled]);
 
-  // Simulate haptic feedback
   const triggerHaptic = () => {
     if (hapticEnabled && window.navigator && window.navigator.vibrate) {
       window.navigator.vibrate(10);
     }
   };
 
-  // Enhanced click handler with sound and haptic
   const handleClick = useCallback((action, soundType = 'click') => {
     if (soundEnabled) playSound(soundType);
     triggerHaptic();
     if (action) action();
   }, [soundEnabled, hapticEnabled]);
 
-  // Load from localStorage
   useEffect(() => {
     const loadData = () => {
       try {
@@ -250,7 +238,6 @@ export default function App() {
     loadData();
   }, []);
 
-  // Save to localStorage
   useEffect(() => { localStorage.setItem("cart", JSON.stringify(cart)); }, [cart]);
   useEffect(() => { localStorage.setItem("favorites", JSON.stringify(favorites)); }, [favorites]);
   useEffect(() => { localStorage.setItem("history", JSON.stringify(history)); }, [history]);
@@ -267,14 +254,12 @@ export default function App() {
   useEffect(() => { localStorage.setItem("badges", JSON.stringify(badges)); }, [badges]);
   useEffect(() => { localStorage.setItem("stats", JSON.stringify(stats)); }, [stats]);
 
-  // Notifications
   const addNotification = useCallback((message, type = "info") => {
     const id = Date.now();
     setNotifications((prev) => [...prev, { id, message, type }]);
     setTimeout(() => setNotifications((prev) => prev.filter((n) => n.id !== id)), 3000);
   }, []);
 
-  // XP System
   const addXP = useCallback((amount) => {
     setUser((prev) => {
       const newXP = prev.xp + amount;
@@ -283,7 +268,6 @@ export default function App() {
     });
   }, []);
 
-  // Favorites
   const toggleFavorite = useCallback((item) => {
     setFavorites((prev) => {
       const exists = prev.some((f) => f.id === item.id);
@@ -298,13 +282,11 @@ export default function App() {
     });
   }, [addNotification, addXP]);
 
-  // Like
   const toggleLike = useCallback((itemId) => {
     setLikedItems((prev) => ({ ...prev, [itemId]: !prev[itemId] }));
     if (!likedItems[itemId]) addXP(1);
   }, [likedItems, addXP]);
 
-  // History
   const addToHistory = useCallback((item) => {
     setHistory((prev) => {
       const filtered = prev.filter((h) => h.id !== item.id);
@@ -316,7 +298,6 @@ export default function App() {
     });
   }, []);
 
-  // Cart
   const addToCart = useCallback((item, quantity = 1) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === item.id);
@@ -346,9 +327,21 @@ export default function App() {
     addNotification("Cart cleared", "warning");
   }, [addNotification]);
 
-  // Promo
   const applyPromo = useCallback(() => {
     if (promoCode.toLowerCase() === "rival20") {
       setPromoApplied(true);
       addNotification("20% promo applied!", "success");
-    } else if (promoCode.toLowerCase() === "rival10") 
+    } else if (promoCode.toLowerCase() === "rival10") {
+      setPromoApplied(true);
+      addNotification("10% promo applied!", "success");
+    } else {
+      addNotification("Invalid promo code", "error");
+    }
+  }, [promoCode, addNotification]);
+
+  const cartTotal = useMemo(() => {
+    const subtotal = cart.reduce((sum, i) => sum + (i.price || i.priceUSD || 0) * i.quantity, 0);
+    let discount = 0;
+    if (promoApplied) discount += subtotal * 0.1;
+    if (cart.length >= 3) discount += subtotal * 0.05;
+    if (premium) discount += sub
