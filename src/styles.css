@@ -1,128 +1,184 @@
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  RIVAL STUDIO — Global CSS Resets & Utilities           ║
-   ║  All component styles live inline in App.jsx            ║
-   ╚══════════════════════════════════════════════════════════╝ */
+/* Глобальные стили для корректной прокрутки и оптимизации под мобильные устройства */
 
-/* ── RESET ── */
-*,
-*::before,
-*::after {
+/* Импорт шрифта */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+/* Сброс и базовые настройки */
+*, *::before, *::after {
   box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-  tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent; /* убирает серый фон при тапе на мобильных */
 }
 
+/* Скрываем скроллбары везде */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+* {
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Фиксируем html и body, запрещаем прокрутку на уровне документа */
 html {
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  background: #06060e;
-  color: #f0eaff;
+  overflow: hidden;
+  height: 100%;
 }
 
 body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;               /* запрещаем прокрутку body */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: "Nunito", "Sora", "DM Sans", system-ui, sans-serif;
-  overscroll-behavior: none;
 }
 
-/* ── SCROLLBARS ── */
-::-webkit-scrollbar { width: 0; height: 0; }
-* { scrollbar-width: none; }
-
-/* ── FOCUS ── */
-:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-}
-button:focus:not(:focus-visible),
-input:focus:not(:focus-visible) {
-  outline: none;
+/* Родительский контейнер React (обычно #root) занимает всю высоту */
+#root {
+  height: 100%;
+  overflow: hidden;
 }
 
-/* ── BUTTONS ── */
-button {
-  font-family: inherit;
-  line-height: 1;
-  appearance: none;
-  -webkit-appearance: none;
+/* Разрешаем вертикальную прокрутку на всех интерактивных элементах,
+   чтобы жест прокрутки не блокировался при старте с кнопки */
+button,
+a,
+[role="button"],
+.clickable,
+.bottom-nav-item,
+.drawer-item,
+.card-button,
+.swiper-slide,
+.gallery-item,
+.course-card,
+.review-card,
+.faq-item,
+.ai-history-item {
+  touch-action: pan-y;            /* разрешаем вертикальный скролл */
+  /* можно добавить также pan-x, если нужно горизонтальное, но обычно нет */
 }
 
-/* ── INPUTS ── */
-input {
-  appearance: none;
-  -webkit-appearance: none;
-  border: none;
-  background: none;
+/* Для элементов, которые должны поддерживать горизонтальный скролл (например, карусели),
+   можно разрешить оба направления, но это редкость */
+.horizontal-scroll {
+  touch-action: pan-x pan-y;      /* разрешаем и горизонтальную, и вертикальную прокрутку */
 }
 
-/* ── IMAGES ── */
-img {
-  display: block;
-  max-width: 100%;
-  user-select: none;
-  -webkit-user-drag: none;
+/* Основной контентный блок – должен скроллиться */
+main, .scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* плавный инерционный скролл на iOS */
+  overscroll-behavior: contain;      /* предотвращаем pull-to-refresh и эффекты границ */
 }
 
-/* ── SELECTIONS ── */
-::selection {
-  background: rgba(138, 92, 246, 0.3);
-  color: #f0eaff;
+/* Анимации, используемые в приложении */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* ── SWIPER ── */
-.swiper { overflow: visible !important; }
-.swiper-wrapper { align-items: flex-start; }
-
-/* ── RANGE INPUT ── */
-input[type="range"] {
-  -webkit-appearance: none;
-  height: 4px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  outline: none;
-  cursor: pointer;
-  width: 100%;
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-input[type="range"]::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-}
-
-/* ── SAFE AREA ── */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  body { padding-bottom: env(safe-area-inset-bottom); }
-}
-
-/* ── REDUCED MOTION ── */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
-/* ── PRINT ── */
-@media print {
-  nav, .splash, canvas, .drawer { display: none !important; }
-  body { background: #fff !important; color: #000 !important; }
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+
+@keyframes drawerSlide {
+  from { transform: translateX(-100%); }
+  to { transform: none; }
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes ping {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.6;
+  }
+}
+
+@keyframes splashBounce {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(15deg);
+  }
+}
+
+/* Стили для кастомных range-ползунков (accent-color задаётся инлайн в зависимости от темы) */
+input[type=range] {
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 99px;
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Swiper по умолчанию может обрезать содержимое, разрешаем видимость за пределами */
+.swiper {
+  overflow: visible !important;
+}
+
+/* Отключаем анимации для пользователей, предпочитающих уменьшенное движение */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
