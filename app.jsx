@@ -32,17 +32,38 @@ const App = () => {
         );
       case 'Free Pack':
         return (
-          <div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <h1>Твой подарок</h1>
-            <ul>
+            <ul style={{ listStyleType: 'none', padding: 0, textAlign: 'left' }}>
               <li>Бесплатный доступ к базовым функциям</li>
               <li>5 бесплатных бонусов</li>
               {/* Добавьте еще бонусы */}
             </ul>
-            <button onClick={() => {
-              console.log('Пак получен');
-              // Измените текст кнопки
-            }}>Забрать</button>
+            <button
+              onClick={() => {
+                console.log('Пак получен');
+                setActiveTab('Free Pack Activated'); // Измените текст кнопки и состояние вкладки
+              }}
+              style={{
+                padding: '10px 20px',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                color: '#fff',
+                backgroundColor: '#4CAF50',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer'
+              }}
+            >
+              Забрать
+            </button>
+          </div>
+        );
+      case 'Free Pack Activated':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <h1>Твой подарок активирован</h1>
+            <p>Спасибо за покупку! Ваш пакет теперь доступен.</p>
           </div>
         );
       default:
@@ -55,16 +76,16 @@ const App = () => {
   };
 
   return (
-    <div>
-      <nav>
-        <ul>
-          <li onClick={() => handleTabChange('Dashboard')}>Дашборд</li>
-          <li onClick={() => handleTabChange('CRM')}>CRM</li>
-          <li onClick={() => handleTabChange('Billing')}>Биллинг</li>
-          <li onClick={() => handleTabChange('Free Pack')}>Бесплатный пак</li>
+    <div style={{ fontFamily: 'Arial, sans-serif' }}>
+      <nav style={{ display: 'flex', justifyContent: 'center', backgroundColor: '#f8f9fa', padding: '10px 0' }}>
+        <ul style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', gap: '20px' }}>
+          <li onClick={() => handleTabChange('Dashboard')} style={{ cursor: 'pointer', color: activeTab === 'Dashboard' ? '#4CAF50' : '#333' }}>Дашборд</li>
+          <li onClick={() => handleTabChange('CRM')} style={{ cursor: 'pointer', color: activeTab === 'CRM' ? '#4CAF50' : '#333' }}>CRM</li>
+          <li onClick={() => handleTabChange('Billing')} style={{ cursor: 'pointer', color: activeTab === 'Billing' ? '#4CAF50' : '#333' }}>Биллинг</li>
+          <li onClick={() => handleTabChange('Free Pack')} style={{ cursor: 'pointer', color: activeTab === 'Free Pack' || activeTab === 'Free Pack Activated' ? '#4CAF50' : '#333' }}>Бесплатный пак</li>
         </ul>
       </nav>
-      <main>{renderContent()}</main>
+      <main style={{ padding: '20px' }}>{renderContent()}</main>
     </div>
   );
 };
