@@ -1,15 +1,17 @@
-/* Глобальные стили для корректной прокрутки и оптимизации под мобильные устройства */
+/* styles.css — полные стили для мобильной версии Rival Studio */
 
 /* Импорт шрифта */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 
-/* Сброс и базовые настройки */
-*, *::before, *::after {
+/* ---------- СБРОС И БАЗОВЫЕ НАСТРОЙКИ ---------- */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent; /* убирает серый фон при тапе на мобильных */
 }
 
-/* Скрываем скроллбары везде */
+/* Скрываем скроллбары везде (опционально) */
 ::-webkit-scrollbar {
   width: 0;
   height: 0;
@@ -18,7 +20,7 @@
   scrollbar-width: none; /* Firefox */
 }
 
-/* Фиксируем html и body, запрещаем прокрутку на уровне документа */
+/* Фиксируем html и body – прокрутка только внутри main */
 html {
   overflow: hidden;
   height: 100%;
@@ -28,51 +30,80 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden;               /* запрещаем прокрутку body */
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: 'Nunito', 'Sora', 'DM Sans', 'Inter', system-ui, sans-serif;
 }
 
-/* Родительский контейнер React (обычно #root) занимает всю высоту */
+/* Корневой контейнер React занимает всю высоту */
 #root {
   height: 100%;
   overflow: hidden;
 }
 
-/* Разрешаем вертикальную прокрутку на всех интерактивных элементах,
-   чтобы жест прокрутки не блокировался при старте с кнопки */
+/* ---------- РАЗРЕШАЕМ ВЕРТИКАЛЬНУЮ ПРОКРУТКУ НА ИНТЕРАКТИВНЫХ ЭЛЕМЕНТАХ ---------- */
 button,
 a,
 [role="button"],
 .clickable,
-.bottom-nav-item,
-.drawer-item,
-.card-button,
+.nav-item,
+.card,
 .swiper-slide,
 .gallery-item,
 .course-card,
 .review-card,
 .faq-item,
-.ai-history-item {
-  touch-action: pan-y;            /* разрешаем вертикальный скролл */
-  /* можно добавить также pan-x, если нужно горизонтальное, но обычно нет */
+.ai-history-item,
+.bottom-nav-item,
+.drawer-item,
+input[type="range"] {
+  touch-action: pan-y; /* позволяет начинать скролл с этих элементов */
 }
 
-/* Для элементов, которые должны поддерживать горизонтальный скролл (например, карусели),
-   можно разрешить оба направления, но это редкость */
+/* Для элементов, которым нужен горизонтальный скролл (редко) */
 .horizontal-scroll {
-  touch-action: pan-x pan-y;      /* разрешаем и горизонтальную, и вертикальную прокрутку */
+  touch-action: pan-x pan-y;
 }
 
-/* Основной контентный блок – должен скроллиться */
-main, .scrollable-content {
-  flex: 1;
+/* ---------- ОСНОВНОЙ КОНТЕНТ – СКРОЛЛИМАЯ ОБЛАСТЬ ---------- */
+main,
+.scrollable-content {
+  flex: 1 1 auto;
+  min-height: 0; /* важно для flex-детей */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch; /* плавный инерционный скролл на iOS */
-  overscroll-behavior: contain;      /* предотвращаем pull-to-refresh и эффекты границ */
+  overscroll-behavior: contain;      /* предотвращает pull-to-refresh и другие эффекты */
 }
 
-/* Анимации, используемые в приложении */
+/* ---------- ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ ДЛЯ КОМПОНЕНТОВ ---------- */
+.app-inner {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh; /* динамическая высота окна */
+  position: relative;
+  z-index: 1;
+}
+
+/* Фиксированная нижняя навигация (класс можно добавить в компонент BottomNav) */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(480px, 100%);
+  z-index: 200;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  padding: 6px 0 calc(6px + env(safe-area-inset-bottom, 0px));
+  /* цвета задаются инлайн, здесь только структура */
+  background: var(--nav-bg, #0c0c18);
+  border-top: 1px solid var(--border-color, rgba(138,92,246,.15));
+}
+
+/* ---------- АНИМАЦИИ (из исходного кода) ---------- */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -150,7 +181,7 @@ main, .scrollable-content {
   }
 }
 
-/* Стили для кастомных range-ползунков (accent-color задаётся инлайн в зависимости от темы) */
+/* ---------- КАСТОМНЫЕ RANGE-ПОЛЗУНКИ ---------- */
 input[type=range] {
   -webkit-appearance: none;
   height: 4px;
@@ -165,13 +196,14 @@ input[type=range]::-webkit-slider-thumb {
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+/* Цвет ползунка задаётся через accent-color в инлайне, здесь не переопределяем */
 
-/* Swiper по умолчанию может обрезать содержимое, разрешаем видимость за пределами */
+/* ---------- SWIPER – РАЗРЕШАЕМ ПЕРЕПОЛНЕНИЕ ---------- */
 .swiper {
   overflow: visible !important;
 }
 
-/* Отключаем анимации для пользователей, предпочитающих уменьшенное движение */
+/* ---------- УВАЖАЕМ ПРЕДПОЧТЕНИЯ ПОЛЬЗОВАТЕЛЯ (УМЕНЬШЕНИЕ ДВИЖЕНИЯ) ---------- */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -181,4 +213,21 @@ input[type=range]::-webkit-slider-thumb {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ---------- УТИЛИТЫ ---------- */
+.tap-highlight-none {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fixed-center {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ---------- ГАРАНТИЯ, ЧТО main НЕ ВЫЛЕТАЕТ ЗА ПРЕДЕЛЫ ---------- */
+main {
+  flex: 1 1 auto;
+  min-height: 0;
 }
