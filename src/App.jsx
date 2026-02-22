@@ -265,14 +265,16 @@ export default function App() {
   const addXPfn=useCallback(amount=>{const newData=addXP(amount);setStreak(newData);const oldLevel=getLevel(newData.xp-amount);const newLevel=getLevel(newData.xp);if(newLevel>oldLevel){setTimeout(()=>{SFX.levelUp();showToast(`🏆 Level ${newLevel}!`,"success");setConfetti(true);setTimeout(()=>setConfetti(false),3500);},300);}},[showToast]);
   const greeting=getGreeting(lang);
   return (
-    <div style={{minHeight:"100dvh",background:th.bg,fontFamily:'"Nunito","Sora","DM Sans","Inter",system-ui,sans-serif',display:"flex",justifyContent:"center",position:"relative",overscrollBehavior:"none"}}>
+    <div style={{height:"100dvh",background:th.bg,fontFamily:'"Nunito","Sora","DM Sans","Inter",system-ui,sans-serif',display:"flex",justifyContent:"center",position:"relative",overscrollBehavior:"none"}}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
         *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
         ::-webkit-scrollbar{width:0;height:0;}*{scrollbar-width:none;}
         html{scroll-behavior:smooth;overscroll-behavior:none;overflow:hidden;height:100%;}
-        body{margin:0;padding:0;overflow-x:hidden;overflow-y:auto;height:100%;overscroll-behavior-y:none;-webkit-overflow-scrolling:touch;}
-        button{font-family:inherit;}input{font-family:inherit;}img{-webkit-user-drag:none;user-select:none;}
+        body{margin:0;padding:0;overflow:hidden;height:100%;overscroll-behavior-y:none;-webkit-overflow-scrolling:touch;}
+        button,[role="button"],[style*="cursor: pointer"]{font-family:inherit;touch-action:manipulation;}
+        input{font-family:inherit;}
+        img{-webkit-user-drag:none;user-select:none;}
         @keyframes fadeIn{from{opacity:0}to{opacity:1}}
         @keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
         @keyframes cardIn{from{opacity:0;transform:translateY(22px) scale(.95)}to{opacity:1;transform:none}}
@@ -293,13 +295,13 @@ export default function App() {
       <ToastSystem toasts={toasts}/>
       {confetti&&<Confetti active={confetti} accent={th.accent}/>}
       <SideDrawer open={drawerOpen} onClose={()=>setDrawerOpen(false)} th={th} t={t} theme={theme} setTheme={setTheme} lang={lang} setLang={setLang} soundOn={soundOn} setSoundOn={setSoundOn} volume={volume} setVolume={setVolume}/>
-      <div style={{width:"100%",maxWidth:480,display:"flex",flexDirection:"column",minHeight:"100dvh",position:"relative",zIndex:1}}>
-        <header style={{position:"sticky",top:0,zIndex:100,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 16px",background:th.nav,borderBottom:`1px solid ${th.border}`}}>
+      <div style={{width:"100%",maxWidth:480,display:"flex",flexDirection:"column",height:"100dvh",position:"relative",zIndex:1}}>
+        <header style={{flexShrink:0,position:"sticky",top:0,zIndex:100,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 16px",background:th.nav,borderBottom:`1px solid ${th.border}`}}>
           <button onClick={()=>{SFX.drawer();setDrawerOpen(true);}} style={{display:"flex",flexDirection:"column",gap:4.5,width:32,height:32,justifyContent:"center",alignItems:"center",background:"none",border:"none",cursor:"pointer",padding:0}}>{[0,1,2].map(i=>(<div key={i} style={{width:i===1?16:22,height:2,borderRadius:999,background:th.sub}}/>))}</button>
           <div style={{display:"flex",alignItems:"center",gap:8,position:"absolute",left:"50%",transform:"translateX(-50%)"}}><div style={{width:28,height:28,borderRadius:9,background:th.grad,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,color:th.btnTxt,boxShadow:th.shadow}}>✦</div><span style={{fontSize:15,fontWeight:900,color:th.text}}>{t.appName}</span></div>
           <div style={{display:"flex",alignItems:"center",gap:8}}><div style={{display:"flex",alignItems:"center",gap:4,padding:"4px 10px",borderRadius:999,background:th.accent+"18",border:`1px solid ${th.accent}30`}}><span style={{fontSize:12}}>🔥</span><span style={{fontSize:11,fontWeight:800,color:th.accent}}>{streak.count}</span></div><button onClick={()=>{SFX.tap();openTg("Rivaldsg");}} style={{width:32,height:32,borderRadius:10,border:`1px solid ${th.border}`,background:"none",color:th.accent,cursor:"pointer",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center"}}>✈</button></div>
         </header>
-        {tab==="home"&&<div style={{padding:"10px 16px 0",fontSize:12,color:th.sub,fontWeight:600}}>{greeting} 👋</div>}
+        {tab==="home"&&<div style={{flexShrink:0,padding:"10px 16px 0",fontSize:12,color:th.sub,fontWeight:600}}>{greeting} 👋</div>}
         <main style={{flex:1,padding:"14px 16px 100px",overflowY:"auto",WebkitOverflowScrolling:"touch",overscrollBehavior:"contain"}}>
           <div key={tab} style={{animation:"cardIn .35s ease both"}}>
             {tab==="home"&&<HomeTab th={th} t={t} lang={lang} onGoGallery={()=>setTab("gallery")} onGoCourses={()=>setTab("courses")} onGoPricing={()=>setTab("pricing")} onGoMore={()=>setTab("more")} cartCount={cartCount} streak={streak}/>}
