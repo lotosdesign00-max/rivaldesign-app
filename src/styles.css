@@ -1,8 +1,5 @@
 /* styles.css — полные стили для мобильной версии Rival Studio */
 
-/* Импорт шрифта */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
-
 /* ---------- СБРОС И БАЗОВЫЕ НАСТРОЙКИ ---------- */
 *,
 *::before,
@@ -11,7 +8,7 @@
   -webkit-tap-highlight-color: transparent; /* убирает серый фон при тапе на мобильных */
 }
 
-/* Скрываем скроллбары везде (опционально) */
+/* Скрываем скроллбары везде (можно оставить для эстетики) */
 ::-webkit-scrollbar {
   width: 0;
   height: 0;
@@ -61,7 +58,7 @@ input[type="range"] {
   touch-action: pan-y; /* позволяет начинать скролл с этих элементов */
 }
 
-/* Для элементов, которым нужен горизонтальный скролл (редко) */
+/* Для элементов, которым нужен горизонтальный скролл (например, карусели категорий) */
 .horizontal-scroll {
   touch-action: pan-x pan-y;
 }
@@ -76,18 +73,26 @@ main,
   overscroll-behavior: contain;      /* предотвращает pull-to-refresh и другие эффекты */
 }
 
-/* ---------- ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ ДЛЯ КОМПОНЕНТОВ ---------- */
+/* ---------- СТРУКТУРНЫЕ КЛАССЫ (можно использовать в компонентах) ---------- */
+.app-outer {
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  overscroll-behavior: none;
+}
+
 .app-inner {
   width: 100%;
   max-width: 480px;
   display: flex;
   flex-direction: column;
-  height: 100dvh; /* динамическая высота окна */
+  height: 100dvh;
   position: relative;
   z-index: 1;
 }
 
-/* Фиксированная нижняя навигация (класс можно добавить в компонент BottomNav) */
+/* Фиксированная нижняя навигация */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -98,9 +103,7 @@ main,
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   padding: 6px 0 calc(6px + env(safe-area-inset-bottom, 0px));
-  /* цвета задаются инлайн, здесь только структура */
-  background: var(--nav-bg, #0c0c18);
-  border-top: 1px solid var(--border-color, rgba(138,92,246,.15));
+  /* цвета задаются инлайн, здесь только позиционирование */
 }
 
 /* ---------- АНИМАЦИИ (из исходного кода) ---------- */
@@ -196,7 +199,7 @@ input[type=range]::-webkit-slider-thumb {
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
-/* Цвет ползунка задаётся через accent-color в инлайне, здесь не переопределяем */
+/* Цвет ползунка задаётся через accent-color в инлайне */
 
 /* ---------- SWIPER – РАЗРЕШАЕМ ПЕРЕПОЛНЕНИЕ ---------- */
 .swiper {
@@ -213,17 +216,6 @@ input[type=range]::-webkit-slider-thumb {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* ---------- УТИЛИТЫ ---------- */
-.tap-highlight-none {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.fixed-center {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 /* ---------- ГАРАНТИЯ, ЧТО main НЕ ВЫЛЕТАЕТ ЗА ПРЕДЕЛЫ ---------- */
