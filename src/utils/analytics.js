@@ -1,15 +1,17 @@
 import * as amplitude from '@amplitude/analytics-browser';
 
-// 🔑 Получите ваш API Key на https://analytics.amplitude.com/
+// 🔑 API Key берется из переменных окружения (.env файл)
+// Получите ваш ключ на: https://analytics.amplitude.com/
 // Settings → Projects → [Your Project] → API Keys
-const AMPLITUDE_API_KEY = 'YOUR_AMPLITUDE_API_KEY'; // TODO: Замените на ваш ключ
+const AMPLITUDE_API_KEY = import.meta.env.VITE_AMPLITUDE_API_KEY;
 
 const IS_PRODUCTION = window.location.hostname !== 'localhost';
+const IS_DEVELOPMENT = !IS_PRODUCTION;
 
 // Инициализация Amplitude
 export const initGA = () => {
-  if (!IS_PRODUCTION) {
-    console.log('[Amplitude] Analytics disabled in development mode');
+  if (!AMPLITUDE_API_KEY || AMPLITUDE_API_KEY === 'YOUR_AMPLITUDE_API_KEY') {
+    console.warn('[Amplitude] ⚠️ API Key не настроен! Добавьте VITE_AMPLITUDE_API_KEY в .env файл');
     return;
   }
   
@@ -22,12 +24,12 @@ export const initGA = () => {
     },
   });
   
-  console.log('[Amplitude] Analytics initialized');
+  console.log('[Amplitude] ✅ Analytics initialized', IS_DEVELOPMENT ? '(Dev Mode)' : '(Production)');
 };
 
 // Отслеживание запуска приложения
 export const trackAppStart = (userId = null) => {
-  if (!IS_PRODUCTION) return;
+  if (!AMPLITUDE_API_KEY || AMPLITUDE_API_KEY === 'YOUR_AMPLITUDE_API_KEY') return;
   
   // Если есть Telegram User ID, сохраняем как user_id
   if (userId) {
@@ -37,12 +39,17 @@ export const trackAppStart = (userId = null) => {
   amplitude.track('app_start', {
     platform: 'telegram_mini_app',
     timestamp: new Date().toISOString(),
+    environment: IS_PRODUCTION ? 'production' : 'development',
   });
+  
+  if (IS_DEVELOPMENT) {
+    console.log('[Amplitude] 📊 Event: app_start', { userId });
+  }
 };
 
 // Отслеживание источников трафика
 export const trackTrafficSource = (source, medium = 'telegram') => {
-  if (!IS_PRODUCTION) return;
+  if (!AMPLITUDE_API_KEY || AMPLITUDE_API_KEY === 'YOUR_AMPLITUDE_API_KEY') return;
   
   amplitude.track('traffic_source', {
     source,
@@ -50,21 +57,29 @@ export const trackTrafficSource = (source, medium = 'telegram') => {
     utm_source: source,
     utm_medium: medium,
   });
+  
+  if (IS_DEVELOPMENT) {
+    console.log('[Amplitude] 📊 Event: traffic_source', { source, medium });
+  }
 };
 
 // Отслеживание просмотров разделов
 export const trackSectionView = (sectionName) => {
-  if (!IS_PRODUCTION) return;
+  if (!AMPLITUDE_API_KEY || AMPLITUDE_API_KEY === 'YOUR_AMPLITUDE_API_KEY') return;
   
   amplitude.track('section_view', {
     section_name: sectionName,
     page: `/${sectionName.toLowerCase()}`,
   });
+  
+  if (IS_DEVELOPMENT) {
+    console.log('[Amplitude] 📊 Event: section_view', { sectionName });
+  }
 };
 
 // Отслеживание воронки покупки
 export const trackFunnelStep = (step, additionalData = {}) => {
-  if (!IS_PRODUCTION) return;
+  if (!AMPLITUDE_API_KEY || AMPLITUDE_API_KEY === 'YOUR_AMPLITUDE_API_KEY') return;
   
   const funnelSteps = {
     app_start: { step: 1, name: 'App Started' },
@@ -83,60 +98,88 @@ export const trackFunnelStep = (step, additionalData = {}) => {
       funnel_name: currentStep.name,
       ...additionalData,
     });
+    
+    if (IS_DEVELOPMENT) {
+      console.log('[Amplitude] 📊 Event: funnel_step', { step, ...currentStep, ...additionalData });
+    }
   }
 };
 
 // Отслеживание генерации идей
 export const trackIdeaGeneration = () => {
-  if (!IS_PRODUCTION) return;
+  if (!AMPLITUDE_API_KEY || AMPLITUDE_API_KEY === 'YOUR_AMPLITUDE_API_KEY') return;
   
   amplitude.track('generate_idea', {
     category: 'engagement',
   });
+  
+  if (IS_DEVELOPMENT) {
+    console.log('[Amplitude] 📊 Event: generate_idea');
+  }
 };
 
 // Отслеживание кликов по кнопкам
 export const trackButtonClick = (buttonName, context = '') => {
-  if (!IS_PRODUCTION) return;
+  if (!AMPLITUDE_API_KEY || AMPLITUDE_API_KEY === 'YOUR_AMPLITUDE_API_KEY') return;
   
   amplitude.track('button_click', {
     button_name: buttonName,
     context: context || 'general',
   });
+  
+  if (IS_DEVELOPMENT) {
+    console.log('[Amplitude] 📊 Event: button_click', { buttonName, context });
+  }
 };
 
 // Отслеживание взаимодействия с галереей
 export const trackGalleryInteraction = (action, imageId = null) => {
-  if (!IS_PRODUCTION) return;
+  if (!AMPLITUDE_API_KEY || AMPLITUDE_API_KEY === 'YOUR_AMPLITUDE_API_KEY') return;
   
   amplitude.track('gallery_interaction', {
     action: action, // 'open', 'close', 'next', 'prev'
     image_id: imageId,
   });
+  
+  if (IS_DEVELOPMENT) {
+    console.log('[Amplitude] 📊 Event: gallery_interaction', { action, imageId });
+  }
 };
 
 // Отслеживание активности пользователя (для расчета активных пользователей)
 export const trackUserActivity = () => {
-  if (!IS_PRODUCTION) return;
+  if (!AMPLITUDE_API_KEY || AMPLITUDE_API_KEY === 'YOUR_AMPLITUDE_API_KEY') return;
   
   amplitude.track('user_activity', {
     timestamp: new Date().toISOString(),
   });
+  
+  if (IS_DEVELOPMENT) {
+    console.log('[Amplitude] 📊 Event: user_activity');
+  }
 };
 
 // Отслеживание времени на сайте (можно вызывать через интервалы)
 export const trackEngagementTime = (seconds) => {
-  if (!IS_PRODUCTION) return;
+  if (!AMPLITUDE_API_KEY || AMPLITUDE_API_KEY === 'YOUR_AMPLITUDE_API_KEY') return;
   
   amplitude.track('engagement_time', {
     seconds: seconds,
     minutes: Math.floor(seconds / 60),
   });
+  
+  if (IS_DEVELOPMENT) {
+    console.log('[Amplitude] 📊 Event: engagement_time', { seconds });
+  }
 };
 
 // Кастомные события для специфичных действий
 export const trackCustomEvent = (eventName, properties = {}) => {
-  if (!IS_PRODUCTION) return;
+  if (!AMPLITUDE_API_KEY || AMPLITUDE_API_KEY === 'YOUR_AMPLITUDE_API_KEY') return;
   
   amplitude.track(eventName, properties);
+  
+  if (IS_DEVELOPMENT) {
+    console.log('[Amplitude] 📊 Event:', eventName, properties);
+  }
 };
