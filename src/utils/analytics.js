@@ -1,75 +1,71 @@
-import ReactGA from 'react-ga4';
+import * as amplitude from '@amplitude/analytics-browser';
 
-const TRACKING_ID = 'G-5CP93DQTJE';
+// 🔑 Получите ваш API Key на https://analytics.amplitude.com/
+// Settings → Projects → [Your Project] → API Keys
+const AMPLITUDE_API_KEY = 'YOUR_AMPLITUDE_API_KEY'; // TODO: Замените на ваш ключ
+
 const IS_PRODUCTION = window.location.hostname !== 'localhost';
 
-// Инициализация Google Analytics
+// Инициализация Amplitude
 export const initGA = () => {
   if (!IS_PRODUCTION) {
-    console.log('[GA] Analytics disabled in development mode');
+    console.log('[Amplitude] Analytics disabled in development mode');
     return;
   }
   
-  ReactGA.initialize(TRACKING_ID, {
-    gaOptions: {
-      anonymizeIp: true, // Анонимизация IP для соответствия GDPR
+  amplitude.init(AMPLITUDE_API_KEY, {
+    defaultTracking: {
+      sessions: true,
+      pageViews: true,
+      formInteractions: true,
+      fileDownloads: false,
     },
   });
   
-  console.log('[GA] Google Analytics initialized with ID:', TRACKING_ID);
+  console.log('[Amplitude] Analytics initialized');
 };
 
 // Отслеживание запуска приложения
 export const trackAppStart = (userId = null) => {
-  ReactGA.event({
-    category: 'App',
-    action: 'app_start',
-    label: 'Application Started',
-    value: 1,
-  });
-  
-  // Отправляем pageview для подсчета сессий
-  ReactGA.send({ hitType: 'pageview', page: '/app-start' });
+  if (!IS_PRODUCTION) return;
   
   // Если есть Telegram User ID, сохраняем как user_id
   if (userId) {
-    ReactGA.set({ userId: `tg_${userId}` });
+    amplitude.setUserId(`tg_${userId}`);
   }
+  
+  amplitude.track('app_start', {
+    platform: 'telegram_mini_app',
+    timestamp: new Date().toISOString(),
+  });
 };
 
 // Отслеживание источников трафика
 export const trackTrafficSource = (source, medium = 'telegram') => {
-  ReactGA.event({
-    category: 'Traffic',
-    action: 'traffic_source',
-    label: source,
-  });
+  if (!IS_PRODUCTION) return;
   
-  // Установка параметров источника трафика
-  ReactGA.set({
-    campaign_source: source,
-    campaign_medium: medium,
+  amplitude.track('traffic_source', {
+    source,
+    medium,
+    utm_source: source,
+    utm_medium: medium,
   });
 };
 
 // Отслеживание просмотров разделов
 export const trackSectionView = (sectionName) => {
-  ReactGA.event({
-    category: 'Navigation',
-    action: 'section_view',
-    label: sectionName,
-  });
+  if (!IS_PRODUCTION) return;
   
-  // Отправляем как виртуальный pageview
-  ReactGA.send({ 
-    hitType: 'pageview', 
+  amplitude.track('section_view', {
+    section_name: sectionName,
     page: `/${sectionName.toLowerCase()}`,
-    title: sectionName 
   });
 };
 
 // Отслеживание воронки покупки
 export const trackFunnelStep = (step, additionalData = {}) => {
+  if (!IS_PRODUCTION) return;
+  
   const funnelSteps = {
     app_start: { step: 1, name: 'App Started' },
     view_gallery: { step: 2, name: 'Viewed Gallery' },
@@ -82,11 +78,9 @@ export const trackFunnelStep = (step, additionalData = {}) => {
   const currentStep = funnelSteps[step];
   
   if (currentStep) {
-    ReactGA.event({
-      category: 'Funnel',
-      action: step,
-      label: currentStep.name,
-      value: currentStep.step,
+    amplitude.track(step, {
+      funnel_step: currentStep.step,
+      funnel_name: currentStep.name,
       ...additionalData,
     });
   }
@@ -94,62 +88,55 @@ export const trackFunnelStep = (step, additionalData = {}) => {
 
 // Отслеживание генерации идей
 export const trackIdeaGeneration = () => {
-  ReactGA.event({
-    category: 'Engagement',
-    action: 'generate_idea',
-    label: 'User Generated Idea',
+  if (!IS_PRODUCTION) return;
+  
+  amplitude.track('generate_idea', {
+    category: 'engagement',
   });
 };
 
 // Отслеживание кликов по кнопкам
 export const trackButtonClick = (buttonName, context = '') => {
-  ReactGA.event({
-    category: 'Interaction',
-    action: 'button_click',
-    label: `${context ? context + ' - ' : ''}${buttonName}`,
+  if (!IS_PRODUCTION) return;
+  
+  amplitude.track('button_click', {
+    button_name: buttonName,
+    context: context || 'general',
   });
 };
 
 // Отслеживание взаимодействия с галереей
 export const trackGalleryInteraction = (action, imageId = null) => {
-  ReactGA.event({
-    category: 'Gallery',
+  if (!IS_PRODUCTION) return;
+  
+  amplitude.track('gallery_interaction', {
     action: action, // 'open', 'close', 'next', 'prev'
-    label: imageId ? `Image ${imageId}` : 'Gallery',
+    image_id: imageId,
   });
 };
 
 // Отслеживание активности пользователя (для расчета активных пользователей)
 export const trackUserActivity = () => {
-  ReactGA.event({
-    category: 'User',
-    action: 'activity',
-    label: 'User Active',
-    nonInteraction: false,
+  if (!IS_PRODUCTION) return;
+  
+  amplitude.track('user_activity', {
+    timestamp: new Date().toISOString(),
   });
 };
 
 // Отслеживание времени на сайте (можно вызывать через интервалы)
 export const trackEngagementTime = (seconds) => {
-  ReactGA.event({
-    category: 'Engagement',
-    action: 'time_spent',
-    label: 'Session Duration',
-    value: seconds,
+  if (!IS_PRODUCTION) return;
+  
+  amplitude.track('engagement_time', {
+    seconds: seconds,
+    minutes: Math.floor(seconds / 60),
   });
 };
 
 // Кастомные события для специфичных действий
-export const trackCustomEvent = (category, action, label, value = null) => {
-  const eventParams = {
-    category,
-    action,
-    label,
-  };
+export const trackCustomEvent = (eventName, properties = {}) => {
+  if (!IS_PRODUCTION) return;
   
-  if (value !== null) {
-    eventParams.value = value;
-  }
-  
-  ReactGA.event(eventParams);
+  amplitude.track(eventName, properties);
 };
