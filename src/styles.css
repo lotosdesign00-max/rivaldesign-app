@@ -1,0 +1,730 @@
+/* ===== БАЗА ПРИЛОЖЕНИЯ ===== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Inter", sans-serif;
+  background: #050509;
+  color: #fff;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+}
+
+/* контейнер, который хорошо влезает в Telegram */
+.app-shell {
+  width: 100%;
+  max-width: 460px;
+  background: #050509;
+  border-radius: 20px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  padding-bottom: 70px; /* место под нижнюю кнопку */
+}
+
+/* ===== ТЕМЫ ===== */
+
+.theme-dark .app-shell {
+  background: radial-gradient(circle at top, #181820 0, #050509 55%);
+  color: #f5f5f5;
+}
+
+.theme-alt .app-shell {
+  background: radial-gradient(circle at top, #ff1f40 0, #050509 55%);
+  color: #ffffff;
+}
+
+/* ===== ВЕРХНЯЯ ПАНЕЛЬ ===== */
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(10, 10, 15, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.65);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.top-bar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.app-subtitle {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon-btn {
+  border: none;
+  outline: none;
+  border-radius: 999px;
+  padding: 6px 8px;
+  cursor: pointer;
+  background: rgba(30, 30, 40, 0.95);
+  color: #fff;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== ТАБЫ ===== */
+
+.tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 6px;
+  padding: 4px 2px;
+}
+
+.tabs::-webkit-scrollbar {
+  height: 0;
+}
+
+.tab-btn {
+  white-space: nowrap;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 10, 12, 0.95);
+  color: #f5f5f5;
+  padding: 6px 12px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.tab-btn-active {
+  background: linear-gradient(135deg, #ff2846, #ff6b3d);
+  border-color: transparent;
+}
+
+/* ===== КАРТОЧКИ / СЕКЦИИ ===== */
+
+.card {
+  background: rgba(10, 10, 14, 0.96);
+  border-radius: 18px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.75);
+}
+
+.section-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.section-subtitle {
+  margin: 0 0 8px;
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.hint-text {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.list {
+  margin: 6px 0 0;
+  padding-left: 16px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* ===== КНОПКИ ===== */
+
+.primary-btn {
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff2846, #ff6b3d);
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(255, 40, 70, 0.5);
+}
+
+.secondary-btn {
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* фиксированная кнопка внизу */
+.fixed-order-btn {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 14px;
+  width: min(420px, 100% - 32px);
+}
+
+/* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* ===== ГАЛЕРЕЯ: МИНИ-КАРТОЧКИ ===== */
+
+.project-card {
+  background: rgba(15, 15, 15, 0.9);
+  border-radius: 14px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 180px; /* ограничиваем ширину чтобы превью были маленькие */
+}
+
+/* прямоугольная миниатюра */
+.project-thumb-wrapper {
+  width: 100%;
+  height: 110px; /* невысокое превью */
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.project-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* картинка заполняет блок, не растягиваясь по высоте */
+  display: block;
+}
+
+.project-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.project-title {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ===== МОДАЛКА ДЛЯ УВЕЛИЧЕННОГО ИЗОБРАЖЕНИЯ ===== */
+
+.image-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 14px;
+  z-index: 100;
+}
+
+.image-modal-content {
+  position: relative;
+  max-width: 480px;
+  width: 100%;
+  background: #111;
+  border-radius: 20px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.image-modal-img {
+  width: 100%;
+  border-radius: 16px;
+  max-height: 60vh;
+  object-fit: contain;
+}
+
+.image-modal-text h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.image-modal-text p {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.image-modal-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+
+/* ===== УБИРАЕМ БЕЛУЮ ПОДСВЕТКУ НА МОБИЛКАХ ===== */
+
+/* 1. ОСНОВНОЕ ПРАВИЛО ДЛЯ ВСЕХ ЭЛЕМЕНТОВ */
+html,
+body,
+*,
+*:before,
+*:after {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  -webkit-tap-highlight-color: transparent !important;
+  tap-highlight-color: transparent !important;
+}
+
+/* 2. ДЛЯ ВСЕХ КНОПОК И КЛИКАБЕЛЬНЫХ ЭЛЕМЕНТОВ */
+button,
+a,
+.tab-btn,
+.icon-btn,
+.primary-btn,
+.secondary-btn,
+.project-card,
+.theme-option,
+.swiper-slide,
+.swiper-slide > *,
+[role="button"] {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  -webkit-tap-highlight-color: transparent !important;
+  tap-highlight-color: transparent !important;
+  outline: 0 !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+/* ===== ПЛАВНЫЕ АНИМАЦИИ ДЛЯ ВСЕГО ПРИЛОЖЕНИЯ ===== */
+
+/* 1. Плавное появление всего приложения */
+.app-root {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 2. Анимация загрузки подборки работ (карточки) */
+.project-card {
+  animation: cardLoad 0.5s ease-out backwards;
+  animation-delay: calc(var(--card-index, 0) * 0.1s);
+}
+
+@keyframes cardLoad {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 3. Плавное появление секций */
+.card {
+  animation: sectionFadeIn 0.4s ease-out;
+}
+
+@keyframes sectionFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 4. Анимация переключения вкладок */
+.tab-content {
+  animation: tabSwitch 0.3s ease-out;
+}
+
+@keyframes tabSwitch {
+  from {
+    opacity: 0.5;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 5. Анимация верхней панели */
+.top-bar {
+  animation: topBarSlide 0.4s ease-out;
+}
+
+@keyframes topBarSlide {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 6. Анимация нижней кнопки */
+.fixed-order-btn {
+  animation: buttonFloat 0.5s ease-out 0.2s backwards;
+}
+
+@keyframes buttonFloat {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* 7. Плавное свечение кнопки */
+.primary-btn {
+  animation: buttonGlow 3s infinite alternate;
+}
+
+@keyframes buttonGlow {
+  from {
+    box-shadow: 0 12px 24px rgba(255, 40, 70, 0.5);
+  }
+  to {
+    box-shadow: 0 12px 24px rgba(255, 40, 70, 0.8),
+                0 0 15px rgba(255, 107, 61, 0.4);
+  }
+}
+
+/* 8. Анимация наведения на карточки */
+.project-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* 9. Анимация изображений при наведении */
+.project-thumb-img {
+  transition: transform 0.5s ease;
+}
+
+.project-card:hover .project-thumb-img {
+  transform: scale(1.05);
+}
+
+/* 10. Анимация модального окна */
+.image-modal-backdrop {
+  animation: backdropFade 0.3s ease-out;
+}
+
+@keyframes backdropFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.image-modal-content {
+  animation: modalSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalSlide {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 11. Анимация выпадающих меню */
+.controls > div > div {
+  animation: dropdownAppear 0.2s ease-out;
+}
+
+@keyframes dropdownAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-15px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 12. Анимация переключения темы */
+.app-root {
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* 13. Анимация загрузки списков (FAQ, Pricing) */
+.list li {
+  animation: listItemLoad 0.3s ease-out backwards;
+  animation-delay: calc(var(--item-index, 0) * 0.05s);
+}
+
+@keyframes listItemLoad {
+  from {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 14. Анимация загрузки отзывов */
+.swiper-slide {
+  animation: slideLoad 0.4s ease-out backwards;
+  animation-delay: calc(var(--slide-index, 0) * 0.08s);
+}
+
+@keyframes slideLoad {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 15. Анимация фильтров галереи */
+.card .tabs {
+  animation: filtersLoad 0.3s ease-out;
+}
+
+@keyframes filtersLoad {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== АНИМАЦИИ НАЖАТИЯ ===== */
+
+/* 1. Мягкая анимация нажатия для всех кнопок */
+button:active,
+.tab-btn:active,
+.icon-btn:active {
+  animation: gentlePress 0.2s ease-out;
+}
+
+@keyframes gentlePress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 2. Анимация нажатия для нижней кнопки */
+.fixed-order-btn:active {
+  animation: mainButtonPress 0.3s ease-out;
+}
+
+@keyframes mainButtonPress {
+  0% {
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) scale(0.95);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* 3. Анимация нажатия для карточек */
+.project-card:active {
+  animation: cardPress 0.25s ease-out;
+}
+
+@keyframes cardPress {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(2px) scale(0.98);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 4. Анимация нажатия для фильтров */
+.card .tabs .tab-btn:active {
+  animation: filterPress 0.2s ease-out;
+}
+
+@keyframes filterPress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 5. Плавный скролл */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 6. Убираем стандартные transition на время анимации */
+button:active,
+.tab-btn:active,
+.icon-btn:active {
+  transition: none !important;
+}
+
+/* 7. Для мобильных устройств */
+@media (max-width: 768px) {
+  .project-card {
+    animation: mobileCardLoad 0.4s ease-out backwards;
+    animation-delay: calc(var(--card-index, 0) * 0.07s);
+  }
+  
+  @keyframes mobileCardLoad {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  
+  .fixed-order-btn:active {
+    animation: mobileButtonPress 0.25s ease-out;
+  }
+  
+  @keyframes mobileButtonPress {
+    0% {
+      transform: translateX(-50%) scale(1);
+    }
+    50% {
+      transform: translateX(-50%) scale(0.93);
+    }
+    100% {
+      transform: translateX(-50%) scale(1);
+    }
+  }
+}
+
+/* 8. Анимация загрузки скелетона */
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.skeleton {
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.05) 25%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    rgba(255, 255, 255, 0.05) 75%);
+  background-size: 200% 100%;
+}
+
+/* 9. Анимация иконок при наведении */
+.icon-btn {
+  transition: all 0.3s ease;
+}
+
+.icon-btn:hover {
+  transform: rotate(12deg) scale(1.1);
+}
+
+/* 10. Плавное изменение прозрачности */
+* {
+  animation-fill-mode: forwards;
+}
+
+/* ������ ��������� ��� ��������� */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

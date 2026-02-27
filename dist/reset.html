@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Сброс подписки</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #1a1a1a;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: #2a2a2a;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        button {
+            padding: 15px 40px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        .info {
+            margin: 20px 0;
+            padding: 15px;
+            background: #333;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Сброс подписки</h1>
+        <div class="info">
+            <p><strong>Текущий статус:</strong></p>
+            <p id="status">Загрузка...</p>
+        </div>
+        <button onclick="resetSubscription()">🔄 Сбросить подписку</button>
+        <button onclick="setSubscribed()">✅ Установить подписку</button>
+        <button onclick="goToApp()">🚀 Перейти в приложение</button>
+    </div>
+
+    <script>
+        function updateStatus() {
+            const subscribed = localStorage.getItem('tg_channel_subscribed');
+            const attempts = localStorage.getItem('subscription_check_attempts');
+            document.getElementById('status').innerHTML = `
+                Подписка: ${subscribed === 'true' ? '✅ Активна' : '❌ Не активна'}<br>
+                Попыток проверки: ${attempts || 0}
+            `;
+        }
+
+        function resetSubscription() {
+            localStorage.removeItem('tg_channel_subscribed');
+            localStorage.removeItem('subscription_check_attempts');
+            alert('✅ Подписка сброшена!');
+            updateStatus();
+        }
+
+        function setSubscribed() {
+            localStorage.setItem('tg_channel_subscribed', 'true');
+            alert('✅ Подписка установлена!');
+            updateStatus();
+        }
+
+        function goToApp() {
+            window.location.href = 'http://localhost:5173/';
+        }
+
+        updateStatus();
+    </script>
+</body>
+</html>

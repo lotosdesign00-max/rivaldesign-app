@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Google Drive Files ID Getter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        input, button {
+            padding: 12px;
+            margin: 10px 0;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            background: #4285f4;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background: #357ae8; }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #f44336;
+        }
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #4caf50;
+        }
+        .step {
+            background: #fff3e0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 3px solid #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Google Drive Files ID Getter</h1>
+        
+        <div class="info">
+            <strong>📝 Инструкция:</strong><br>
+            1. Получите Google API ключ (см. GOOGLE_DRIVE_AUTO_INTEGRATION.md)<br>
+            2. Вставьте API ключ ниже<br>
+            3. Вставьте ID папки с вашими файлами<br>
+            4. Нажмите "Получить файлы"<br>
+            5. Скопируйте результат в App.jsx
+        </div>
+
+        <div class="step">
+            <strong>Шаг 1:</strong> Вставьте ваш Google API ключ
+        </div>
+        <input type="text" id="apiKey" placeholder="AIzaSy...ваш_api_ключ">
+
+        <div class="step">
+            <strong>Шаг 2:</strong> Вставьте ID папки на Google Drive
+        </div>
+        <input type="text" id="folderId" placeholder="1ABC123xyz...">
+
+        <div class="step">
+            <strong>Шаг 3:</strong> Выберите язык
+        </div>
+        <select id="language" style="width: 100%; padding: 12px;">
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+        </select>
+
+        <button onclick="getFiles()">📥 Получить файлы из папки</button>
+
+        <div id="status"></div>
+        <div id="result"></div>
+
+        <div class="info" style="margin-top: 20px;">
+            <strong>💡 Как получить ID папки:</strong><br>
+            Откройте папку на Google Drive, посмотрите URL:<br>
+            <code>https://drive.google.com/drive/folders/<b>1ABC123xyz</b></code><br>
+            ID папки = <b>1ABC123xyz</b>
+        </div>
+    </div>
+
+    <script>
+        async function getFiles() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const folderId = document.getElementById('folderId').value.trim();
+            const language = document.getElementById('language').value;
+            const statusDiv = document.getElementById('status');
+            const resultDiv = document.getElementById('result');
+
+            // Валидация
+            if (!apiKey) {
+                statusDiv.innerHTML = '<div class="error">❌ Введите API ключ!</div>';
+                return;
+            }
+            if (!folderId) {
+                statusDiv.innerHTML = '<div class="error">❌ Введите ID папки!</div>';
+                return;
+            }
+
+            statusDiv.innerHTML = '<div class="info">⏳ Загрузка файлов...</div>';
+            resultDiv.textContent = '';
+
+            try {
+                // Запрос к Google Drive API
+                const url = `https://www.googleapis.com/drive/v3/files?` + new URLSearchParams({
+                    q: `'${folderId}' in parents and trashed=false`,
+                    key: apiKey,
+                    fields: 'files(id,name,mimeType,size,thumbnailLink)',
+                    orderBy: 'name'
+                });
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.error) {
+                    statusDiv.innerHTML = `<div class="error">❌ Ошибка: ${data.error.message}</div>`;
+                    return;
+                }
+
+                if (!data.files || data.files.length === 0) {
+                    statusDiv.innerHTML = '<div class="error">❌ Файлы не найдены в этой папке!</div>';
+                    return;
+                }
+
+                // Генерация кода
+                const code = generateCode(data.files, language);
+                
+                statusDiv.innerHTML = `<div class="success">✅ Найдено ${data.files.length} файлов! Скопируйте код ниже:</div>`;
+                resultDiv.textContent = code;
+
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Ошибка: ${error.message}</div>`;
+            }
+        }
+
+        function generateCode(files, lang) {
+            const categoryMap = {
+                ru: {
+                    'ttf': 'Шрифты', 'otf': 'Шрифты', 'woff': 'Шрифты', 'woff2': 'Шрифты',
+                    'jpg': 'Текстуры', 'jpeg': 'Текстуры', 'png': 'Текстуры', 'webp': 'Текстуры',
+                    'abr': 'Кисти', 'brush': 'Кисти',
+                    'svg': 'Иконки', 'ai': 'Иконки', 'eps': 'Иконки', 'zip': 'Иконки'
+                },
+                en: {
+                    'ttf': 'Fonts', 'otf': 'Fonts', 'woff': 'Fonts', 'woff2': 'Fonts',
+                    'jpg': 'Textures', 'jpeg': 'Textures', 'png': 'Textures', 'webp': 'Textures',
+                    'abr': 'Brushes', 'brush': 'Brushes',
+                    'svg': 'Icons', 'ai': 'Icons', 'eps': 'Icons', 'zip': 'Icons'
+                }
+            };
+
+            const map = categoryMap[lang];
+            let code = `// ── DESIGN PACK MATERIALS FROM GOOGLE DRIVE ──\nconst DESIGN_PACK_MATERIALS = {\n  ${lang}: [\n`;
+
+            files.forEach((file, index) => {
+                const ext = file.name.split('.').pop().toLowerCase();
+                const category = map[ext] || (lang === 'ru' ? 'Другое' : 'Other');
+                const size = formatFileSize(file.size);
+
+                code += `    {\n`;
+                code += `      id: ${index + 1},\n`;
+                code += `      name: "${file.name}",\n`;
+                code += `      category: "${category}",\n`;
+                code += `      size: "${size}",\n`;
+                code += `      fileId: "${file.id}",\n`;
+                code += `      preview: "https://drive.google.com/thumbnail?id=${file.id}&sz=w400"\n`;
+                code += `    },\n`;
+            });
+
+            code += `  ]\n};\n`;
+            code += `DESIGN_PACK_MATERIALS.ua = DESIGN_PACK_MATERIALS.ru;\n`;
+            code += `DESIGN_PACK_MATERIALS.kz = DESIGN_PACK_MATERIALS.ru;\n`;
+            code += `DESIGN_PACK_MATERIALS.by = DESIGN_PACK_MATERIALS.ru;\n`;
+            code += `DESIGN_PACK_MATERIALS.en = DESIGN_PACK_MATERIALS.${lang};\n`;
+
+            return code;
+        }
+
+        function formatFileSize(bytes) {
+            if (!bytes) return 'Unknown';
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(1024));
+            return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>
