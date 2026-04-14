@@ -114,7 +114,7 @@ function cryptoPayPlugin(env) {
   const cryptoToken = env.CRYPTOPAY_API_TOKEN || env.CRYPTO_PAY_API_TOKEN || "";
   const defaultAsset = env.CRYPTOPAY_ASSET || "USDT";
   const supabaseUrl = env.SUPABASE_URL || "https://tlzxcghfvgazkzaoawtj.supabase.co";
-  const supabaseServiceKey = env.SUPABASE_SECRET_KEY || env.SUPABASE_SERVICE_KEY || "";
+  const supabaseServiceKey = env.SUPABASE_SERVICE_KEY || "";
   const adminTelegramId = Number(env.ADMIN_TELEGRAM_ID || env.TELEGRAM_ADMIN_ID || 0);
   const supabaseAdmin = createSupabaseAdmin(supabaseUrl, supabaseServiceKey);
 
@@ -158,26 +158,6 @@ function cryptoPayPlugin(env) {
     if (!telegramId) throw new Error("Missing telegram user");
     let user = await ensureLegacyUser(telegramUser);
 
-    const { data: existingAdmins, error: adminsError } = await supabaseAdmin
-      .from("users")
-      .select("id")
-      .eq("is_admin", true)
-      .limit(1);
-
-    if (adminsError) throw adminsError;
-    const hasAdmins = Array.isArray(existingAdmins) && existingAdmins.length > 0;
-
-    if (!hasAdmins) {
-      const { data: bootstrappedAdmin, error: bootstrapError } = await supabaseAdmin
-        .from("users")
-        .update({ is_admin: true })
-        .eq("id", user.id)
-        .select("*")
-        .single();
-      if (bootstrapError) throw bootstrapError;
-      return bootstrappedAdmin;
-    }
-
     if (!user.is_admin && adminTelegramId && telegramId === adminTelegramId) {
       const { data: promoted, error: promoteError } = await supabaseAdmin
         .from("users")
@@ -211,54 +191,8 @@ function cryptoPayPlugin(env) {
       }
 
       if (pathname.startsWith("/api/admin/")) {
+        if (!requireSupabaseAdmin(res)) return;
         const body = req.method === "GET" ? {} : await readJsonBody(req);
-
-        if (!supabaseAdmin) {
-          if (req.method === "POST" && pathname === "/api/admin/bootstrap") {
-            sendJson(res, 200, {
-              ok: true,
-              result: {
-                adminUser: {
-                  telegram_id: Number(body?.telegramUser?.id || 0) || null,
-                  username: body?.telegramUser?.username || "local_admin",
-                  first_name: body?.telegramUser?.first_name || "Local",
-                  last_name: body?.telegramUser?.last_name || "Admin",
-                  is_admin: true,
-                },
-                users: [],
-                orders: [],
-                payments: [],
-                messages: [],
-                content: readContentStore(),
-                metrics: buildMetrics({}),
-                setup: {
-                  requiresServiceKey: true,
-                  message: "Добавь SUPABASE_SERVICE_KEY в .env, чтобы включить inbox, заказы, платежи и живой чат.",
-                },
-              },
-            });
-            return;
-          }
-
-          if (req.method === "POST" && pathname === "/api/admin/content/save") {
-            const nextContent = writeContentStore(body.content || {});
-            sendJson(res, 200, {
-              ok: true,
-              result: {
-                content: nextContent,
-                setup: {
-                  requiresServiceKey: true,
-                  message: "Контент сохранен локально. Для live-заказов и inbox добавь SUPABASE_SERVICE_KEY.",
-                },
-              },
-            });
-            return;
-          }
-
-          sendJson(res, 500, { ok: false, error: "Missing SUPABASE_SERVICE_KEY" });
-          return;
-        }
-
         const adminUser = await ensureAdminUser(body.telegramUser || {});
 
         if (req.method === "POST" && pathname === "/api/admin/bootstrap") {
@@ -642,16 +576,7 @@ function cryptoPayPlugin(env) {
             senderId = user.id;
           }
           if (!senderId && body.senderRole === "designer") {
-            if (adminTelegramId) {
-              const { data: adminRow, error: adminFetchError } = await supabaseAdmin
-                .from("users")
-                .select("id")
-                .eq("telegram_id", adminTelegramId)
-                .maybeSingle();
-
-              if (adminFetchError) throw adminFetchError;
-              senderId = adminRow?.id || null;
-            }
+            senderId = adminUser?.id || null;
           }
 
           const { data: message, error } = await supabaseAdmin
@@ -770,13 +695,6 @@ function cryptoPayPlugin(env) {
 
       sendJson(res, 404, { ok: false, error: "Not found" });
     } catch (error) {
-      if (error?.code === "PGRST205") {
-        sendJson(res, 500, {
-          ok: false,
-          error: "Supabase schema is not ready. Run supabase/admin_live_schema.sql in SQL Editor for this project.",
-        });
-        return;
-      }
       sendJson(res, 500, {
         ok: false,
         error: error instanceof Error ? error.message : "Unknown error",

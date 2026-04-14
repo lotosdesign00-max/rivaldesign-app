@@ -1,1122 +1,165 @@
-﻿import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import * as adminApi from '../src/core/supabase/adminApi'
-import { 
-  getDefaultFormData, 
-  getContentConfig, 
-  getModalTitle, 
-  renderForm,
-  labelStyle,
-  inputStyle,
-  textareaStyle,
-} from './helpers'
+﻿import React, { useEffect, useMemo, useState } from "react";
+import SystemIcon from "../legacy/components/SystemIcon.jsx";
 
-// ==========================================
-// TELEGRAM WEBAPP INTEGRATION
-// ==========================================
-const tg = window.Telegram?.WebApp
-const isTelegram = !!tg?.initDataUnsafe?.user
-const telegramUser = tg?.initDataUnsafe?.user
-
-// ==========================================
-// UI/UX DESIGN SYSTEM (Dark Glassmorphism Admin)
-// Следуем UI/UX Pro Max: Accessibility, Touch targets, Performance, Style
-// ==========================================
-const theme = {
-  // Цвета - Dark mode с glassmorphism
-  bg: '#05070b',
-  bgGradient: 'radial-gradient(circle at top left, rgba(96,104,255,.18), transparent 24%), radial-gradient(circle at top right, rgba(56,189,248,.12), transparent 22%), linear-gradient(180deg, #05070b 0%, #090b12 100%)',
-  cardBg: 'linear-gradient(180deg, rgba(17,19,28,.92) 0%, rgba(10,12,18,.96) 100%)',
-  cardBorder: '1px solid rgba(255,255,255,.08)',
-  cardShadow: '0 18px 56px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.04)',
-  
-  // Текст
-  text: 'rgba(244,244,245,.96)',
-  textSecondary: 'rgba(161,161,170,.82)',
-  textMuted: 'rgba(161,161,170,.6)',
-  
-  // Акценты
-  primary: '#6366f1',
-  primaryGradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-  primaryGradientBg: 'linear-gradient(135deg, rgba(99,102,241,.22), rgba(56,189,248,.16))',
-  success: '#10b981',
-  successGradient: 'linear-gradient(135deg, rgba(16,185,129,.22), rgba(5,150,105,.18))',
-  danger: '#ef4444',
-  dangerBg: 'rgba(248,113,113,.08)',
-  dangerBorder: '1px solid rgba(248,113,113,.18)',
-  warning: '#f59e0b',
-  
-  // Размеры - UI/UX Pro Max: Touch targets >= 44px
-  buttonHeight: 48,
-  inputHeight: 48,
-  borderRadius: 16,
-  cardRadius: 28,
-  
-  // Spacing - 8dp grid
-  spacing: { xs: 4, sm: 8, md: 12, lg: 16, xl: 18, xxl: 24, xxxl: 32 },
-}
-
-// ==========================================
-// REUSABLE COMPONENTS
-// ==========================================
-
-function Card({ children, style, ...props }) {
-  return (
-    <div
-      style={{
-        border: theme.cardBorder,
-        background: theme.cardBg,
-        borderRadius: theme.cardRadius,
-        boxShadow: theme.cardShadow,
-        backdropFilter: 'blur(18px)',
-        padding: theme.spacing.xl,
-        ...style,
-      }}
-      {...props}
-    >
-      {children}
-    </div>
-  )
-}
-
-function Button({ children, variant = 'primary', style, disabled, loading, onClick, ...props }) {
-  const variants = {
-    primary: {
-      background: theme.primaryGradient,
-      color: '#fff',
-      border: '1px solid rgba(255,255,255,.08)',
-    },
-    secondary: {
-      background: 'rgba(255,255,255,.05)',
-      color: '#fff',
-      border: theme.cardBorder,
-    },
-    success: {
-      background: theme.successGradient,
-      color: '#ecfdf5',
-      border: '1px solid rgba(16,185,129,.22)',
-    },
-    danger: {
-      background: theme.dangerBg,
-      color: '#fecaca',
-      border: theme.dangerBorder,
-    },
-  }
-
-  const [pressed, setPressed] = useState(false)
-
-  return (
-    <button
-      disabled={disabled || loading}
-      onClick={onClick}
-      onTouchStart={() => setPressed(true)}
-      onTouchEnd={() => setPressed(false)}
-      onMouseDown={() => setPressed(true)}
-      onMouseUp={() => setPressed(false)}
-      onMouseLeave={() => setPressed(false)}
-      style={{
-        height: theme.buttonHeight,
-        padding: `0 ${theme.spacing.lg}px`,
-        borderRadius: theme.borderRadius,
-        fontWeight: 800,
-        cursor: disabled || loading ? 'not-allowed' : 'pointer',
-        opacity: disabled || loading ? 0.5 : pressed ? 0.9 : 1,
-        transform: pressed ? 'scale(0.98)' : 'scale(1)',
-        transition: 'all 0.15s ease-out',
-        ...variants[variant],
-        ...style,
-      }}
-      {...props}
-    >
-      {loading ? '⏳ Загрузка...' : children}
-    </button>
-  )
-}
-
-function Input({ label, error, style, ...props }) {
-  const [focused, setFocused] = useState(false)
-  
-  return (
-    <div style={{ display: 'grid', gap: theme.spacing.sm }}>
-      {label && (
-        <label style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', color: theme.textSecondary }}>
-          {label}
-        </label>
-      )}
-      <input
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={{
-          height: theme.inputHeight,
-          borderRadius: theme.borderRadius,
-          border: `1px solid ${error ? 'rgba(239,68,68,.4)' : focused ? 'rgba(99,102,241,.4)' : 'rgba(255,255,255,.08)'}`,
-          background: 'rgba(255,255,255,.04)',
-          color: theme.text,
-          padding: `0 ${theme.spacing.lg}px`,
-          fontSize: 15,
-          outline: 'none',
-          transition: 'border-color 0.15s ease-out',
-          ...style,
-        }}
-        {...props}
-      />
-      {error && <span style={{ fontSize: 12, color: theme.danger }}>{error}</span>}
-    </div>
-  )
-}
-
-function TextArea({ label, error, style, ...props }) {
-  const [focused, setFocused] = useState(false)
-  
-  return (
-    <div style={{ display: 'grid', gap: theme.spacing.sm }}>
-      {label && (
-        <label style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', color: theme.textSecondary }}>
-          {label}
-        </label>
-      )}
-      <textarea
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={{
-          borderRadius: theme.borderRadius,
-          border: `1px solid ${error ? 'rgba(239,68,68,.4)' : focused ? 'rgba(99,102,241,.4)' : 'rgba(255,255,255,.08)'}`,
-          background: 'rgba(255,255,255,.04)',
-          color: theme.text,
-          padding: theme.spacing.lg,
-          fontSize: 15,
-          outline: 'none',
-          resize: 'vertical',
-          minHeight: 120,
-          lineHeight: 1.6,
-          transition: 'border-color 0.15s ease-out',
-          ...style,
-        }}
-        {...props}
-      />
-      {error && <span style={{ fontSize: 12, color: theme.danger }}>{error}</span>}
-    </div>
-  )
-}
-
-function Select({ label, options, style, ...props }) {
-  return (
-    <div style={{ display: 'grid', gap: theme.spacing.sm }}>
-      {label && (
-        <label style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', color: theme.textSecondary }}>
-          {label}
-        </label>
-      )}
-      <select
-        style={{
-          height: theme.inputHeight,
-          borderRadius: theme.borderRadius,
-          border: '1px solid rgba(255,255,255,.08)',
-          background: 'rgba(255,255,255,.04)',
-          color: theme.text,
-          padding: `0 ${theme.spacing.lg}px`,
-          fontSize: 15,
-          outline: 'none',
-          cursor: 'pointer',
-          ...style,
-        }}
-        {...props}
-      >
-        {options.map(([value, label]) => (
-          <option key={value} value={value}>{label}</option>
-        ))}
-      </select>
-    </div>
-  )
-}
-
-function Toast({ message, type = 'success', onClose }) {
-  useEffect(() => {
-    const timer = setTimeout(onClose, 3000)
-    return () => clearTimeout(timer)
-  }, [onClose])
-
-  const colors = {
-    success: { bg: 'rgba(16,185,129,.15)', border: 'rgba(16,185,129,.3)', text: '#ecfdf5' },
-    error: { bg: 'rgba(239,68,68,.15)', border: 'rgba(239,68,68,.3)', text: '#fecaca' },
-    info: { bg: 'rgba(56,189,248,.15)', border: 'rgba(56,189,248,.3)', text: '#e0f2fe' },
-  }
-
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 20,
-        right: 20,
-        zIndex: 1000,
-        padding: '14px 20px',
-        borderRadius: theme.borderRadius,
-        background: colors[type].bg,
-        border: `1px solid ${colors[type].border}`,
-        color: colors[type].text,
-        fontWeight: 700,
-        animation: 'slideIn 0.3s ease-out',
-        backdropFilter: 'blur(18px)',
-      }}
-    >
-      {type === 'success' ? '✅ ' : type === 'error' ? '❌ ' : 'ℹ️ '}{message}
-    </div>
-  )
-}
-
-function Modal({ isOpen, title, children, onClose }) {
-  if (!isOpen) return null
-
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 999,
-        display: 'grid',
-        placeItems: 'center',
-        padding: theme.spacing.xl,
-        background: 'rgba(0,0,0,.6)',
-        backdropFilter: 'blur(8px)',
-        animation: 'fadeIn 0.2s ease-out',
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          width: 'min(600px, 100%)',
-          maxHeight: '90vh',
-          overflow: 'auto',
-          ...theme.cardBg,
-          border: theme.cardBorder,
-          borderRadius: theme.cardRadius,
-          boxShadow: theme.cardShadow,
-          padding: theme.spacing.xxl,
-          animation: 'scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing.xl }}>
-          <h2 style={{ fontSize: 24, fontWeight: 900 }}>{title}</h2>
-          <button
-            onClick={onClose}
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 12,
-              border: theme.cardBorder,
-              background: 'rgba(255,255,255,.05)',
-              color: theme.text,
-              cursor: 'pointer',
-              fontSize: 20,
-              display: 'grid',
-              placeItems: 'center',
-            }}
-          >
-            ✕
-          </button>
-        </div>
-        {children}
-      </div>
-    </div>
-  )
-}
-
-// ==========================================
-// NAVIGATION
-// ==========================================
 const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Обзор', icon: '📊' },
-  { id: 'inbox', label: 'Входящие', icon: '📝' },
-  { id: 'payments', label: 'Платежи', icon: '💰' },
-  { id: 'clients', label: 'Клиенты', icon: '👥' },
-  { id: 'portfolio', label: 'Портфолио', icon: '📦' },
-  { id: 'courses', label: 'Курсы', icon: '📚' },
-  { id: 'services', label: 'Услуги', icon: '💼' },
-  { id: 'reviews', label: 'Отзывы', icon: '⭐' },
-  { id: 'faq', label: 'FAQ', icon: '❓' },
-  { id: 'home', label: 'Главная', icon: '🏠' },
-  { id: 'socials', label: 'Соцсети', icon: '🌐' },
-]
+  { id: "dashboard", label: "Обзор", icon: "spark" },
+  { id: "inbox", label: "Inbox", icon: "chat" },
+  { id: "payments", label: "Платежи", icon: "wallet" },
+  { id: "clients", label: "Клиенты", icon: "users" },
+  { id: "portfolio", label: "Портфолио", icon: "gallery" },
+  { id: "courses", label: "Курсы", icon: "book" },
+  { id: "services", label: "Услуги", icon: "grid" },
+  { id: "reviews", label: "Отзывы", icon: "star" },
+  { id: "faq", label: "FAQ", icon: "info" },
+  { id: "home", label: "Главная", icon: "home" },
+  { id: "socials", label: "Соцсети", icon: "globe" },
+];
 
-// ==========================================
-// MAIN ADMIN APP
-// ==========================================
-export default function AdminApp() {
-  const [section, setSection] = useState('dashboard')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [toast, setToast] = useState(null)
-  
-  // Data
-  const [stats, setStats] = useState({})
-  const [orders, setOrders] = useState([])
-  const [payments, setPayments] = useState([])
-  const [users, setUsers] = useState([])
-  const [content, setContent] = useState({
-    gallery: [],
-    courses: [],
-    services: [],
-    reviews: [],
-    faq: [],
-    home_stats: [],
-    home_socials: [],
-  })
-  
-  // UI State
-  const [selectedOrderId, setSelectedOrderId] = useState(null)
-  const [modalOpen, setModalOpen] = useState(false)
-  const [modalType, setModalType] = useState('')
-  const [editingItem, setEditingItem] = useState(null)
-  const [formData, setFormData] = useState({})
+const ORDER_STATUS_OPTIONS = [
+  ["waiting_payment", "Ожидает оплату"],
+  ["payment_review", "Проверка оплаты"],
+  ["queued", "В очереди"],
+  ["in_progress", "В работе"],
+  ["preview_sent", "Превью отправлено"],
+  ["revision", "Правки"],
+  ["delivered", "Готово"],
+  ["closed", "Закрыт"],
+  ["canceled", "Отменен"],
+];
 
-  // Load data
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError('')
-      
-      const [statsData, ordersData, paymentsData, usersData, 
-             galleryData, coursesData, servicesData, reviewsData, faqData, statsListData, socialsData] = 
-        await Promise.all([
-          adminApi.dashboardStats().catch(() => ({})),
-          adminApi.ordersList().catch(() => []),
-          adminApi.paymentsList().catch(() => []),
-          adminApi.usersList().catch(() => []),
-          adminApi.galleryList().catch(() => []),
-          adminApi.coursesList().catch(() => []),
-          adminApi.servicesList().catch(() => []),
-          adminApi.reviewsList().catch(() => []),
-          adminApi.faqList().catch(() => []),
-          adminApi.homeStatsList().catch(() => []),
-          adminApi.homeSocialsList().catch(() => []),
-        ])
-      
-      setStats(statsData)
-      setOrders(ordersData)
-      setPayments(paymentsData)
-      setUsers(usersData)
-      setContent({
-        gallery: galleryData,
-        courses: coursesData,
-        services: servicesData,
-        reviews: reviewsData,
-        faq: faqData,
-        home_stats: statsListData,
-        home_socials: socialsData,
-      })
-      setSelectedOrderId(ordersData[0]?.id || null)
-    } catch (err) {
-      setError(err.message || 'Ошибка загрузки данных')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+const PAYMENT_STATUS_OPTIONS = [
+  ["pending", "Ожидает"],
+  ["paid", "Оплачен"],
+  ["canceled", "Отменен"],
+  ["refunded", "Возврат"],
+];
 
-  useEffect(() => {
-    loadData()
-  }, [loadData])
+const contentConfig = {
+  portfolio: { title: "Портфолио", path: ["gallery", "ru"], template: { id: `g_${Date.now()}`, cat: "Превью", title: "Новая работа", desc: "Короткое описание", img: "/images/new-work.jpg", tags: ["new"], popular: false, views: 0 }, getLabel: (item) => item?.title || item?.id || "Работа", getMeta: (item) => item?.cat || "Без категории" },
+  courses: { title: "Курсы", path: ["courses", "ru"], template: { id: `c_${Date.now()}`, cat: "Новый", title: "Новый курс", desc: "Описание курса", level: "Средний", duration: "3 ч", lessons: 6, img: "/images/course-cover.jpg", popular: false, free: false, price: 10, rating: 5, students: 0, topics: ["Тема 1", "Тема 2"] }, getLabel: (item) => item?.title || item?.id || "Курс", getMeta: (item) => `${item?.price ?? 0}$ · ${item?.lessons ?? 0} уроков` },
+  services: { title: "Услуги", path: ["services"], template: { id: Date.now(), icon: "✦", key: `service_${Date.now()}`, priceUSD: 10, ru: "Новая услуга", en: "New service", ua: "Нова послуга", kz: "Жаңа қызмет", by: "Новая паслуга", descRu: "Описание услуги", descEn: "Service description", timeRu: "1–2 дня", timeEn: "1–2 days", features: ["Опция 1", "Опция 2"] }, getLabel: (item) => item?.ru || item?.en || item?.key || "Услуга", getMeta: (item) => `$${item?.priceUSD ?? 0}` },
+  reviews: { title: "Отзывы", path: ["reviews"], template: { id: `r_${Date.now()}`, name: "Новый клиент", tg: "username", rating: 5, text: "Текст отзыва", time: "сегодня", verified: true }, getLabel: (item) => item?.name || item?.id || "Отзыв", getMeta: (item) => `${item?.rating ?? 0}/5` },
+  faq: { title: "FAQ", path: ["faq", "ru"], template: { q: "Новый вопрос?", a: "Новый ответ." }, getLabel: (item) => item?.q || "Вопрос", getMeta: () => "FAQ" },
+  home: { title: "Главная", path: ["home", "stats"], template: { value: "0", labelRu: "Новый пункт", labelEn: "New stat" }, getLabel: (item) => item?.labelRu || item?.labelEn || "Статистика", getMeta: (item) => item?.value || "0" },
+  socials: { title: "Соцсети", path: ["home", "socials"], template: { kind: "telegram", label: "Telegram", url: "https://t.me/username", accent: "#229ED9" }, getLabel: (item) => item?.label || item?.kind || "Соцсеть", getMeta: (item) => item?.url || "" },
+};
 
-  // Show toast
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type })
-  }
+const styles = {
+  bg: { minHeight: "100vh", background: "radial-gradient(circle at top left, rgba(96,104,255,.18), transparent 24%), radial-gradient(circle at top right, rgba(56,189,248,.12), transparent 22%), linear-gradient(180deg, #05070b 0%, #090b12 100%)", color: "rgba(244,244,245,.96)" },
+  shell: { display: "grid", gridTemplateColumns: "280px minmax(0,1fr)", gap: 18, padding: 18 },
+  card: { border: "1px solid rgba(255,255,255,.08)", background: "linear-gradient(180deg, rgba(17,19,28,.92) 0%, rgba(10,12,18,.96) 100%)", borderRadius: 28, boxShadow: "0 18px 56px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.04)", backdropFilter: "blur(18px)" },
+};
 
-  // Open modal for adding/editing
-  const openModal = (type, item = null) => {
-    setModalType(type)
-    setEditingItem(item)
-    setFormData(item || getDefaultFormData(type))
-    setModalOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalOpen(false)
-    setEditingItem(null)
-    setFormData({})
-  }
-
-  // Save content
-  const handleSave = async () => {
-    try {
-      const apiMap = {
-        portfolio: { add: adminApi.galleryAdd, update: adminApi.galleryUpdate, delete: adminApi.galleryDelete },
-        courses: { add: adminApi.coursesAdd, update: adminApi.coursesUpdate, delete: adminApi.coursesDelete },
-        services: { add: adminApi.servicesAdd, update: adminApi.servicesUpdate, delete: adminApi.servicesDelete },
-        reviews: { add: adminApi.reviewsAdd, update: adminApi.reviewsUpdate, delete: adminApi.reviewsDelete },
-        faq: { add: adminApi.faqAdd, update: adminApi.faqUpdate, delete: adminApi.faqDelete },
-        home_stats: { add: adminApi.homeStatsAdd, update: adminApi.homeStatsUpdate, delete: adminApi.homeStatsDelete },
-        home_socials: { add: adminApi.homeSocialsAdd, update: adminApi.homeSocialsUpdate, delete: adminApi.homeSocialsDelete },
-      }
-
-      const api = apiMap[modalType]
-      if (!api) throw new Error('Unknown modal type')
-
-      if (editingItem) {
-        await api.update(editingItem.id, formData)
-        showToast('Обновлено!')
-      } else {
-        await api.add(formData)
-        showToast('Добавлено!')
-      }
-
-      closeModal()
-      await loadData()
-    } catch (err) {
-      showToast(err.message, 'error')
-    }
-  }
-
-  // Delete item
-  const handleDelete = async (type, id) => {
-    if (!confirm('Удалить? Это действие нельзя отменить.')) return
-
-    try {
-      const apiMap = {
-        portfolio: adminApi.galleryDelete,
-        courses: adminApi.coursesDelete,
-        services: adminApi.servicesDelete,
-        reviews: adminApi.reviewsDelete,
-        faq: adminApi.faqDelete,
-        home_stats: adminApi.homeStatsDelete,
-        home_socials: adminApi.homeSocialsDelete,
-      }
-
-      await apiMap[type](id)
-      showToast('Удалено!')
-      await loadData()
-    } catch (err) {
-      showToast(err.message, 'error')
-    }
-  }
-
-  // Render content section
-  const renderContentSection = () => {
-    const config = getContentConfig(section)
-    if (!config) return null
-
-    const items = content[config.dataKey] || []
-
-    return (
-      <div style={{ display: 'grid', gap: theme.spacing.xl }}>
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: theme.spacing.md }}>
-          <div>
-            <h2 style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.05em' }}>{config.title}</h2>
-            <p style={{ fontSize: 13, color: theme.textSecondary, marginTop: 6 }}>{items.length} записей</p>
-          </div>
-          <Button onClick={() => openModal(section)}>➕ Добавить</Button>
-        </div>
-
-        {/* Items list */}
-        <div style={{ display: 'grid', gap: theme.spacing.md }}>
-          {items.map((item, index) => (
-            <Card key={item.id || index} style={{ padding: theme.spacing.lg }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: theme.spacing.lg }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 16, fontWeight: 800 }}>{config.getLabel(item)}</div>
-                  <div style={{ fontSize: 13, color: theme.textSecondary, marginTop: 4 }}>{config.getMeta(item)}</div>
-                </div>
-                <div style={{ display: 'flex', gap: theme.spacing.sm }}>
-                  <Button variant="secondary" style={{ height: 40, padding: '0 14px' }} onClick={() => openModal(section, item)}>
-                    ✏️
-                  </Button>
-                  <Button variant="danger" style={{ height: 40, padding: '0 14px' }} onClick={() => handleDelete(section, item.id)}>
-                    🗑
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-
-        {items.length === 0 && (
-          <Card style={{ padding: theme.spacing.xxl, textAlign: 'center', color: theme.textSecondary }}>
-            <div style={{ fontSize: 48, marginBottom: theme.spacing.md }}>📭</div>
-            <div style={{ fontSize: 16, fontWeight: 700 }}>Пока пусто</div>
-            <div style={{ fontSize: 13, marginTop: 8 }}>Нажмите "Добавить" чтобы создать первую запись</div>
-          </Card>
-        )}
-      </div>
-    )
-  }
-
-  return (
-    <div style={{ minHeight: '100vh', minHeight: '100dvh', background: theme.bgGradient, color: theme.text }}>
-      <style>{`
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        * { -webkit-tap-highlight-color: transparent; }
-        input, textarea, select, button { font-family: inherit; }
-        button:active { transform: scale(0.98) !important; }
-      `}</style>
-
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-
-      {/* Header */}
-      <header style={{
-        borderBottom: '1px solid rgba(255,255,255,.06)',
-        padding: `${theme.spacing.xl}px ${theme.spacing.xl}px`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: theme.spacing.lg,
-        flexWrap: 'wrap',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-        background: 'rgba(5,7,11,.8)',
-        backdropFilter: 'blur(18px)',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing.lg }}>
-          <div style={{
-            width: 52,
-            height: 52,
-            borderRadius: 18,
-            display: 'grid',
-            placeItems: 'center',
-            background: 'linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.04))',
-            border: theme.cardBorder,
-            fontSize: 24,
-          }}>
-            🎨
-          </div>
-          <div>
-            <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-.04em' }}>Rival Admin</div>
-            <div style={{ fontSize: 12, color: theme.textSecondary }}>
-              {isTelegram ? `@${telegramUser?.username || 'Admin'}` : 'Веб-версия'}
-            </div>
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: theme.spacing.sm }}>
-          <Button variant="secondary" onClick={loadData} style={{ height: 40, padding: '0 14px' }}>
-            🔄 Обновить
-          </Button>
-        </div>
-      </header>
-
-      <div style={{ display: 'flex', gap: theme.spacing.xl, padding: theme.spacing.xl, maxWidth: 1600, margin: '0 auto' }}>
-        {/* Sidebar - UI/UX Pro Max: Sidebar for desktop, bottom nav for mobile */}
-        <aside style={{
-          width: 260,
-          flexShrink: 0,
-          position: 'sticky',
-          top: 100,
-          height: 'calc(100vh - 120px)',
-          overflow: 'auto',
-        }}>
-          <Card style={{ padding: theme.spacing.md }}>
-            <nav style={{ display: 'grid', gap: theme.spacing.xs }}>
-              {NAV_ITEMS.map(item => {
-                const active = section === item.id
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setSection(item.id)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: theme.spacing.md,
-                      width: '100%',
-                      padding: '12px 14px',
-                      borderRadius: theme.borderRadius,
-                      border: `1px solid ${active ? 'rgba(99,102,241,.36)' : 'rgba(255,255,255,.06)'}`,
-                      background: active ? theme.primaryGradientBg : 'rgba(255,255,255,.03)',
-                      color: theme.text,
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      fontSize: 14,
-                      fontWeight: active ? 800 : 600,
-                      transition: 'all 0.15s ease-out',
-                    }}
-                  >
-                    <span style={{ fontSize: 18, width: 24, textAlign: 'center' }}>{item.icon}</span>
-                    <span style={{ flex: 1 }}>{item.label}</span>
-                  </button>
-                )
-              })}
-            </nav>
-          </Card>
-        </aside>
-
-        {/* Main content */}
-        <main style={{ flex: 1, minWidth: 0 }}>
-          {loading ? (
-            <Card style={{ padding: theme.spacing.xxxl, textAlign: 'center', color: theme.textSecondary }}>
-              <div style={{ fontSize: 48, marginBottom: theme.spacing.md, animation: 'pulse 2s ease-in-out infinite' }}>⏳</div>
-              <div style={{ fontSize: 16, fontWeight: 700 }}>Загрузка...</div>
-            </Card>
-          ) : error ? (
-            <Card style={{ padding: theme.spacing.xl, borderColor: 'rgba(239,68,68,.3)', color: theme.danger }}>
-              ❌ {error}
-            </Card>
-          ) : (
-            <>
-              {/* Dashboard */}
-              {section === 'dashboard' && <Dashboard stats={stats} orders={orders} payments={payments} />}
-              
-              {/* Inbox */}
-              {section === 'inbox' && (
-                <Inbox 
-                  orders={orders}
-                  payments={payments}
-                  selectedOrderId={selectedOrderId}
-                  setSelectedOrderId={setSelectedOrderId}
-                  showToast={showToast}
-                  loadData={loadData}
-                />
-              )}
-              
-              {/* Payments */}
-              {section === 'payments' && (
-                <PaymentsList 
-                  payments={payments}
-                  showToast={showToast}
-                  loadData={loadData}
-                />
-              )}
-              
-              {/* Clients */}
-              {section === 'clients' && (
-                <ClientsList 
-                  users={users}
-                  showToast={showToast}
-                  loadData={loadData}
-                />
-              )}
-              
-              {/* Content sections */}
-              {['portfolio', 'courses', 'services', 'reviews', 'faq', 'home_stats', 'home_socials'].includes(section) && renderContentSection()}
-            </>
-          )}
-        </main>
-      </div>
-
-      {/* Modal */}
-      <Modal isOpen={modalOpen} title={getModalTitle(modalType, editingItem)} onClose={closeModal}>
-        <div style={{ display: 'grid', gap: theme.spacing.lg }}>
-          {renderForm(modalType, formData, setFormData)}
-          <div style={{ display: 'flex', gap: theme.spacing.md, marginTop: theme.spacing.lg }}>
-            <Button onClick={handleSave} style={{ flex: 1 }}>
-              {editingItem ? '💾 Сохранить' : '➕ Добавить'}
-            </Button>
-            <Button variant="secondary" onClick={closeModal}>Отмена</Button>
-          </div>
-        </div>
-      </Modal>
-    </div>
-  )
-}
-
-// ==========================================
-// DASHBOARD COMPONENT
-// ==========================================
-function Dashboard({ stats, orders, payments }) {
-  const latestOrders = (orders || []).slice(0, 5)
-  const latestPayments = (payments || []).slice(0, 5)
-
-  return (
-    <div style={{ display: 'grid', gap: theme.spacing.xl }}>
-      {/* Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: theme.spacing.lg }}>
-        <StatCard icon="📦" label="Активные заказы" value={stats.activeOrders || 0} sub="живые проекты" />
-        <StatCard icon="💰" label="Доход" value={`$${stats.revenue || 0}`} sub="оплаченные платежи" />
-        <StatCard icon="💬" label="Запросы" value={stats.inbox || 0} sub="реквизиты и диалоги" />
-        <StatCard icon="👥" label="Клиенты" value={stats.users || 0} sub="в базе" />
-      </div>
-
-      {/* Recent Orders & Payments */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: theme.spacing.xl }}>
-        <Card>
-          <h3 style={{ fontSize: 18, fontWeight: 900, marginBottom: theme.spacing.lg }}>Свежие заказы</h3>
-          <div style={{ display: 'grid', gap: theme.spacing.md }}>
-            {latestOrders.map(order => (
-              <div key={order.id} style={{
-                padding: theme.spacing.lg,
-                borderRadius: theme.borderRadius,
-                border: '1px solid rgba(255,255,255,.06)',
-                background: 'rgba(255,255,255,.03)',
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: theme.spacing.md }}>
-                  <div>
-                    <div style={{ fontSize: 11, color: theme.textSecondary, marginBottom: 4 }}>{order.order_number}</div>
-                    <div style={{ fontSize: 15, fontWeight: 800 }}>{order.service_name}</div>
-                    <div style={{ fontSize: 12, color: theme.textSecondary, marginTop: 4 }}>
-                      {order.users?.username || order.users?.first_name || 'Клиент'}
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontWeight: 900 }}>${Number(order.total_amount || 0).toFixed(2)}</div>
-                    <div style={{ fontSize: 12, color: theme.textSecondary, marginTop: 4 }}>{order.status}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card>
-          <h3 style={{ fontSize: 18, fontWeight: 900, marginBottom: theme.spacing.lg }}>Платежный поток</h3>
-          <div style={{ display: 'grid', gap: theme.spacing.md }}>
-            {latestPayments.map(payment => (
-              <div key={payment.id} style={{
-                padding: theme.spacing.lg,
-                borderRadius: theme.borderRadius,
-                border: '1px solid rgba(255,255,255,.06)',
-                background: 'rgba(255,255,255,.03)',
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: theme.spacing.md }}>
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 800 }}>
-                      {payment.users?.username || payment.users?.first_name || 'Клиент'}
-                    </div>
-                    <div style={{ fontSize: 12, color: theme.textSecondary, marginTop: 4 }}>{payment.payment_method}</div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontWeight: 900 }}>${Number(payment.amount || 0).toFixed(2)}</div>
-                    <div style={{ fontSize: 12, color: payment.status === 'paid' ? theme.success : theme.warning, marginTop: 4 }}>
-                      {payment.status}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
-    </div>
-  )
-}
+function money(value) { return `$${Number(value || 0).toFixed(2)}`; }
+function formatDate(value) { if (!value) return "—"; const date = new Date(value); return date.toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); }
+function getPath(obj, path) { return path.reduce((acc, key) => acc?.[key], obj); }
+function setPath(obj, path, value) { const clone = structuredClone(obj); let cursor = clone; for (let i = 0; i < path.length - 1; i += 1) { const key = path[i]; if (!cursor[key]) cursor[key] = typeof path[i + 1] === "number" ? [] : {}; cursor = cursor[key]; } cursor[path[path.length - 1]] = value; return clone; }
+function buildTelegramUser(rawUser, devId) { if (rawUser?.id) return rawUser; const numericId = Number(devId || 0); if (!numericId) return null; return { id: numericId, username: "local_admin", first_name: "Local", last_name: "Admin" }; }
+async function adminPost(path, payload, telegramUser) { const response = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, telegramUser }) }); const json = await response.json().catch(() => null); if (!response.ok || !json?.ok) throw new Error(json?.error || "Admin request failed"); return json.result; }
 
 function StatCard({ icon, label, value, sub }) {
-  return (
-    <Card style={{ padding: theme.spacing.lg }}>
-      <div style={{ width: 46, height: 46, borderRadius: 16, display: 'grid', placeItems: 'center', background: 'linear-gradient(135deg, rgba(99,102,241,.22), rgba(56,189,248,.18))', marginBottom: theme.spacing.md, fontSize: 22 }}>
-        {icon}
-      </div>
-      <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.12em', color: theme.textSecondary, marginBottom: theme.spacing.sm }}>{label}</div>
-      <div style={{ fontSize: 30, fontWeight: 900, lineHeight: 1, letterSpacing: '-.04em' }}>{value}</div>
-      {sub && <div style={{ fontSize: 12, color: theme.textSecondary, marginTop: 6 }}>{sub}</div>}
-    </Card>
-  )
+  return <div style={{ ...styles.card, padding: 18, display: "flex", flexDirection: "column", gap: 10 }}><div style={{ width: 46, height: 46, borderRadius: 16, display: "grid", placeItems: "center", background: "linear-gradient(135deg, rgba(99,102,241,.22), rgba(56,189,248,.18))", border: "1px solid rgba(255,255,255,.08)" }}><SystemIcon name={icon} size={20} color="#fff" animated /></div><div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".12em", color: "rgba(161,161,170,.8)" }}>{label}</div><div style={{ fontSize: 30, fontWeight: 900, lineHeight: 1, letterSpacing: "-.04em" }}>{value}</div>{sub ? <div style={{ fontSize: 12, color: "rgba(161,161,170,.82)" }}>{sub}</div> : null}</div>;
 }
 
-// ==========================================
-// INBOX COMPONENT
-// ==========================================
-function Inbox({ orders, payments, selectedOrderId, setSelectedOrderId, showToast, loadData }) {
-  const [draftStatus, setDraftStatus] = useState('')
-  const [draftNotes, setDraftNotes] = useState('')
-  const [draftDelivery, setDraftDelivery] = useState('')
-  const [messageText, setMessageText] = useState('')
-  const [messages, setMessages] = useState([])
+function Sidebar({ section, setSection, dirtyContent }) {
+  return <aside style={{ ...styles.card, padding: 18, position: "sticky", top: 18, height: "calc(100vh - 36px)", overflow: "auto" }}><div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}><div style={{ width: 52, height: 52, borderRadius: 18, display: "grid", placeItems: "center", background: "linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.04))", border: "1px solid rgba(255,255,255,.1)" }}><SystemIcon name="spark" size={22} color="#fff" animated /></div><div><div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-.04em" }}>Rival Admin</div><div style={{ fontSize: 12, color: "rgba(161,161,170,.82)" }}>операционка + контент</div></div></div><div style={{ display: "grid", gap: 8 }}>{NAV_ITEMS.map((item) => { const active = section === item.id; return <button key={item.id} onClick={() => setSection(item.id)} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", padding: "13px 14px", borderRadius: 16, border: `1px solid ${active ? "rgba(99,102,241,.36)" : "rgba(255,255,255,.06)"}`, background: active ? "linear-gradient(135deg, rgba(99,102,241,.18), rgba(56,189,248,.10))" : "rgba(255,255,255,.03)", color: "rgba(244,244,245,.96)", cursor: "pointer", textAlign: "left" }}><span style={{ width: 26, display: "grid", placeItems: "center" }}><SystemIcon name={item.icon} size={18} color={active ? "#fff" : "rgba(212,212,216,.9)"} animated /></span><span style={{ flex: 1, fontWeight: 700 }}>{item.label}</span>{dirtyContent && ["portfolio", "courses", "services", "reviews", "faq", "home", "socials"].includes(item.id) ? <span style={{ width: 8, height: 8, borderRadius: 999, background: "#f59e0b" }} /> : null}</button>; })}</div></aside>;
+}
+function Dashboard({ metrics, orders, payments }) {
+  const latestOrders = orders.slice(0, 5);
+  const latestPayments = payments.slice(0, 5);
+  return <div style={{ display: "grid", gap: 18 }}><div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0,1fr))", gap: 14 }}><StatCard icon="clipboard" label="Активные" value={metrics.activeOrders} sub="живые проекты" /><StatCard icon="wallet" label="Выручка" value={money(metrics.revenue)} sub="оплаченные платежи" /><StatCard icon="chat" label="Inbox" value={metrics.inbox} sub="запросы реквизитов" /><StatCard icon="users" label="Клиенты" value={metrics.users} sub="в базе Supabase" /></div><div style={{ display: "grid", gridTemplateColumns: "1.2fr .8fr", gap: 18 }}><div style={{ ...styles.card, padding: 18 }}><div style={{ fontSize: 18, fontWeight: 900, marginBottom: 14 }}>Свежие заказы</div><div style={{ display: "grid", gap: 10 }}>{latestOrders.map((order) => <div key={order.id} style={{ padding: 14, borderRadius: 16, border: "1px solid rgba(255,255,255,.06)", background: "rgba(255,255,255,.03)", display: "flex", justifyContent: "space-between", gap: 12 }}><div><div style={{ fontSize: 11, color: "rgba(161,161,170,.8)", marginBottom: 4 }}>{order.order_number}</div><div style={{ fontSize: 15, fontWeight: 800 }}>{order.service_name}</div><div style={{ fontSize: 12, color: "rgba(161,161,170,.82)", marginTop: 4 }}>{order.users?.username || order.users?.first_name || "Клиент"}</div></div><div style={{ textAlign: "right" }}><div style={{ fontWeight: 900 }}>{money(order.total_amount)}</div><div style={{ fontSize: 12, color: "rgba(161,161,170,.82)", marginTop: 4 }}>{order.status}</div></div></div>)}</div></div><div style={{ ...styles.card, padding: 18 }}><div style={{ fontSize: 18, fontWeight: 900, marginBottom: 14 }}>Платежный поток</div><div style={{ display: "grid", gap: 10 }}>{latestPayments.map((payment) => <div key={payment.id} style={{ padding: 14, borderRadius: 16, border: "1px solid rgba(255,255,255,.06)", background: "rgba(255,255,255,.03)", display: "flex", justifyContent: "space-between", gap: 12 }}><div><div style={{ fontWeight: 800 }}>{payment.users?.username || payment.users?.first_name || "Клиент"}</div><div style={{ fontSize: 12, color: "rgba(161,161,170,.82)", marginTop: 4 }}>{payment.payment_method}</div></div><div style={{ textAlign: "right" }}><div style={{ fontWeight: 900 }}>{money(payment.amount)}</div><div style={{ fontSize: 12, color: payment.status === "paid" ? "#34d399" : "#fbbf24", marginTop: 4 }}>{payment.status}</div></div></div>)}</div></div></div></div>;
+}
 
-  const selectedOrder = (orders || []).find(o => o.id === selectedOrderId)
-  const paymentsById = useMemo(() => Object.fromEntries((payments || []).map(p => [p.id, p])), [payments])
+function Payments({ payments, onUpdate, onOpenOrder }) {
+  return <div style={{ ...styles.card, padding: 18, display: "grid", gap: 10 }}>{payments.map((payment) => <div key={payment.id} style={{ padding: 14, borderRadius: 18, border: "1px solid rgba(255,255,255,.06)", background: "rgba(255,255,255,.03)", display: "grid", gridTemplateColumns: "1.1fr .8fr .7fr auto", alignItems: "center", gap: 12 }}><div><div style={{ fontWeight: 800 }}>{payment.users?.username || payment.users?.first_name || "Клиент"}</div><div style={{ fontSize: 12, color: "rgba(161,161,170,.82)", marginTop: 4 }}>{payment.payment_method} · {formatDate(payment.created_at)}</div></div><div style={{ fontWeight: 900 }}>{money(payment.amount)}</div><select value={payment.status} onChange={(e) => onUpdate(payment.id, e.target.value)} style={{ height: 42, borderRadius: 12, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.04)", color: "#fff", padding: "0 12px" }}>{PAYMENT_STATUS_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select><button onClick={() => onOpenOrder(payment.id)} style={{ height: 42, padding: "0 14px", borderRadius: 12, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.05)", color: "#fff", cursor: "pointer" }}>Открыть</button></div>)}</div>;
+}
 
-  const STATUS_OPTIONS = [
-    ['waiting_payment', 'Ожидает оплату'],
-    ['payment_review', 'Проверка оплаты'],
-    ['queued', 'В очереди'],
-    ['in_progress', 'В работе'],
-    ['preview_sent', 'Превью отправлено'],
-    ['revision', 'Правки'],
-    ['delivered', 'Готово'],
-    ['closed', 'Закрыт'],
-    ['canceled', 'Отменен'],
-  ]
+function Clients({ users, onUpdateBalance }) {
+  const [drafts, setDrafts] = useState({});
+  return <div style={{ ...styles.card, padding: 18, display: "grid", gap: 12 }}>{users.map((user) => <div key={user.id} style={{ padding: 14, borderRadius: 18, border: "1px solid rgba(255,255,255,.06)", background: "rgba(255,255,255,.03)", display: "grid", gridTemplateColumns: "1fr 220px auto", gap: 12, alignItems: "center" }}><div><div style={{ fontWeight: 800 }}>{user.username || user.first_name || `ID ${user.telegram_id}`}</div><div style={{ fontSize: 12, color: "rgba(161,161,170,.82)", marginTop: 4 }}>telegram_id: {user.telegram_id}</div></div><input value={drafts[user.id] ?? Number(user.balance || 0)} onChange={(e) => setDrafts((prev) => ({ ...prev, [user.id]: e.target.value }))} style={{ height: 44, borderRadius: 12, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.04)", color: "#fff", padding: "0 12px", boxSizing: "border-box" }} /><button onClick={() => onUpdateBalance(user.id, drafts[user.id] ?? Number(user.balance || 0))} style={{ height: 44, padding: "0 14px", borderRadius: 12, border: "1px solid rgba(255,255,255,.08)", background: "linear-gradient(135deg, rgba(99,102,241,.24), rgba(56,189,248,.18))", color: "#fff", cursor: "pointer", fontWeight: 800 }}>Сохранить</button></div>)}</div>;
+}
+function Inbox({ orders, paymentsById, messagesByOrder, selectedOrderId, setSelectedOrderId, onSaveOrder, onSendMessage, onMarkPayment }) {
+  const selectedOrder = orders.find((order) => order.id === selectedOrderId) || orders[0] || null;
+  const [draftStatus, setDraftStatus] = useState(selectedOrder?.status || "waiting_payment");
+  const [draftNotes, setDraftNotes] = useState(selectedOrder?.designer_notes || "");
+  const [draftDelivery, setDraftDelivery] = useState(selectedOrder?.delivery_url || "");
+  const [messageText, setMessageText] = useState("");
 
   useEffect(() => {
-    if (selectedOrder) {
-      setDraftStatus(selectedOrder.status || 'waiting_payment')
-      setDraftNotes(selectedOrder.designer_notes || '')
-      setDraftDelivery(selectedOrder.delivery_url || '')
-      
-      // Load messages
-      adminApi.messagesByOrder(selectedOrder.id)
-        .then(msgs => setMessages(msgs || []))
-        .catch(() => setMessages([]))
-    }
-  }, [selectedOrder])
+    setDraftStatus(selectedOrder?.status || "waiting_payment");
+    setDraftNotes(selectedOrder?.designer_notes || "");
+    setDraftDelivery(selectedOrder?.delivery_url || "");
+  }, [selectedOrderId, selectedOrder?.status, selectedOrder?.designer_notes, selectedOrder?.delivery_url]);
 
-  const handleSaveOrder = async () => {
-    try {
-      await adminApi.ordersUpdate(selectedOrderId, {
-        status: draftStatus,
-        designerNotes: draftNotes,
-        deliveryUrl: draftDelivery,
-      })
-      showToast('Заказ обновлён!')
-      await loadData()
-    } catch (err) {
-      showToast(err.message, 'error')
-    }
-  }
+  const ordered = useMemo(() => [...orders].sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)), [orders]);
 
-  const handleSendMessage = async () => {
-    if (!messageText.trim()) return
-    try {
-      await adminApi.messageSend(selectedOrderId, messageText)
-      setMessageText('')
-      // Reload messages
-      const msgs = await adminApi.messagesByOrder(selectedOrderId)
-      setMessages(msgs || [])
-      showToast('Сообщение отправлено!')
-    } catch (err) {
-      showToast(err.message, 'error')
-    }
-  }
-
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: theme.spacing.xl }}>
-      {/* Orders list */}
-      <Card style={{ padding: theme.spacing.md, maxHeight: 'calc(100vh - 140px)', overflow: 'auto' }}>
-        <div style={{ display: 'grid', gap: theme.spacing.sm }}>
-          {(orders || []).map(order => {
-            const payment = order.payment_id ? paymentsById[order.payment_id] : null
-            const active = selectedOrderId === order.id
-            return (
-              <button
-                key={order.id}
-                onClick={() => setSelectedOrderId(order.id)}
-                style={{
-                  textAlign: 'left',
-                  padding: theme.spacing.lg,
-                  borderRadius: theme.borderRadius,
-                  border: `1px solid ${active ? 'rgba(99,102,241,.32)' : 'rgba(255,255,255,.06)'}`,
-                  background: active ? 'linear-gradient(135deg, rgba(99,102,241,.14), rgba(56,189,248,.08))' : 'rgba(255,255,255,.03)',
-                  color: 'inherit',
-                  cursor: 'pointer',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: theme.spacing.md }}>
-                  <div>
-                    <div style={{ fontSize: 11, color: theme.textSecondary, marginBottom: 4 }}>{order.order_number}</div>
-                    <div style={{ fontSize: 15, fontWeight: 800 }}>{order.service_name}</div>
-                    <div style={{ fontSize: 12, color: theme.textSecondary, marginTop: 6 }}>
-                      {order.users?.username || order.users?.first_name || 'Клиент'}
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontWeight: 900 }}>${Number(order.total_amount || 0).toFixed(2)}</div>
-                    <div style={{ fontSize: 12, color: payment?.status === 'paid' ? theme.success : theme.textSecondary, marginTop: 6 }}>
-                      {payment?.status || order.status}
-                    </div>
-                  </div>
-                </div>
-              </button>
-            )
-          })}
-        </div>
-      </Card>
-
-      {/* Order details */}
-      <div style={{ display: 'grid', gap: theme.spacing.lg }}>
-        {selectedOrder ? (
-          <>
-            <Card>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: theme.spacing.lg, marginBottom: theme.spacing.lg }}>
-                <div>
-                  <div style={{ fontSize: 12, color: theme.textSecondary, marginBottom: 6 }}>{selectedOrder.order_number}</div>
-                  <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-.04em' }}>{selectedOrder.service_name}</div>
-                  <div style={{ fontSize: 13, color: theme.textSecondary, marginTop: 8 }}>
-                    {selectedOrder.users?.username || selectedOrder.users?.first_name || 'Клиент'} · ${Number(selectedOrder.total_amount || 0).toFixed(2)}
-                  </div>
-                </div>
-                <div style={{ padding: '8px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,.08)', background: 'rgba(255,255,255,.05)', fontSize: 12 }}>
-                  {selectedOrder.status}
-                </div>
-              </div>
-
-              {/* Brief */}
-              <Card style={{ marginBottom: theme.spacing.lg, background: 'rgba(255,255,255,.03)' }}>
-                <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.12em', color: theme.textSecondary, marginBottom: theme.spacing.sm }}>Бриф</div>
-                <div style={{ fontSize: 14, lineHeight: 1.6 }}>{selectedOrder.brief || '—'}</div>
-              </Card>
-
-              {/* Status & Delivery */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: theme.spacing.lg, marginBottom: theme.spacing.lg }}>
-                <div>
-                  <label style={labelStyle}>Статус</label>
-                  <select value={draftStatus} onChange={e => setDraftStatus(e.target.value)} style={inputStyle}>
-                    {STATUS_OPTIONS.map(([value, label]) => (
-                      <option key={value} value={value}>{label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>Ссылка на выдачу</label>
-                  <input value={draftDelivery} onChange={e => setDraftDelivery(e.target.value)} placeholder="https://..." style={inputStyle} />
-                </div>
-              </div>
-
-              {/* Notes */}
-              <label style={labelStyle}>Заметка для клиента</label>
-              <textarea value={draftNotes} onChange={e => setDraftNotes(e.target.value)} rows={4} style={textareaStyle} />
-
-              <div style={{ marginTop: theme.spacing.lg }}>
-                <Button onClick={handleSaveOrder} style={{ width: '100%' }}>💾 Сохранить</Button>
-              </div>
-            </Card>
-
-            {/* Chat */}
-            <Card>
-              <h3 style={{ fontSize: 16, fontWeight: 900, marginBottom: theme.spacing.lg }}>Чат заказа</h3>
-              <div style={{ display: 'grid', gap: theme.spacing.md, maxHeight: 320, overflow: 'auto', paddingRight: 4, marginBottom: theme.spacing.lg }}>
-                {messages.map(msg => (
-                  <div key={msg.id} style={{
-                    padding: theme.spacing.md,
-                    borderRadius: theme.borderRadius,
-                    background: msg.sender_role === 'designer' ? 'rgba(99,102,241,.14)' : 'rgba(255,255,255,.04)',
-                    border: `1px solid ${msg.sender_role === 'designer' ? 'rgba(99,102,241,.24)' : 'rgba(255,255,255,.06)'}`,
-                  }}>
-                    <div style={{ fontSize: 12, color: theme.textSecondary, marginBottom: 6 }}>
-                      {msg.sender_role === 'designer' ? 'Ты' : 'Клиент'} · {new Date(msg.created_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                    <div style={{ lineHeight: 1.6 }}>{msg.text}</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: theme.spacing.md }}>
-                <textarea value={messageText} onChange={e => setMessageText(e.target.value)} rows={3} placeholder="Ответ клиенту..." style={textareaStyle} />
-                <Button onClick={handleSendMessage} style={{ alignSelf: 'end' }}>📤 Отправить</Button>
-              </div>
-            </Card>
-          </>
-        ) : (
-          <Card style={{ padding: theme.spacing.xxxl, textAlign: 'center', color: theme.textSecondary }}>
-            <div style={{ fontSize: 48, marginBottom: theme.spacing.md }}>📝</div>
-            <div style={{ fontSize: 16, fontWeight: 700 }}>Выберите заказ</div>
-          </Card>
-        )}
-      </div>
-    </div>
-  )
+  return <div style={{ display: "grid", gridTemplateColumns: "360px minmax(0,1fr)", gap: 18 }}><div style={{ ...styles.card, padding: 14, display: "grid", gap: 10, maxHeight: "calc(100vh - 72px)", overflow: "auto" }}>{ordered.map((order) => { const payment = order.payment_id ? paymentsById[order.payment_id] : null; const isInquiry = String(order.service_name || "").toLowerCase().includes("реквизит") || String(order.service_name || "").toLowerCase().includes("payment details"); const active = selectedOrder?.id === order.id; return <button key={order.id} onClick={() => setSelectedOrderId(order.id)} style={{ textAlign: "left", padding: 14, borderRadius: 18, border: `1px solid ${active ? "rgba(99,102,241,.32)" : "rgba(255,255,255,.06)"}`, background: active ? "linear-gradient(135deg, rgba(99,102,241,.14), rgba(56,189,248,.08))" : "rgba(255,255,255,.03)", color: "inherit", cursor: "pointer" }}><div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}><div><div style={{ fontSize: 11, color: "rgba(161,161,170,.78)", marginBottom: 5 }}>{order.order_number}</div><div style={{ fontSize: 15, fontWeight: 800 }}>{order.service_name}</div><div style={{ fontSize: 12, color: isInquiry ? "#93c5fd" : "rgba(161,161,170,.82)", marginTop: 6 }}>{isInquiry ? "Запрос реквизитов" : order.users?.username || order.users?.first_name || "Клиент"}</div></div><div style={{ textAlign: "right" }}><div style={{ fontWeight: 900 }}>{money(order.total_amount)}</div><div style={{ fontSize: 12, color: payment?.status === "paid" ? "#34d399" : "rgba(161,161,170,.82)", marginTop: 6 }}>{payment?.status || order.status}</div></div></div></button>; })}</div><div style={{ ...styles.card, padding: 18, minHeight: 720 }}>{!selectedOrder ? <div style={{ color: "rgba(161,161,170,.82)" }}>Заказов пока нет.</div> : <div style={{ display: "grid", gap: 16 }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 18 }}><div><div style={{ fontSize: 12, color: "rgba(161,161,170,.78)", marginBottom: 6 }}>{selectedOrder.order_number}</div><div style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-.04em" }}>{selectedOrder.service_name}</div><div style={{ fontSize: 13, color: "rgba(161,161,170,.82)", marginTop: 8 }}>{selectedOrder.users?.username || selectedOrder.users?.first_name || "Клиент"} · {money(selectedOrder.total_amount)}</div></div><div style={{ display: "grid", gap: 8, justifyItems: "end" }}><div style={{ padding: "8px 12px", borderRadius: 999, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.05)", fontSize: 12 }}>{selectedOrder.status}</div><div style={{ fontSize: 12, color: "rgba(161,161,170,.8)" }}>{formatDate(selectedOrder.updated_at || selectedOrder.created_at)}</div></div></div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}><div style={{ padding: 14, borderRadius: 18, background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.06)" }}><div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".12em", color: "rgba(161,161,170,.82)", marginBottom: 10 }}>Бриф</div><div style={{ fontSize: 14, lineHeight: 1.6 }}>{selectedOrder.brief || "—"}</div></div><div style={{ padding: 14, borderRadius: 18, background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.06)" }}><div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".12em", color: "rgba(161,161,170,.82)", marginBottom: 10 }}>Платеж</div><div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}><div><div style={{ fontSize: 14, fontWeight: 800 }}>{selectedOrder.payments?.payment_method || "manual"}</div><div style={{ fontSize: 12, color: "rgba(161,161,170,.82)", marginTop: 4 }}>{selectedOrder.payments?.status || "pending"}</div></div>{selectedOrder.payment_id ? <button onClick={() => onMarkPayment(selectedOrder.payment_id, selectedOrder.payments?.status === "paid" ? "pending" : "paid")} style={{ padding: "10px 12px", borderRadius: 12, border: "1px solid rgba(255,255,255,.08)", background: "linear-gradient(135deg, rgba(16,185,129,.18), rgba(5,150,105,.12))", color: "#d1fae5", cursor: "pointer", fontWeight: 800 }}>{selectedOrder.payments?.status === "paid" ? "Вернуть в pending" : "Подтвердить оплату"}</button> : null}</div></div></div><div style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: 12 }}><div><div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".12em", color: "rgba(161,161,170,.82)", marginBottom: 8 }}>Статус</div><select value={draftStatus} onChange={(e) => setDraftStatus(e.target.value)} style={{ width: "100%", height: 48, borderRadius: 14, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.04)", color: "#fff", padding: "0 14px" }}>{ORDER_STATUS_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></div><div><div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".12em", color: "rgba(161,161,170,.82)", marginBottom: 8 }}>Ссылка на выдачу</div><input value={draftDelivery} onChange={(e) => setDraftDelivery(e.target.value)} placeholder="https://..." style={{ width: "100%", height: 48, borderRadius: 14, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.04)", color: "#fff", padding: "0 14px", boxSizing: "border-box" }} /></div></div><div><div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".12em", color: "rgba(161,161,170,.82)", marginBottom: 8 }}>Заметка для клиента</div><textarea value={draftNotes} onChange={(e) => setDraftNotes(e.target.value)} rows={4} style={{ width: "100%", borderRadius: 18, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.04)", color: "#fff", padding: 14, boxSizing: "border-box", resize: "vertical" }} /></div><div style={{ display: "flex", gap: 10 }}><button onClick={() => onSaveOrder(selectedOrder.id, { status: draftStatus, designerNotes: draftNotes, deliveryUrl: draftDelivery })} style={{ padding: "12px 16px", borderRadius: 14, border: "1px solid rgba(255,255,255,.08)", background: "linear-gradient(135deg, #6366f1, #8b5cf6)", color: "#fff", fontWeight: 900, cursor: "pointer" }}>Сохранить карточку</button></div><div style={{ borderTop: "1px solid rgba(255,255,255,.06)", paddingTop: 16 }}><div style={{ fontSize: 16, fontWeight: 900, marginBottom: 12 }}>Чат заказа</div><div style={{ display: "grid", gap: 10, maxHeight: 320, overflow: "auto", paddingRight: 4 }}>{(messagesByOrder[selectedOrder.id] || []).map((message) => <div key={message.id} style={{ padding: 12, borderRadius: 16, background: message.sender_role === "designer" ? "rgba(99,102,241,.14)" : "rgba(255,255,255,.04)", border: `1px solid ${message.sender_role === "designer" ? "rgba(99,102,241,.24)" : "rgba(255,255,255,.06)"}` }}><div style={{ fontSize: 12, color: "rgba(161,161,170,.78)", marginBottom: 6 }}>{message.sender_role === "designer" ? "Ты" : selectedOrder.users?.username || selectedOrder.users?.first_name || "Клиент"} · {formatDate(message.created_at)}</div><div style={{ lineHeight: 1.6 }}>{message.text}</div></div>)}</div><div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 10, marginTop: 12 }}><textarea value={messageText} onChange={(e) => setMessageText(e.target.value)} rows={3} placeholder="Ответ клиенту..." style={{ borderRadius: 16, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.04)", color: "#fff", padding: 14, resize: "vertical" }} /><button onClick={() => { onSendMessage(selectedOrder.id, messageText); setMessageText(""); }} style={{ alignSelf: "end", height: 48, padding: "0 16px", borderRadius: 14, border: "1px solid rgba(255,255,255,.08)", background: "linear-gradient(135deg, rgba(56,189,248,.28), rgba(99,102,241,.22))", color: "#fff", fontWeight: 900, cursor: "pointer" }}>Отправить</button></div></div></div>}</div></div>;
 }
 
-// ==========================================
-// PAYMENTS LIST COMPONENT
-// ==========================================
-function PaymentsList({ payments, showToast, loadData }) {
-  const formatDate = (date) => {
-    if (!date) return '—'
-    return new Date(date).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
-  }
-
-  const handleUpdate = async (paymentId, status) => {
-    try {
-      await adminApi.paymentsUpdate(paymentId, { status })
-      showToast('Платёж обновлён!')
-      await loadData()
-    } catch (err) {
-      showToast(err.message, 'error')
-    }
-  }
-
-  return (
-    <Card style={{ padding: theme.spacing.lg }}>
-      <div style={{ display: 'grid', gap: theme.spacing.md }}>
-        {(payments || []).map(payment => (
-          <div key={payment.id} style={{
-            padding: theme.spacing.lg,
-            borderRadius: theme.borderRadius,
-            border: '1px solid rgba(255,255,255,.06)',
-            background: 'rgba(255,255,255,.03)',
-            display: 'grid',
-            gridTemplateColumns: '1.1fr .8fr .7fr auto',
-            alignItems: 'center',
-            gap: theme.spacing.lg,
-          }}>
-            <div>
-              <div style={{ fontWeight: 800 }}>
-                {payment.users?.username || payment.users?.first_name || 'Клиент'}
-              </div>
-              <div style={{ fontSize: 12, color: theme.textSecondary, marginTop: 4 }}>
-                {payment.payment_method} · {formatDate(payment.created_at)}
-              </div>
-            </div>
-            <div style={{ fontWeight: 900 }}>${Number(payment.amount || 0).toFixed(2)}</div>
-            <select
-              value={payment.status}
-              onChange={e => handleUpdate(payment.id, e.target.value)}
-              style={{
-                height: 42,
-                borderRadius: 12,
-                border: '1px solid rgba(255,255,255,.08)',
-                background: 'rgba(255,255,255,.04)',
-                color: '#fff',
-                padding: '0 12px',
-              }}
-            >
-              <option value="pending">Ожидает</option>
-              <option value="paid">Оплачен</option>
-              <option value="canceled">Отменен</option>
-              <option value="refunded">Возврат</option>
-            </select>
-          </div>
-        ))}
-      </div>
-    </Card>
-  )
+function ContentManager({ sectionKey, contentDraft, setContentDraft, onSaveAll, dirty }) {
+  const config = contentConfig[sectionKey];
+  const items = getPath(contentDraft, config.path) || [];
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [editorValue, setEditorValue] = useState(JSON.stringify(items[0] || config.template, null, 2));
+  useEffect(() => { const safeIndex = Math.min(selectedIndex, Math.max(items.length - 1, 0)); setSelectedIndex(safeIndex); setEditorValue(JSON.stringify(items[safeIndex] || config.template, null, 2)); }, [sectionKey, items.length]);
+  const applyEditor = () => { const nextItem = JSON.parse(editorValue); const nextItems = [...items]; if (nextItems.length === 0) nextItems.push(nextItem); else nextItems[selectedIndex] = nextItem; setContentDraft((prev) => setPath(prev, config.path, nextItems)); };
+  const addItem = () => { const nextItems = [...items, structuredClone(config.template)]; setContentDraft((prev) => setPath(prev, config.path, nextItems)); setSelectedIndex(nextItems.length - 1); setEditorValue(JSON.stringify(nextItems[nextItems.length - 1], null, 2)); };
+  const duplicateItem = () => { const current = items[selectedIndex]; if (!current) return; const copy = structuredClone(current); if (copy.id) copy.id = `${copy.id}_copy_${Date.now()}`; const nextItems = [...items]; nextItems.splice(selectedIndex + 1, 0, copy); setContentDraft((prev) => setPath(prev, config.path, nextItems)); setSelectedIndex(selectedIndex + 1); setEditorValue(JSON.stringify(copy, null, 2)); };
+  const removeItem = () => { if (!items[selectedIndex]) return; const nextItems = items.filter((_, index) => index !== selectedIndex); setContentDraft((prev) => setPath(prev, config.path, nextItems)); const nextIndex = Math.max(selectedIndex - 1, 0); setSelectedIndex(nextIndex); setEditorValue(JSON.stringify(nextItems[nextIndex] || config.template, null, 2)); };
+  return <div style={{ display: "grid", gridTemplateColumns: "320px minmax(0,1fr)", gap: 18 }}><div style={{ ...styles.card, padding: 14, display: "grid", gap: 10, maxHeight: "calc(100vh - 72px)", overflow: "auto" }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, padding: "4px 4px 10px" }}><div><div style={{ fontSize: 18, fontWeight: 900 }}>{config.title}</div><div style={{ fontSize: 12, color: "rgba(161,161,170,.82)" }}>{items.length} записей</div></div><button onClick={addItem} style={{ height: 40, padding: "0 12px", borderRadius: 12, border: "1px solid rgba(255,255,255,.08)", background: "linear-gradient(135deg, rgba(99,102,241,.24), rgba(56,189,248,.18))", color: "#fff", cursor: "pointer", fontWeight: 900 }}>Добавить</button></div>{items.map((item, index) => { const active = index === selectedIndex; return <button key={`${config.title}_${index}`} onClick={() => { setSelectedIndex(index); setEditorValue(JSON.stringify(item, null, 2)); }} style={{ textAlign: "left", padding: 14, borderRadius: 16, border: `1px solid ${active ? "rgba(99,102,241,.32)" : "rgba(255,255,255,.06)"}`, background: active ? "linear-gradient(135deg, rgba(99,102,241,.14), rgba(56,189,248,.08))" : "rgba(255,255,255,.03)", color: "inherit", cursor: "pointer" }}><div style={{ fontWeight: 800 }}>{config.getLabel(item)}</div><div style={{ fontSize: 12, color: "rgba(161,161,170,.82)", marginTop: 5 }}>{config.getMeta(item)}</div></button>; })}</div><div style={{ ...styles.card, padding: 18, display: "grid", gap: 14 }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}><div><div style={{ fontSize: 24, fontWeight: 900 }}>{config.title}</div><div style={{ fontSize: 12, color: "rgba(161,161,170,.82)", marginTop: 4 }}>{dirty ? "Есть несохраненные изменения" : "Все синхронизировано"}</div></div><div style={{ display: "flex", gap: 8 }}><button onClick={duplicateItem} style={{ height: 42, padding: "0 12px", borderRadius: 12, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.05)", color: "#fff", cursor: "pointer" }}>Дубль</button><button onClick={removeItem} style={{ height: 42, padding: "0 12px", borderRadius: 12, border: "1px solid rgba(248,113,113,.18)", background: "rgba(248,113,113,.08)", color: "#fecaca", cursor: "pointer" }}>Удалить</button><button onClick={applyEditor} style={{ height: 42, padding: "0 14px", borderRadius: 12, border: "1px solid rgba(255,255,255,.08)", background: "linear-gradient(135deg, rgba(99,102,241,.24), rgba(56,189,248,.18))", color: "#fff", cursor: "pointer", fontWeight: 900 }}>Применить JSON</button><button onClick={onSaveAll} style={{ height: 42, padding: "0 14px", borderRadius: 12, border: "1px solid rgba(16,185,129,.22)", background: "linear-gradient(135deg, rgba(16,185,129,.22), rgba(5,150,105,.18))", color: "#ecfdf5", cursor: "pointer", fontWeight: 900 }}>Сохранить в CMS</button></div></div><textarea value={editorValue} onChange={(e) => setEditorValue(e.target.value)} spellCheck={false} style={{ minHeight: 540, width: "100%", borderRadius: 22, border: "1px solid rgba(255,255,255,.08)", background: "rgba(2,4,9,.72)", color: "#f8fafc", padding: 18, boxSizing: "border-box", resize: "vertical", fontFamily: "ui-monospace, SFMono-Regular, Consolas, monospace", fontSize: 13, lineHeight: 1.6 }} /></div></div>;
 }
+export default function AdminApp() {
+  const tg = window.Telegram?.WebApp;
+  const [devId, setDevId] = useState(() => localStorage.getItem("rs_admin_dev_id") || "");
+  const telegramUser = useMemo(() => buildTelegramUser(tg?.initDataUnsafe?.user, devId), [tg, devId]);
+  const [section, setSection] = useState("dashboard");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [metrics, setMetrics] = useState({ activeOrders: 0, unpaidOrders: 0, revenue: 0, users: 0, inbox: 0 });
+  const [users, setUsers] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [contentDraft, setContentDraft] = useState(null);
+  const [dirtyContent, setDirtyContent] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
 
-// ==========================================
-// CLIENTS LIST COMPONENT
-// ==========================================
-function ClientsList({ users, showToast, loadData }) {
-  const [drafts, setDrafts] = useState({})
+  useEffect(() => { tg?.ready?.(); tg?.expand?.(); }, [tg]);
 
-  const handleUpdateBalance = async (userId, balance) => {
+  const load = async () => {
+    if (!telegramUser?.id) { setLoading(false); return; }
+    setLoading(true); setError("");
     try {
-      await adminApi.usersUpdateBalance(userId, balance)
-      showToast('Баланс обновлён!')
-      await loadData()
+      const result = await adminPost("/api/admin/bootstrap", {}, telegramUser);
+      setMetrics(result.metrics || {});
+      setUsers(result.users || []);
+      setOrders(result.orders || []);
+      setPayments(result.payments || []);
+      setMessages(result.messages || []);
+      setContentDraft(result.content || null);
+      setSelectedOrderId((result.orders || [])[0]?.id || null);
+      setDirtyContent(false);
     } catch (err) {
-      showToast(err.message, 'error')
+      setError(err.message || "Не удалось загрузить админку");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => { load(); }, [telegramUser?.id]);
+
+  const paymentsById = useMemo(() => Object.fromEntries(payments.map((item) => [item.id, item])), [payments]);
+  const messagesByOrder = useMemo(() => messages.reduce((acc, item) => { if (!acc[item.order_id]) acc[item.order_id] = []; acc[item.order_id].push(item); return acc; }, {}), [messages]);
+
+  const handleSaveOrder = async (orderId, payload) => { await adminPost("/api/admin/order/update", { orderId, ...payload }, telegramUser); await load(); };
+  const handleSendMessage = async (orderId, text) => { if (!String(text || "").trim()) return; await adminPost("/api/admin/message/send", { orderId, text }, telegramUser); await load(); };
+  const handlePaymentUpdate = async (paymentId, status) => { await adminPost("/api/admin/payment/update", { paymentId, status }, telegramUser); await load(); };
+  const handleBalanceUpdate = async (userId, balance) => { await adminPost("/api/admin/user/update-balance", { userId, balance }, telegramUser); await load(); };
+  const handleSaveContent = async () => { await adminPost("/api/admin/content/save", { content: contentDraft }, telegramUser); await load(); };
+
+  if (!telegramUser?.id) {
+    return <div style={{ ...styles.bg, display: "grid", placeItems: "center", padding: 24 }}><div style={{ ...styles.card, width: "min(520px, 100%)", padding: 28 }}><div style={{ fontSize: 28, fontWeight: 900, marginBottom: 10 }}>Rival Admin</div><div style={{ fontSize: 14, color: "rgba(161,161,170,.84)", lineHeight: 1.7, marginBottom: 18 }}>Открой админку внутри Telegram Mini App или введи свой Telegram ID для локальной проверки в браузере.</div><input value={devId} onChange={(e) => { setDevId(e.target.value); localStorage.setItem("rs_admin_dev_id", e.target.value); }} placeholder="Telegram ID" style={{ width: "100%", height: 52, borderRadius: 16, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.04)", color: "#fff", padding: "0 14px", boxSizing: "border-box" }} /></div></div>;
   }
 
-  return (
-    <Card style={{ padding: theme.spacing.lg }}>
-      <div style={{ display: 'grid', gap: theme.spacing.md }}>
-        {(users || []).map(user => (
-          <div key={user.id} style={{
-            padding: theme.spacing.lg,
-            borderRadius: theme.borderRadius,
-            border: '1px solid rgba(255,255,255,.06)',
-            background: 'rgba(255,255,255,.03)',
-            display: 'grid',
-            gridTemplateColumns: '1fr 220px auto',
-            gap: theme.spacing.lg,
-            alignItems: 'center',
-          }}>
-            <div>
-              <div style={{ fontWeight: 800 }}>
-                {user.username || user.first_name || `ID ${user.telegram_id}`}
-              </div>
-              <div style={{ fontSize: 12, color: theme.textSecondary, marginTop: 4 }}>
-                telegram_id: {user.telegram_id}
-              </div>
-            </div>
-            <input
-              value={drafts[user.id] ?? Number(user.balance || 0)}
-              onChange={e => setDrafts(prev => ({ ...prev, [user.id]: e.target.value }))}
-              style={{
-                height: 44,
-                borderRadius: 12,
-                border: '1px solid rgba(255,255,255,.08)',
-                background: 'rgba(255,255,255,.04)',
-                color: '#fff',
-                padding: '0 12px',
-                boxSizing: 'border-box',
-              }}
-            />
-            <Button onClick={() => handleUpdateBalance(user.id, drafts[user.id] ?? user.balance)} style={{ height: 44 }}>
-              💾 Сохранить
-            </Button>
-          </div>
-        ))}
-      </div>
-    </Card>
-  )
+  return <div style={styles.bg}><div style={styles.shell}><Sidebar section={section} setSection={setSection} dirtyContent={dirtyContent} /><main style={{ display: "grid", gap: 18 }}><div style={{ ...styles.card, padding: "18px 22px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18 }}><div><div style={{ fontSize: 30, fontWeight: 900, letterSpacing: "-.05em" }}>{NAV_ITEMS.find((item) => item.id === section)?.label || "Admin"}</div><div style={{ fontSize: 13, color: "rgba(161,161,170,.82)", marginTop: 6 }}>{telegramUser.username ? `@${telegramUser.username}` : telegramUser.first_name || "Админ"} · отдельное приложение управления Rival Space</div></div><div style={{ display: "flex", gap: 10 }}><button onClick={load} style={{ height: 42, padding: "0 14px", borderRadius: 12, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.05)", color: "#fff", cursor: "pointer" }}>Обновить</button>{contentDraft && ["portfolio", "courses", "services", "reviews", "faq", "home", "socials"].includes(section) ? <button onClick={handleSaveContent} style={{ height: 42, padding: "0 14px", borderRadius: 12, border: "1px solid rgba(16,185,129,.22)", background: "linear-gradient(135deg, rgba(16,185,129,.22), rgba(5,150,105,.18))", color: "#ecfdf5", cursor: "pointer", fontWeight: 900 }}>Сохранить CMS</button> : null}</div></div>{error ? <div style={{ ...styles.card, padding: 18, color: "#fecaca", borderColor: "rgba(248,113,113,.22)" }}>{error}</div> : null}{loading ? <div style={{ ...styles.card, padding: 28, color: "rgba(161,161,170,.82)" }}>Загружаю админ-систему…</div> : null}{!loading && section === "dashboard" ? <Dashboard metrics={metrics} orders={orders} payments={payments} /> : null}{!loading && section === "inbox" ? <Inbox orders={orders} paymentsById={paymentsById} messagesByOrder={messagesByOrder} selectedOrderId={selectedOrderId} setSelectedOrderId={setSelectedOrderId} onSaveOrder={handleSaveOrder} onSendMessage={handleSendMessage} onMarkPayment={handlePaymentUpdate} /> : null}{!loading && section === "payments" ? <Payments payments={payments} onUpdate={handlePaymentUpdate} onOpenOrder={(paymentId) => { const order = orders.find((item) => item.payment_id === paymentId); if (order) { setSelectedOrderId(order.id); setSection("inbox"); } }} /> : null}{!loading && section === "clients" ? <Clients users={users} onUpdateBalance={handleBalanceUpdate} /> : null}{!loading && contentDraft && ["portfolio", "courses", "services", "reviews", "faq", "home", "socials"].includes(section) ? <ContentManager sectionKey={section} contentDraft={contentDraft} setContentDraft={(updater) => { setContentDraft((prev) => { const next = typeof updater === "function" ? updater(prev) : updater; setDirtyContent(true); return next; }); }} onSaveAll={handleSaveContent} dirty={dirtyContent} /> : null}</main></div></div>;
 }

@@ -1,43 +1,22 @@
-﻿<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#05070b" />
-    <title>Rival Admin Panel</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rival Space Admin</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+      :root {
+        color-scheme: dark;
+        font-family: Inter, system-ui, sans-serif;
+        background: #06070b;
       }
-      
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background: #05070b;
-        color: #f4f4f5;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        overflow-x: hidden;
-      }
-
-      #root {
-        min-height: 100vh;
-        min-height: 100dvh;
-      }
-
-      /* Telegram Mini App safe areas */
-      @supports (padding: max(0px)) {
-        body {
-          padding-left: max(0px, env(safe-area-inset-left));
-          padding-right: max(0px, env(safe-area-inset-right));
-        }
-      }
+      html, body, #root { margin: 0; min-height: 100%; background: #06070b; }
+      body { overflow-x: hidden; }
     </style>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./main.jsx"></script>
+    <script type="module" src="/admin/main.jsx"></script>
   </body>
 </html>
