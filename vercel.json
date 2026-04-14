@@ -34,10 +34,5 @@
   ],
   "env": {
     "VITE_SUPABASE_URL": "https://tlzxcghfvgazkzaoawtj.supabase.co"
-  },
-  "build": {
-    "env": {
-      "SUPABASE_SERVICE_KEY": "@supabase_service_key"
-    }
   }
 }
