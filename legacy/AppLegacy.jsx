@@ -1151,9 +1151,9 @@ export default function App() {
       const left = Number(safe?.left || 0);
       const stableHeight = Number(TG?.viewportStableHeight || TG?.viewportHeight || window.innerHeight || document.documentElement.clientHeight || 0);
       const viewportWidth = Number(window.innerWidth || document.documentElement.clientWidth || 0);
-      const sideGap = Math.max(6, Math.min(10, viewportWidth * 0.022));
-      const barGap = Math.max(3, Math.min(6, viewportWidth * 0.014));
-      const designWidth = 456;
+      const sideGap = Math.max(2, Math.min(4, viewportWidth * 0.012));
+      const barGap = Math.max(1, Math.min(2, viewportWidth * 0.008));
+      const designWidth = 420;
       const availableWidth = Math.max(320, viewportWidth - left - right - sideGap * 2);
       const shellScale = Math.min(1, availableWidth / designWidth);
 
@@ -2426,7 +2426,7 @@ export default function App() {
       }}
     >
       <style>{`
-        :root{--font-body:"Inter",system-ui,sans-serif;--font-display:"Gilroy-Bold","Gilroy-Heavy","Inter",system-ui,sans-serif;--font-button:"Gilroy-Medium","Gilroy-Bold","Inter",system-ui,sans-serif;--font-number:"Gilroy-Heavy","Gilroy-Bold","Inter",system-ui,sans-serif;--font-micro:"Inter",system-ui,sans-serif;--tg-side-gap:clamp(6px,2.2vw,10px);--tg-bar-gap:clamp(3px,1.4vw,6px);--tg-shell-width:456px;--tg-shell-scale:1;}
+        :root{--font-body:"Inter",system-ui,sans-serif;--font-display:"Gilroy-Bold","Gilroy-Heavy","Inter",system-ui,sans-serif;--font-button:"Gilroy-Medium","Gilroy-Bold","Inter",system-ui,sans-serif;--font-number:"Gilroy-Heavy","Gilroy-Bold","Inter",system-ui,sans-serif;--font-micro:"Inter",system-ui,sans-serif;--tg-side-gap:clamp(2px,1.2vw,4px);--tg-bar-gap:clamp(1px,.8vw,2px);--tg-shell-width:420px;--tg-shell-scale:1;}
         *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;}
         ::-webkit-scrollbar{width:0;height:0;}*{scrollbar-width:none;}
         html{scroll-behavior:smooth;overscroll-behavior:none;overflow:hidden;overflow-x:clip;height:100%;width:100%;max-width:100%;background:#030408;}
