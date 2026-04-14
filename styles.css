@@ -1,0 +1,108 @@
+﻿:root {
+  --font-text: 'Inter', 'Segoe UI', sans-serif;
+  --text-base: 16px;
+  --text-primary: rgba(244, 244, 245, 0.96);
+  --color-bg-primary: #05070b;
+  --accent-500: #6366f1;
+  --glass-light: rgba(255, 255, 255, 0.04);
+  --glass-strong: rgba(255, 255, 255, 0.14);
+  --border-medium: rgba(255, 255, 255, 0.2);
+  --radius-full: 999px;
+  --radius-md: 16px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: var(--font-text);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--color-bg-primary);
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(99, 102, 241, 0.28);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-500);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--glass-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--glass-strong);
+  border-radius: var(--radius-full);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

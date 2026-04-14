@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import * as adminApi from '../src/core/supabase/adminApi'
+import * as adminApi from './adminApi'
 import { 
   getDefaultFormData, 
   getContentConfig, 
@@ -8,7 +8,7 @@ import {
   labelStyle,
   inputStyle,
   textareaStyle,
-} from './helpers'
+} from './helpers.jsx'
 
 // ==========================================
 // TELEGRAM WEBAPP INTEGRATION
@@ -541,7 +541,7 @@ export default function AdminApp() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', minHeight: '100dvh', background: theme.bgGradient, color: theme.text }}>
+    <div style={{ minHeight: '100dvh', background: theme.bgGradient, color: theme.text }}>
       <style>{`
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -1120,3 +1120,4 @@ function ClientsList({ users, showToast, loadData }) {
     </Card>
   )
 }
+
