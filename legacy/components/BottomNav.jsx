@@ -306,9 +306,10 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
         style={{
           position: "fixed",
           bottom: 0,
-          left: "50%",
+          left: "calc(50% + (var(--tg-safe-left, 0px) - var(--tg-safe-right, 0px)) / 2)",
           transform: "translateX(-50%)",
-          width: "min(480px, 100%)",
+          width: "min(480px, calc(100vw - var(--tg-safe-left, 0px) - var(--tg-safe-right, 0px)))",
+          maxWidth: "calc(100vw - var(--tg-safe-left, 0px) - var(--tg-safe-right, 0px))",
           zIndex: 200,
           background: `linear-gradient(180deg, ${th.nav} 0%, ${th.surface} 100%)`,
           border: `1px solid ${th.border}`,
@@ -321,6 +322,7 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
           WebkitBackdropFilter: "blur(28px)",
           boxShadow: `0 -2px 0 ${th.border}, 0 -24px 48px rgba(3,4,8,0.6), inset 0 2px 0 rgba(255,255,255,.06)`,
           overflow: "visible",
+          boxSizing: "border-box",
         }}
       >
         {/* subtle top indigo shimmer */}

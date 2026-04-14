@@ -1139,6 +1139,46 @@ export default function App() {
 
   useEffect(() => { tgReady(); }, []);
 
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const applyTelegramViewport = () => {
+      const root = document.documentElement;
+      const safe = TG?.contentSafeAreaInset || TG?.contentSafeAreaInsets || TG?.safeAreaInset || TG?.safeAreaInsets || {};
+      const top = Number(safe?.top || 0);
+      const right = Number(safe?.right || 0);
+      const bottom = Number(safe?.bottom || 0);
+      const left = Number(safe?.left || 0);
+      const stableHeight = Number(TG?.viewportStableHeight || TG?.viewportHeight || window.innerHeight || document.documentElement.clientHeight || 0);
+
+      root.style.setProperty("--tg-safe-top", `${top}px`);
+      root.style.setProperty("--tg-safe-right", `${right}px`);
+      root.style.setProperty("--tg-safe-bottom", `${bottom}px`);
+      root.style.setProperty("--tg-safe-left", `${left}px`);
+      root.style.setProperty("--tg-app-height", `${stableHeight || window.innerHeight}px`);
+    };
+
+    const syncViewport = () => window.requestAnimationFrame(applyTelegramViewport);
+
+    applyTelegramViewport();
+    window.addEventListener("resize", syncViewport);
+
+    try {
+      TG?.onEvent?.("viewportChanged", syncViewport);
+      TG?.onEvent?.("safeAreaChanged", syncViewport);
+      TG?.onEvent?.("contentSafeAreaChanged", syncViewport);
+    } catch {}
+
+    return () => {
+      window.removeEventListener("resize", syncViewport);
+      try {
+        TG?.offEvent?.("viewportChanged", syncViewport);
+        TG?.offEvent?.("safeAreaChanged", syncViewport);
+        TG?.offEvent?.("contentSafeAreaChanged", syncViewport);
+      } catch {}
+    };
+  }, []);
+
   useEffect(() => {
     fetch("/api/public-content")
       .then((response) => response.json())
@@ -2358,13 +2398,30 @@ export default function App() {
   }
 
   return (
-    <div style={{ height: "100dvh", background: "transparent", fontFamily: "var(--font-body)", display: "flex", justifyContent: "center", position: "relative", overscrollBehavior: "none" }}>
+    <div
+      style={{
+        height: "var(--tg-app-height, 100dvh)",
+        minHeight: "var(--tg-app-height, 100dvh)",
+        width: "100%",
+        maxWidth: "100vw",
+        paddingLeft: "var(--tg-safe-left, 0px)",
+        paddingRight: "var(--tg-safe-right, 0px)",
+        background: "transparent",
+        fontFamily: "var(--font-body)",
+        display: "flex",
+        justifyContent: "center",
+        position: "relative",
+        overscrollBehavior: "none",
+        overflowX: "clip",
+      }}
+    >
       <style>{`
         :root{--font-body:"Inter",system-ui,sans-serif;--font-display:"Gilroy-Bold","Gilroy-Heavy","Inter",system-ui,sans-serif;--font-button:"Gilroy-Medium","Gilroy-Bold","Inter",system-ui,sans-serif;--font-number:"Gilroy-Heavy","Gilroy-Bold","Inter",system-ui,sans-serif;--font-micro:"Inter",system-ui,sans-serif;}
         *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;}
         ::-webkit-scrollbar{width:0;height:0;}*{scrollbar-width:none;}
-        html{scroll-behavior:smooth;overscroll-behavior:none;overflow:hidden;height:100%;background:#030408;}
-        body{margin:0;padding:0;overflow:hidden;height:100%;overscroll-behavior-y:none;-webkit-overflow-scrolling:touch;font-family:var(--font-body);background:#030408;color:rgba(224,231,255,.95);}
+        html{scroll-behavior:smooth;overscroll-behavior:none;overflow:hidden;overflow-x:clip;height:100%;width:100%;max-width:100%;background:#030408;}
+        body{margin:0;padding:0;overflow:hidden;overflow-x:clip;height:100%;width:100%;max-width:100%;overscroll-behavior-y:none;-webkit-overflow-scrolling:touch;font-family:var(--font-body);background:#030408;color:rgba(224,231,255,.95);}
+        #root{height:100%;width:100%;max-width:100%;overflow:hidden;overflow-x:clip;}
         button,[role="button"]{font-family:var(--font-button);font-weight:600;letter-spacing:-.01em;touch-action:manipulation;}
         input,textarea,select{font-family:var(--font-body);}
         .type-display{font-family:var(--font-display);font-weight:700;letter-spacing:-.03em;}
@@ -2521,9 +2578,9 @@ export default function App() {
       {showLevelUp && <LevelUpNotification />}
       <SideDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} th={th} t={t} theme={theme} setTheme={setTheme} lang={lang} setLang={setLang} soundOn={soundOn} setSoundOn={setSoundOn} volume={volume} setVolume={setVolume} streak={streak} sfx={SFX} getLevel={getLevel} getLevelProgress={getLevelProgress} tgUser={tgUser} />
 
-      <div style={{ width: "100%", maxWidth: 480, display: "flex", flexDirection: "column", height: "100dvh", position: "relative", zIndex: 1 }}>
+      <div style={{ width: "100%", maxWidth: 480, display: "flex", flexDirection: "column", height: "var(--tg-app-height, 100dvh)", position: "relative", zIndex: 1, overflowX: "hidden" }}>
         {/* Header */}
-        <header style={{ flexShrink: 0, position: "sticky", top: 0, zIndex: 100, padding: "12px 12px 0", background: "transparent" }}>
+        <header style={{ flexShrink: 0, position: "sticky", top: 0, zIndex: 100, padding: "calc(12px + var(--tg-safe-top, 0px)) 12px 0", background: "transparent" }}>
           <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: 58, padding: "12px 14px", borderRadius: 24, background: `linear-gradient(180deg, ${th.nav} 0%, ${th.surface} 100%)`, border: `1px solid ${th.border}`, boxShadow: th.shadow, backdropFilter: "blur(28px)", overflow: "hidden" }}>
             <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 14% 18%, rgba(255,255,255,.09) 0 1px, transparent 1.8px), radial-gradient(circle at 84% 72%, rgba(255,255,255,.07) 0 1px, transparent 1.8px), radial-gradient(circle at 72% 24%, rgba(255,255,255,.05) 0 .8px, transparent 1.6px), linear-gradient(135deg, rgba(255,255,255,.03) 0%, transparent 45%, rgba(255,255,255,.02) 100%)", opacity: 0.9, pointerEvents: "none" }} />
             <div style={{ position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.95, background: "radial-gradient(circle at 8% 72%, rgba(255,255,255,.08) 0 1px, transparent 1.9px), radial-gradient(circle at 28% 34%, rgba(255,255,255,.05) 0 .9px, transparent 1.7px), radial-gradient(circle at 58% 18%, rgba(255,255,255,.05) 0 .9px, transparent 1.6px), radial-gradient(circle at 92% 58%, rgba(255,255,255,.08) 0 1.05px, transparent 1.9px), linear-gradient(122deg, transparent 16%, rgba(255,255,255,.08) 18%, transparent 21%), radial-gradient(ellipse at 70% -30%, rgba(255,255,255,.06) 0%, transparent 58%), radial-gradient(ellipse at -10% 100%, rgba(255,255,255,.04) 0%, transparent 52%)" }} />
@@ -2633,7 +2690,7 @@ export default function App() {
           </div>
         )}
 
-        <main ref={mainRef} style={{ flex: 1, padding: "14px 16px 100px", overflowY: "auto", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}>
+        <main ref={mainRef} style={{ flex: 1, padding: "14px 16px calc(100px + var(--tg-safe-bottom, 0px))", overflowY: "auto", overflowX: "hidden", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}>
           <div
             key={tab}
             style={{
