@@ -1,0 +1,226 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * ENHANCED DESIGN TOKENS — Extended Token System
+ * Additional tokens for premium effects: gradients, glows, particles
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  /* ═══════════════════════════════════════════════════════════════════════
+     GRADIENT TOKENS — Premium Gradients
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  /* Primary Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--accent-500) 0%, var(--secondary-500) 100%);
+  --gradient-primary-hover: linear-gradient(135deg, var(--accent-400) 0%, var(--secondary-400) 100%);
+  --gradient-primary-vertical: linear-gradient(180deg, var(--accent-500) 0%, var(--secondary-500) 100%);
+
+  /* Cosmic Gradients */
+  --gradient-cosmic: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+  --gradient-cosmic-dark: linear-gradient(135deg, #4338ca 0%, #6d28d9 50%, #be185d 100%);
+  --gradient-nebula: radial-gradient(ellipse at center, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+
+  /* Accent Gradients */
+  --gradient-cyan: linear-gradient(135deg, #22d3ee 0%, #0891b2 100%);
+  --gradient-violet: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+  --gradient-pink: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+  --gradient-gold: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+
+  /* Semantic Gradients */
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --gradient-error: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  --gradient-info: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+
+  /* Glass Gradients */
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  --gradient-glass-strong: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+
+  /* Mesh Gradients */
+  --gradient-mesh-1: radial-gradient(ellipse at 20% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+  --gradient-mesh-2: radial-gradient(ellipse at 80% 100%, rgba(139, 92, 246, 0.12) 0%, transparent 50%);
+  --gradient-mesh-3: radial-gradient(ellipse at 50% 50%, rgba(34, 211, 238, 0.08) 0%, transparent 60%);
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     GLOW TOKENS — Premium Glow Effects
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  /* Accent Glows */
+  --glow-primary: 0 0 20px rgba(99, 102, 241, 0.4), 0 0 40px rgba(99, 102, 241, 0.2);
+  --glow-primary-strong: 0 0 30px rgba(99, 102, 241, 0.6), 0 0 60px rgba(99, 102, 241, 0.3);
+  --glow-secondary: 0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.2);
+  --glow-cyan: 0 0 20px rgba(34, 211, 238, 0.4), 0 0 40px rgba(34, 211, 238, 0.2);
+
+  /* Semantic Glows */
+  --glow-success: 0 0 20px rgba(16, 185, 129, 0.4), 0 0 40px rgba(16, 185, 129, 0.2);
+  --glow-warning: 0 0 20px rgba(245, 158, 11, 0.4), 0 0 40px rgba(245, 158, 11, 0.2);
+  --glow-error: 0 0 20px rgba(239, 68, 68, 0.4), 0 0 40px rgba(239, 68, 68, 0.2);
+
+  /* Soft Glows */
+  --glow-soft: 0 0 15px rgba(255, 255, 255, 0.1);
+  --glow-soft-strong: 0 0 25px rgba(255, 255, 255, 0.15);
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     PARTICLE TOKENS — Particle Effects
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  --particle-size-sm: 2px;
+  --particle-size-md: 4px;
+  --particle-size-lg: 6px;
+  --particle-opacity: 0.6;
+  --particle-speed-slow: 3s;
+  --particle-speed-normal: 2s;
+  --particle-speed-fast: 1s;
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     BACKDROP TOKENS — Enhanced Backdrop Effects
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  --backdrop-blur-subtle: blur(4px);
+  --backdrop-blur-light: blur(8px);
+  --backdrop-blur-medium: blur(12px);
+  --backdrop-blur-strong: blur(16px);
+  --backdrop-blur-intense: blur(24px);
+
+  --backdrop-brightness-dim: brightness(0.8);
+  --backdrop-brightness-normal: brightness(1);
+  --backdrop-brightness-bright: brightness(1.2);
+
+  --backdrop-saturate-low: saturate(0.8);
+  --backdrop-saturate-normal: saturate(1);
+  --backdrop-saturate-high: saturate(1.5);
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     TRANSFORM TOKENS — 3D Transforms
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  --transform-lift-sm: translateY(-2px);
+  --transform-lift-md: translateY(-4px);
+  --transform-lift-lg: translateY(-8px);
+
+  --transform-scale-sm: scale(1.02);
+  --transform-scale-md: scale(1.05);
+  --transform-scale-lg: scale(1.1);
+
+  --transform-rotate-sm: rotate(2deg);
+  --transform-rotate-md: rotate(5deg);
+  --transform-rotate-lg: rotate(10deg);
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     FILTER TOKENS — Image Filters
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  --filter-grayscale: grayscale(100%);
+  --filter-sepia: sepia(100%);
+  --filter-invert: invert(100%);
+  --filter-hue-rotate: hue-rotate(180deg);
+
+  --filter-brightness-dim: brightness(0.7);
+  --filter-brightness-normal: brightness(1);
+  --filter-brightness-bright: brightness(1.3);
+
+  --filter-contrast-low: contrast(0.8);
+  --filter-contrast-normal: contrast(1);
+  --filter-contrast-high: contrast(1.2);
+
+  --filter-saturate-low: saturate(0.5);
+  --filter-saturate-normal: saturate(1);
+  --filter-saturate-high: saturate(1.5);
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     SOUND TOKENS — Audio Feedback
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  --sound-volume-low: 0.3;
+  --sound-volume-medium: 0.6;
+  --sound-volume-high: 0.9;
+
+  --sound-duration-short: 0.1s;
+  --sound-duration-medium: 0.2s;
+  --sound-duration-long: 0.3s;
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     HAPTIC TOKENS — Haptic Feedback
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  --haptic-light: light;
+  --haptic-medium: medium;
+  --haptic-heavy: heavy;
+  --haptic-rigid: rigid;
+  --haptic-soft: soft;
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     GRID TOKENS — Layout Grid
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  --grid-columns-2: repeat(2, 1fr);
+  --grid-columns-3: repeat(3, 1fr);
+  --grid-columns-4: repeat(4, 1fr);
+  --grid-columns-auto-sm: repeat(auto-fill, minmax(120px, 1fr));
+  --grid-columns-auto-md: repeat(auto-fill, minmax(160px, 1fr));
+  --grid-columns-auto-lg: repeat(auto-fill, minmax(240px, 1fr));
+
+  --grid-gap-sm: var(--space-2);
+  --grid-gap-md: var(--space-3);
+  --grid-gap-lg: var(--space-4);
+  --grid-gap-xl: var(--space-6);
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     ASPECT RATIO TOKENS
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  --aspect-square: 1 / 1;
+  --aspect-video: 16 / 9;
+  --aspect-portrait: 3 / 4;
+  --aspect-landscape: 4 / 3;
+  --aspect-ultrawide: 21 / 9;
+  --aspect-golden: 1.618 / 1;
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     CURSOR TOKENS
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  --cursor-pointer: pointer;
+  --cursor-grab: grab;
+  --cursor-grabbing: grabbing;
+  --cursor-not-allowed: not-allowed;
+  --cursor-zoom-in: zoom-in;
+  --cursor-zoom-out: zoom-out;
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     SCROLLBAR TOKENS
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  --scrollbar-width: 8px;
+  --scrollbar-track: var(--glass-light);
+  --scrollbar-thumb: var(--glass-strong);
+  --scrollbar-thumb-hover: var(--border-medium);
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     SELECTION TOKENS
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  --selection-bg: rgba(99, 102, 241, 0.3);
+  --selection-color: var(--text-primary);
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     SKELETON TOKENS
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  --skeleton-base: var(--glass-light);
+  --skeleton-highlight: var(--glass-medium);
+  --skeleton-animation: shimmerSkeleton 2s infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME VARIANTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme='graphite'] {
+  --gradient-primary: linear-gradient(135deg, #ffffff 0%, #e5e7eb 100%);
+  --glow-primary: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 40px rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='deepspace'] {
+  /* Default theme - already defined above */
+}

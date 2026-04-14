@@ -1,0 +1,48 @@
+/**
+ * LOADING SPINNER STYLES
+ */
+
+.loading-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner__circle {
+  border-radius: 50%;
+  border: 2px solid var(--glass-strong);
+  border-top-color: var(--accent-500);
+  animation: loading-spinner-spin 0.8s linear infinite;
+}
+
+/* Sizes */
+.loading-spinner--sm .loading-spinner__circle {
+  width: 16px;
+  height: 16px;
+}
+
+.loading-spinner--md .loading-spinner__circle {
+  width: 24px;
+  height: 24px;
+  border-width: 3px;
+}
+
+.loading-spinner--lg .loading-spinner__circle {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+}
+
+@keyframes loading-spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner__circle {
+    animation: none;
+    border-top-color: var(--accent-500);
+    opacity: 0.5;
+  }
+}

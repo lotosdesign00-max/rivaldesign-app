@@ -1,0 +1,6 @@
+﻿PLACEHOLDER FOR VIDEO
+Course: Photoshop с нуля
+Course ID: c1
+Lesson: 10
+
+Delete this file and put your own video here with the exact name: lesson-10.mp4

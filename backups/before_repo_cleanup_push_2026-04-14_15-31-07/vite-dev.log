@@ -1,0 +1,54 @@
+
+> designer-miniapp@1.0.0 dev
+> vite --host 0.0.0.0
+
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m317[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://26.193.168.7:[1m5173[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.0.102:[1m5173[22m/[39m
+[2m13:02:21[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:05:51[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:06:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:06:19[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:06:34[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:08:48[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:12:38[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:12:49[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:12:57[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:13:04[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:13:14[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:13:23[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:21:03[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ProfileTab.jsx[22m
+[2m13:21:03[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ClientHub.jsx[22m
+[2m13:23:07[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:25:38[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:29:19[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:31:58[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m13:33:00[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ProfileTab.jsx[22m
+[2m13:33:00[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ClientHub.jsx[22m
+[2m13:43:21[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ClientHub.jsx[22m
+[2m13:47:02[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ClientHub.jsx[22m
+[2m13:47:02[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ClientHub.jsx[22m
+[2m13:47:50[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ClientHub.jsx[22m
+[2m13:48:48[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ClientHub.jsx[22m
+[2m13:49:41[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ClientHub.jsx[22m
+[2m13:53:11[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mindex.html[22m
+[2m13:55:32[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ClientHub.jsx[22m
+[2m13:55:32[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ClientHub.jsx[22m
+[2m14:07:09[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ProfileTab.jsx[22m
+[2m14:07:09[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ProfileTab.jsx[22m
+[2m14:08:10[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/ProfileTab.jsx[22m
+[2m14:08:30[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m14:09:03[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/BottomNav.jsx[22m
+[2m14:10:11[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/BottomNav.jsx[22m
+[2m14:11:32[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/BottomNav.jsx[22m
+[2m14:11:50[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/BottomNav.jsx[22m
+[2m14:13:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m14:13:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m14:14:56[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m14:15:51[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m14:15:51[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m14:16:03[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/AppLegacy.jsx[22m
+[2m14:16:17[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/legacy/components/BottomNav.jsx[22m

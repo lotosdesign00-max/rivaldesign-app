@@ -1,0 +1,1395 @@
+{
+  "langs": {
+    "ru": {
+      "flag": "рџ‡·рџ‡є",
+      "name": "Р СѓСЃСЃРєРёР№",
+      "cur": "в‚Ѕ",
+      "code": "RUB",
+      "rate": 95
+    },
+    "en": {
+      "flag": "рџ‡єрџ‡ё",
+      "name": "English",
+      "cur": "$",
+      "code": "USD",
+      "rate": 1
+    },
+    "ua": {
+      "flag": "рџ‡єрџ‡¦",
+      "name": "РЈРєСЂР°С—РЅСЃСЊРєР°",
+      "cur": "в‚ґ",
+      "code": "UAH",
+      "rate": 40
+    },
+    "kz": {
+      "flag": "рџ‡°рџ‡ї",
+      "name": "ТљР°Р·Р°Т›С€Р°",
+      "cur": "в‚ё",
+      "code": "KZT",
+      "rate": 450
+    },
+    "by": {
+      "flag": "рџ‡§рџ‡ѕ",
+      "name": "Р‘РµР»Р°СЂСѓСЃРєР°СЏ",
+      "cur": "Br",
+      "code": "BYN",
+      "rate": 3.2
+    }
+  },
+  "gallery": {
+    "ru": [
+      {
+        "id": "a1",
+        "cat": "РђРІР°С‚Р°СЂРєРё",
+        "title": "РљРёР±РµСЂРїР°РЅРє Р°РІР°С‚Р°СЂ",
+        "desc": "РќРµРѕРЅРѕРІРѕРµ СЃРІРµС‡РµРЅРёРµ Рё sci-fi СЌСЃС‚РµС‚РёРєР°",
+        "img": "https://picsum.photos/seed/rsa1/1080/1280",
+        "tags": [
+          "neon",
+          "cyber",
+          "scifi"
+        ],
+        "popular": true,
+        "views": 1240
+      },
+      {
+        "id": "a2",
+        "cat": "РђРІР°С‚Р°СЂРєРё",
+        "title": "РњРёРЅРёРјР°Р» Р°РІР°С‚Р°СЂ",
+        "desc": "Р§РёСЃС‚С‹Р№ РіРµРѕРјРµС‚СЂРёС‡РµСЃРєРёР№ РјРёРЅРёРјР°Р»РёР·Рј",
+        "img": "https://picsum.photos/seed/rsa2/1080/1280",
+        "tags": [
+          "minimal",
+          "geo"
+        ],
+        "popular": false,
+        "views": 560
+      },
+      {
+        "id": "a3",
+        "cat": "РђРІР°С‚Р°СЂРєРё",
+        "title": "РўС‘РјРЅС‹Р№ Р°РІР°С‚Р°СЂ",
+        "desc": "РњСЂР°С‡РЅС‹Р№ Р°С‚РјРѕСЃС„РµСЂРЅС‹Р№ СЃС‚РёР»СЊ",
+        "img": "https://picsum.photos/seed/rsa3/1080/1280",
+        "tags": [
+          "dark",
+          "moody"
+        ],
+        "popular": true,
+        "views": 980
+      },
+      {
+        "id": "a4",
+        "cat": "РђРІР°С‚Р°СЂРєРё",
+        "title": "Р“СЂР°РґРёРµРЅС‚ Р°РІР°С‚Р°СЂ",
+        "desc": "РџР»Р°РІРЅС‹Рµ РїРµСЂРµС…РѕРґС‹, РјСЏРіРєРёРµ С‚РѕРЅР°",
+        "img": "https://picsum.photos/seed/rsa4/1080/1280",
+        "tags": [
+          "gradient",
+          "soft"
+        ],
+        "popular": false,
+        "views": 430
+      },
+      {
+        "id": "a5",
+        "cat": "РђРІР°С‚Р°СЂРєРё",
+        "title": "Anime Р°РІР°С‚Р°СЂ",
+        "desc": "РР»Р»СЋСЃС‚СЂР°С†РёСЏ РІ Р°РЅРёРјРµ-СЃС‚РёР»Рµ",
+        "img": "https://picsum.photos/seed/rsa5/1080/1280",
+        "tags": [
+          "anime",
+          "illustration"
+        ],
+        "popular": true,
+        "views": 2100
+      },
+      {
+        "id": "a6",
+        "cat": "РђРІР°С‚Р°СЂРєРё",
+        "title": "Pixel Р°РІР°С‚Р°СЂ",
+        "desc": "РџРёРєСЃРµР»СЊРЅРѕРµ СЂРµС‚СЂРѕ РёСЃРєСѓСЃСЃС‚РІРѕ",
+        "img": "https://picsum.photos/seed/rsa6/1080/1280",
+        "tags": [
+          "pixel",
+          "retro"
+        ],
+        "popular": false,
+        "views": 310
+      },
+      {
+        "id": "p1",
+        "cat": "РџСЂРµРІСЊСЋ",
+        "title": "YouTube РїСЂРµРІСЊСЋ Gaming",
+        "desc": "Р­РїРёС‡РЅС‹Р№ РіРµР№РјРµСЂСЃРєРёР№ РґРёР·Р°Р№РЅ",
+        "img": "https://picsum.photos/seed/rsp1/1080/1280",
+        "tags": [
+          "youtube",
+          "game"
+        ],
+        "popular": true,
+        "views": 3400
+      },
+      {
+        "id": "p2",
+        "cat": "РџСЂРµРІСЊСЋ",
+        "title": "Twitch РїСЂРµРІСЊСЋ",
+        "desc": "РЎС‚СЂРёРјРµСЂСЃРєРёР№ РґРёР·Р°Р№РЅ СЃ РёРЅРґРёРІРёРґСѓР°Р»СЊРЅРѕСЃС‚СЊСЋ",
+        "img": "https://picsum.photos/seed/rsp2/1080/1280",
+        "tags": [
+          "twitch",
+          "stream"
+        ],
+        "popular": false,
+        "views": 780
+      },
+      {
+        "id": "p3",
+        "cat": "РџСЂРµРІСЊСЋ",
+        "title": "Viral РїСЂРµРІСЊСЋ",
+        "desc": "Р—Р°СЃС‚Р°РІРёС‚ РєР»РёРєР°С‚СЊ РєР°Р¶РґРѕРіРѕ",
+        "img": "/images/podborka av 4.png",
+        "tags": [
+          "viral",
+          "bright"
+        ],
+        "popular": true,
+        "views": 5600
+      },
+      {
+        "id": "p4",
+        "cat": "РџСЂРµРІСЊСЋ",
+        "title": "РњРёРЅРёРјР°Р» РїСЂРµРІСЊСЋ",
+        "desc": "Р­Р»РµРіР°РЅС‚РЅР°СЏ Р»Р°РєРѕРЅРёС‡РЅРѕСЃС‚СЊ",
+        "img": "https://picsum.photos/seed/rsp4/1080/1280",
+        "tags": [
+          "minimal",
+          "clean"
+        ],
+        "popular": false,
+        "views": 290
+      },
+      {
+        "id": "p5",
+        "cat": "РџСЂРµРІСЊСЋ",
+        "title": "Dark РїСЂРµРІСЊСЋ",
+        "desc": "РўС‘РјРЅР°СЏ С‚РµРјР°, РјР°РєСЃРёРјСѓРј Р°С‚РјРѕСЃС„РµСЂС‹",
+        "img": "https://picsum.photos/seed/rsp5/1080/1280",
+        "tags": [
+          "dark",
+          "cinematic"
+        ],
+        "popular": true,
+        "views": 1870
+      },
+      {
+        "id": "b1",
+        "cat": "Р‘Р°РЅРЅРµСЂС‹",
+        "title": "Twitch Р±Р°РЅРЅРµСЂ PRO",
+        "desc": "РџСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅР°СЏ С€Р°РїРєР° РєР°РЅР°Р»Р°",
+        "img": "https://picsum.photos/seed/rsb1/1080/1280",
+        "tags": [
+          "twitch",
+          "channel"
+        ],
+        "popular": true,
+        "views": 2200
+      },
+      {
+        "id": "b2",
+        "cat": "Р‘Р°РЅРЅРµСЂС‹",
+        "title": "Discord Р±Р°РЅРЅРµСЂ",
+        "desc": "РЈРЅРёРєР°Р»СЊРЅР°СЏ СЃРµСЂРІРµСЂРЅР°СЏ С€Р°РїРєР°",
+        "img": "https://picsum.photos/seed/rsb2/1080/1280",
+        "tags": [
+          "discord"
+        ],
+        "popular": false,
+        "views": 650
+      },
+      {
+        "id": "b3",
+        "cat": "Р‘Р°РЅРЅРµСЂС‹",
+        "title": "YouTube С€Р°РїРєР° 4K",
+        "desc": "Р‘РµР·СѓРїСЂРµС‡РЅС‹Р№ РєР°РЅР°Р»СЊРЅС‹Р№ Р°СЂС‚",
+        "img": "https://picsum.photos/seed/rsb3/1080/1280",
+        "tags": [
+          "youtube",
+          "4k"
+        ],
+        "popular": true,
+        "views": 3100
+      },
+      {
+        "id": "b4",
+        "cat": "Р‘Р°РЅРЅРµСЂС‹",
+        "title": "VK/TikTok Р±Р°РЅРЅРµСЂ",
+        "desc": "Р”Р»СЏ СЃРѕС†СЃРµС‚РµР№ РЅРѕРІРѕРіРѕ РїРѕРєРѕР»РµРЅРёСЏ",
+        "img": "https://picsum.photos/seed/rsb4/1080/1280",
+        "tags": [
+          "vk",
+          "tiktok"
+        ],
+        "popular": false,
+        "views": 410
+      },
+      {
+        "id": "l1",
+        "cat": "Р›РѕРіРѕС‚РёРїС‹",
+        "title": "Gaming Р»РѕРіРѕ eSports",
+        "desc": "РџРѕР±РµРґРЅС‹Рµ СЃРёРјРІРѕР»С‹ РґР»СЏ РєРѕРјР°РЅРґ",
+        "img": "https://picsum.photos/seed/rsl1/1080/1280",
+        "tags": [
+          "game",
+          "esports",
+          "logo"
+        ],
+        "popular": true,
+        "views": 4200
+      },
+      {
+        "id": "l2",
+        "cat": "Р›РѕРіРѕС‚РёРїС‹",
+        "title": "РњРёРЅРёРјР°Р» Р»РѕРіРѕ",
+        "desc": "РЎРѕРІСЂРµРјРµРЅРЅС‹Р№ РіРµРѕРјРµС‚СЂРёС‡РµСЃРєРёР№ Р±СЂРµРЅРґ",
+        "img": "https://picsum.photos/seed/rsl2/1080/1280",
+        "tags": [
+          "minimal",
+          "geo",
+          "logo"
+        ],
+        "popular": false,
+        "views": 740
+      },
+      {
+        "id": "l3",
+        "cat": "Р›РѕРіРѕС‚РёРїС‹",
+        "title": "РќРµРѕРЅ Р»РѕРіРѕ",
+        "desc": "РЎРІРµС‚СЏС‰РёР№СЃСЏ Р·РЅР°Рє РІ РЅРѕС‡Рё",
+        "img": "https://picsum.photos/seed/rsl3/1080/1280",
+        "tags": [
+          "neon",
+          "glow",
+          "logo"
+        ],
+        "popular": true,
+        "views": 1950
+      },
+      {
+        "id": "l4",
+        "cat": "Р›РѕРіРѕС‚РёРїС‹",
+        "title": "3D Р»РѕРіРѕ PRO",
+        "desc": "РћР±СЉС‘РјРЅС‹Р№ РґРёР·Р°Р№РЅ РЅРѕРІРѕРіРѕ СѓСЂРѕРІРЅСЏ",
+        "img": "https://picsum.photos/seed/rsl4/1080/1280",
+        "tags": [
+          "3d",
+          "volume",
+          "logo"
+        ],
+        "popular": false,
+        "views": 580
+      },
+      {
+        "id": "l5",
+        "cat": "Р›РѕРіРѕС‚РёРїС‹",
+        "title": "Mascot Р»РѕРіРѕ",
+        "desc": "РџРµСЂСЃРѕРЅР°Р¶-РјР°СЃРєРѕС‚ РґР»СЏ Р±СЂРµРЅРґР°",
+        "img": "https://picsum.photos/seed/rsl5/1080/1280",
+        "tags": [
+          "mascot",
+          "character",
+          "logo"
+        ],
+        "popular": true,
+        "views": 2800
+      }
+    ],
+    "en": [
+      {
+        "id": "a1",
+        "cat": "Avatars",
+        "title": "Cyberpunk Avatar",
+        "desc": "Neon glow sci-fi aesthetic",
+        "img": "https://picsum.photos/seed/rsa1/1080/1280",
+        "tags": [
+          "neon",
+          "cyber",
+          "scifi"
+        ],
+        "popular": true,
+        "views": 1240
+      },
+      {
+        "id": "a2",
+        "cat": "Avatars",
+        "title": "Minimal Avatar",
+        "desc": "Clean geometric minimalism",
+        "img": "https://picsum.photos/seed/rsa2/1080/1280",
+        "tags": [
+          "minimal",
+          "geo"
+        ],
+        "popular": false,
+        "views": 560
+      },
+      {
+        "id": "a3",
+        "cat": "Avatars",
+        "title": "Dark Avatar",
+        "desc": "Moody atmospheric style",
+        "img": "https://picsum.photos/seed/rsa3/1080/1280",
+        "tags": [
+          "dark",
+          "moody"
+        ],
+        "popular": true,
+        "views": 980
+      },
+      {
+        "id": "a4",
+        "cat": "Avatars",
+        "title": "Gradient Avatar",
+        "desc": "Smooth pastel transitions",
+        "img": "https://picsum.photos/seed/rsa4/1080/1280",
+        "tags": [
+          "gradient",
+          "soft"
+        ],
+        "popular": false,
+        "views": 430
+      },
+      {
+        "id": "a5",
+        "cat": "Avatars",
+        "title": "Anime Avatar",
+        "desc": "Anime illustration style",
+        "img": "https://picsum.photos/seed/rsa5/1080/1280",
+        "tags": [
+          "anime",
+          "illustration"
+        ],
+        "popular": true,
+        "views": 2100
+      },
+      {
+        "id": "a6",
+        "cat": "Avatars",
+        "title": "Pixel Avatar",
+        "desc": "Retro pixel art",
+        "img": "https://picsum.photos/seed/rsa6/1080/1280",
+        "tags": [
+          "pixel",
+          "retro"
+        ],
+        "popular": false,
+        "views": 310
+      },
+      {
+        "id": "p1",
+        "cat": "Previews",
+        "title": "YouTube Gaming Preview",
+        "desc": "Epic gamer thumbnail design",
+        "img": "https://picsum.photos/seed/rsp1/1080/1280",
+        "tags": [
+          "youtube",
+          "game"
+        ],
+        "popular": true,
+        "views": 3400
+      },
+      {
+        "id": "p2",
+        "cat": "Previews",
+        "title": "Twitch Preview",
+        "desc": "Streamer-focused unique design",
+        "img": "https://picsum.photos/seed/rsp2/1080/1280",
+        "tags": [
+          "twitch"
+        ],
+        "popular": false,
+        "views": 780
+      },
+      {
+        "id": "p3",
+        "cat": "Previews",
+        "title": "Viral Preview",
+        "desc": "Impossible not to click",
+        "img": "https://picsum.photos/seed/rsp3/1080/1280",
+        "tags": [
+          "viral",
+          "bright"
+        ],
+        "popular": true,
+        "views": 5600
+      },
+      {
+        "id": "p4",
+        "cat": "Previews",
+        "title": "Minimal Preview",
+        "desc": "Elegant and clean",
+        "img": "https://picsum.photos/seed/rsp4/1080/1280",
+        "tags": [
+          "minimal"
+        ],
+        "popular": false,
+        "views": 290
+      },
+      {
+        "id": "p5",
+        "cat": "Previews",
+        "title": "Dark Preview",
+        "desc": "Dark cinematic atmosphere",
+        "img": "https://picsum.photos/seed/rsp5/1080/1280",
+        "tags": [
+          "dark",
+          "cinematic"
+        ],
+        "popular": true,
+        "views": 1870
+      },
+      {
+        "id": "b1",
+        "cat": "Banners",
+        "title": "Twitch Banner PRO",
+        "desc": "Professional channel header",
+        "img": "https://picsum.photos/seed/rsb1/1080/1280",
+        "tags": [
+          "twitch"
+        ],
+        "popular": true,
+        "views": 2200
+      },
+      {
+        "id": "b2",
+        "cat": "Banners",
+        "title": "Discord Banner",
+        "desc": "Unique server header",
+        "img": "https://picsum.photos/seed/rsb2/1080/1280",
+        "tags": [
+          "discord"
+        ],
+        "popular": false,
+        "views": 650
+      },
+      {
+        "id": "b3",
+        "cat": "Banners",
+        "title": "YouTube Header 4K",
+        "desc": "Flawless channel art",
+        "img": "https://picsum.photos/seed/rsb3/1080/1280",
+        "tags": [
+          "youtube"
+        ],
+        "popular": true,
+        "views": 3100
+      },
+      {
+        "id": "b4",
+        "cat": "Banners",
+        "title": "VK/TikTok Banner",
+        "desc": "Next-gen social media",
+        "img": "https://picsum.photos/seed/rsb4/1080/1280",
+        "tags": [
+          "tiktok"
+        ],
+        "popular": false,
+        "views": 410
+      },
+      {
+        "id": "l1",
+        "cat": "Logos",
+        "title": "Gaming eSports Logo",
+        "desc": "Victory symbol for teams",
+        "img": "https://picsum.photos/seed/rsl1/1080/1280",
+        "tags": [
+          "game",
+          "esports"
+        ],
+        "popular": true,
+        "views": 4200
+      },
+      {
+        "id": "l2",
+        "cat": "Logos",
+        "title": "Minimal Logo",
+        "desc": "Modern geometric brand",
+        "img": "https://picsum.photos/seed/rsl2/1080/1280",
+        "tags": [
+          "minimal"
+        ],
+        "popular": false,
+        "views": 740
+      },
+      {
+        "id": "l3",
+        "cat": "Logos",
+        "title": "Neon Logo",
+        "desc": "Glowing sign in the night",
+        "img": "https://picsum.photos/seed/rsl3/1080/1280",
+        "tags": [
+          "neon"
+        ],
+        "popular": true,
+        "views": 1950
+      },
+      {
+        "id": "l4",
+        "cat": "Logos",
+        "title": "3D Logo PRO",
+        "desc": "Next-level volumetric design",
+        "img": "https://picsum.photos/seed/rsl4/1080/1280",
+        "tags": [
+          "3d"
+        ],
+        "popular": false,
+        "views": 580
+      },
+      {
+        "id": "l5",
+        "cat": "Logos",
+        "title": "Mascot Logo",
+        "desc": "Character mascot for brand",
+        "img": "https://picsum.photos/seed/rsl5/1080/1280",
+        "tags": [
+          "mascot"
+        ],
+        "popular": true,
+        "views": 2800
+      }
+    ]
+  },
+  "courses": {
+    "ru": [
+      {
+        "id": "c1",
+        "cat": "РћСЃРЅРѕРІС‹",
+        "title": "Photoshop СЃ РЅСѓР»СЏ",
+        "desc": "РџРѕР»РЅС‹Р№ РєСѓСЂСЃ Р±Р°Р·С‹ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РґРёР·Р°Р№РЅР°",
+        "level": "РќР°С‡РёРЅР°СЋС‰РёР№",
+        "duration": "3 С‡",
+        "lessons": 12,
+        "img": "https://picsum.photos/seed/course1/600/340",
+        "popular": true,
+        "free": true,
+        "price": 0,
+        "rating": 4.9,
+        "students": 2840,
+        "topics": [
+          "РРЅС‚РµСЂС„РµР№СЃ",
+          "РЎР»РѕРё",
+          "Р’С‹РґРµР»РµРЅРёРµ",
+          "Р¦РІРµС‚",
+          "РўРµРєСЃС‚",
+          "Р¤РёР»СЊС‚СЂС‹",
+          "РњР°СЃРєРё",
+          "РЎРјР°СЂС‚-РѕР±СЉРµРєС‚С‹",
+          "Р­РєСЃРїРѕСЂС‚",
+          "Batch",
+          "РЁРѕСЂС‚РєР°С‚С‹",
+          "Р¤РёРЅР°Р»"
+        ]
+      },
+      {
+        "id": "c2",
+        "cat": "РћСЃРЅРѕРІС‹",
+        "title": "РўРµРѕСЂРёСЏ С†РІРµС‚Р°",
+        "desc": "РџР°Р»РёС‚СЂС‹, РіР°СЂРјРѕРЅРёРё Рё РїСЃРёС…РѕР»РѕРіРёСЏ С†РІРµС‚Р°",
+        "level": "РќР°С‡РёРЅР°СЋС‰РёР№",
+        "duration": "2 С‡",
+        "lessons": 8,
+        "img": "https://picsum.photos/seed/course2/600/340",
+        "popular": true,
+        "free": true,
+        "price": 0,
+        "rating": 4.8,
+        "students": 1920,
+        "topics": [
+          "Р¦РІРµС‚РѕРІРѕР№ РєСЂСѓРі",
+          "РўС‘РїР»С‹Рµ/С…РѕР»РѕРґРЅС‹Рµ",
+          "РљРѕРјРїР»РµРјРµРЅС‚Р°СЂРЅС‹Рµ",
+          "РўСЂРёР°РґС‹",
+          "РџСЃРёС…РѕР»РѕРіРёСЏ",
+          "Р’РµР±-РїР°Р»РёС‚СЂС‹",
+          "Р‘СЂРµРЅРґРёРЅРі",
+          "РџСЂР°РєС‚РёРєР°"
+        ]
+      },
+      {
+        "id": "c3",
+        "cat": "РџСЂРѕРґРІРёРЅСѓС‚С‹Р№",
+        "title": "РђРІР°С‚Р°СЂРєРё PRO",
+        "desc": "РЎРѕР·РґР°РІР°Р№ Р°РІР°С‚Р°СЂС‹ С‚РѕРїРѕРІРѕРіРѕ СѓСЂРѕРІРЅСЏ",
+        "level": "РџСЂРѕРґРІРёРЅСѓС‚С‹Р№",
+        "duration": "5 С‡",
+        "lessons": 16,
+        "img": "https://picsum.photos/seed/course3/600/340",
+        "popular": true,
+        "free": false,
+        "price": 15,
+        "rating": 5,
+        "students": 680,
+        "topics": [
+          "РўСЂРµРЅРґС‹",
+          "РљРѕРјРїРѕР·РёС†РёСЏ",
+          "РЎРІРµС‚/С‚РµРЅСЊ",
+          "РќРµРѕРЅ",
+          "Р“Р»РёС‚С‡",
+          "Smoke",
+          "3D СЌР»РµРјРµРЅС‚С‹",
+          "РўРµРєСЃС‚СѓСЂС‹",
+          "РљРёР±РµСЂРїР°РЅРє",
+          "РњРёРЅРёРјР°Р»РёР·Рј",
+          "Р“СЂР°РґРёРµРЅС‚ PRO",
+          "Р¦РІРµС‚РѕРєРѕСЂСЂРµРєС†РёСЏ",
+          "Animated PFP",
+          "РњРѕРєР°РїС‹",
+          "РџРѕСЂС‚С„РѕР»РёРѕ",
+          "Р¤СЂРёР»Р°РЅСЃ"
+        ]
+      },
+      {
+        "id": "c4",
+        "cat": "РџСЂРѕРґРІРёРЅСѓС‚С‹Р№",
+        "title": "YouTube Thumbnail Master",
+        "desc": "РџСЂРµРІСЊСЋ РєРѕС‚РѕСЂС‹Рµ РїСЂРёРЅРµСЃСѓС‚ РјРёР»Р»РёРѕРЅС‹ РїСЂРѕСЃРјРѕС‚СЂРѕРІ",
+        "level": "РџСЂРѕРґРІРёРЅСѓС‚С‹Р№",
+        "duration": "4 С‡",
+        "lessons": 14,
+        "img": "https://picsum.photos/seed/course4/600/340",
+        "popular": false,
+        "free": false,
+        "price": 15,
+        "rating": 4.7,
+        "students": 430,
+        "topics": [
+          "РџСЃРёС…РѕР»РѕРіРёСЏ РєР»РёРєРѕРІ",
+          "РљРѕРјРїРѕР·РёС†РёСЏ",
+          "РўРёРїРѕРіСЂР°С„РёРєР°",
+          "Р›РёС†Рѕ",
+          "Р­РјРѕС†РёРё",
+          "РљРѕРЅС‚СЂР°СЃС‚",
+          "A/B С‚РµСЃС‚",
+          "РЁР°Р±Р»РѕРЅС‹",
+          "РќРёС€Рё",
+          "РђРЅРёРјР°С†РёСЏ",
+          "CTR",
+          "РўСЂРµРЅРґС‹ 2025",
+          "РћС€РёР±РєРё",
+          "РџСЂРѕРµРєС‚"
+        ]
+      },
+      {
+        "id": "c5",
+        "cat": "Р‘СЂРµРЅРґРёРЅРі",
+        "title": "Р›РѕРіРѕС‚РёРї СЃ РЅСѓР»СЏ РґРѕ РїСЂРѕС„Рё",
+        "desc": "РџРѕР»РЅС‹Р№ РіР°Р№Рґ РїРѕ Р»РѕРіРѕС‚РёРїР°Рј Рё Р±СЂРµРЅРґРёРЅРіСѓ",
+        "level": "РЎСЂРµРґРЅРёР№",
+        "duration": "6 С‡",
+        "lessons": 18,
+        "img": "https://picsum.photos/seed/course5/600/340",
+        "popular": true,
+        "free": false,
+        "price": 20,
+        "rating": 4.9,
+        "students": 1100,
+        "topics": [
+          "РСЃС‚РѕСЂРёСЏ",
+          "РўРёРїС‹",
+          "Р‘СЂРёС„",
+          "РЎРєРµС‚С‡РёРЅРі",
+          "Р¦РІРµС‚",
+          "РўРёРїРѕРіСЂР°С„РёРєР°",
+          "Р’РµРєС‚РѕСЂ",
+          "Illustrator PRO",
+          "РђРґР°РїС‚РёРІРЅС‹Рµ",
+          "РђРЅРёРјР°С†РёСЏ",
+          "Р“Р°Р№РґР»Р°Р№РЅ",
+          "РњРѕРєР°РїС‹",
+          "РџСЂРµР·РµРЅС‚Р°С†РёСЏ",
+          "Р¦РµРЅРѕРѕР±СЂР°Р·РѕРІР°РЅРёРµ",
+          "РџСЂР°РІРєРё",
+          "РђРІС‚РѕСЂСЃРєРѕРµ РїСЂР°РІРѕ",
+          "РџРѕСЂС‚С„РѕР»РёРѕ",
+          "Р¤СЂРёР»Р°РЅСЃ"
+        ]
+      },
+      {
+        "id": "c6",
+        "cat": "РњРѕСѓС€РЅ",
+        "title": "Motion Design СЃС‚Р°СЂС‚",
+        "desc": "РћР¶РёРІРё СЃРІРѕРё РґРёР·Р°Р№РЅС‹ Р°РЅРёРјР°С†РёРµР№",
+        "level": "РЎСЂРµРґРЅРёР№",
+        "duration": "8 С‡",
+        "lessons": 20,
+        "img": "https://picsum.photos/seed/course6/600/340",
+        "popular": true,
+        "free": false,
+        "price": 25,
+        "rating": 4.8,
+        "students": 790,
+        "topics": [
+          "After Effects",
+          "РљР»СЋС‡РµРІС‹Рµ РєР°РґСЂС‹",
+          "Easing",
+          "РўРµРєСЃС‚",
+          "Shape layers",
+          "РњР°СЃРєРё",
+          "Precomps",
+          "Expressions",
+          "РђРЅРёРјР°С†РёСЏ Р»РѕРіРѕ",
+          "РџРµСЂРµС…РѕРґС‹",
+          "Particles",
+          "3D СЃР»РѕРё",
+          "РљР°РјРµСЂР°",
+          "Р РµРЅРґРµСЂ",
+          "GIF",
+          "Lottie",
+          "Р’РµР±",
+          "РЎРѕС†СЃРµС‚Рё",
+          "РЁРѕСѓСЂРёР»",
+          "РџСЂРѕРµРєС‚"
+        ]
+      },
+      {
+        "id": "c7",
+        "cat": "Р‘РёР·РЅРµСЃ",
+        "title": "Р¤СЂРёР»Р°РЅСЃ РґРёР·Р°Р№РЅРµСЂ",
+        "desc": "РљР°Рє Р·Р°СЂР°Р±Р°С‚С‹РІР°С‚СЊ $1000+/РјРµСЃ РЅР° РґРёР·Р°Р№РЅРµ",
+        "level": "Р’СЃРµ СѓСЂРѕРІРЅРё",
+        "duration": "4 С‡",
+        "lessons": 15,
+        "img": "https://picsum.photos/seed/course7/600/340",
+        "popular": false,
+        "free": false,
+        "price": 10,
+        "rating": 4.6,
+        "students": 560,
+        "topics": [
+          "РќРёС€Р°",
+          "РџРѕСЂС‚С„РѕР»РёРѕ",
+          "Р‘РёСЂР¶Рё",
+          "РљР»РёРµРЅС‚С‹",
+          "Р¦РµРЅРѕРѕР±СЂР°Р·РѕРІР°РЅРёРµ",
+          "РџРµСЂРµРіРѕРІРѕСЂС‹",
+          "РљРѕРЅС‚СЂР°РєС‚С‹",
+          "РЈРїСЂР°РІР»РµРЅРёРµ",
+          "Р”РµРґР»Р°Р№РЅС‹",
+          "РћР±СЂР°С‚РЅР°СЏ СЃРІСЏР·СЊ",
+          "РњР°СЃС€С‚Р°Р±",
+          "РџР°СЃСЃРёРІРЅС‹Р№ РґРѕС…РѕРґ",
+          "Р›РёС‡РЅС‹Р№ Р±СЂРµРЅРґ",
+          "РЎРѕС†СЃРµС‚Рё",
+          "Р РѕСЃС‚"
+        ]
+      },
+      {
+        "id": "c8",
+        "cat": "Р‘РёР·РЅРµСЃ",
+        "title": "Р”РёР·Р°Р№РЅ РґР»СЏ СЃС‚СЂРёРјРµСЂРѕРІ",
+        "desc": "РџРѕР»РЅС‹Р№ РїР°Рє РґР»СЏ Twitch / YouTube",
+        "level": "РЎСЂРµРґРЅРёР№",
+        "duration": "5 С‡",
+        "lessons": 14,
+        "img": "https://picsum.photos/seed/course8/600/340",
+        "popular": false,
+        "free": false,
+        "price": 15,
+        "rating": 4.7,
+        "students": 380,
+        "topics": [
+          "РћРІРµСЂР»РµРё",
+          "РџР°РЅРµР»Рё Twitch",
+          "РђР»РµСЂС‚С‹",
+          "РћР¶РёРґР°РЅРёРµ",
+          "РЁР°РїРєР°",
+          "Р­РјРѕСѓС‚С‹",
+          "Р‘СЂРµРЅРґРёРЅРі",
+          "РџР°Рє",
+          "РђРЅРёРјР°С†РёСЏ",
+          "OBS",
+          "РЎР°Р±-Р±РµР№РґР¶Рё",
+          "РњРµСЂС‡",
+          "Р¦РµРЅРѕРѕР±СЂР°Р·РѕРІР°РЅРёРµ",
+          "РџРѕСЂС‚С„РѕР»РёРѕ"
+        ]
+      }
+    ],
+    "en": [
+      {
+        "id": "c1",
+        "cat": "Basics",
+        "title": "Photoshop from Zero",
+        "desc": "Complete graphic design foundation",
+        "level": "Beginner",
+        "duration": "3h",
+        "lessons": 12,
+        "img": "https://picsum.photos/seed/course1/600/340",
+        "popular": true,
+        "free": true,
+        "price": 0,
+        "rating": 4.9,
+        "students": 2840,
+        "topics": [
+          "Interface",
+          "Layers",
+          "Selection",
+          "Color",
+          "Text",
+          "Filters",
+          "Masks",
+          "Smart Objects",
+          "Export",
+          "Batch",
+          "Shortcuts",
+          "Final Project"
+        ]
+      },
+      {
+        "id": "c2",
+        "cat": "Basics",
+        "title": "Color Theory",
+        "desc": "Palettes, harmonies and psychology",
+        "level": "Beginner",
+        "duration": "2h",
+        "lessons": 8,
+        "img": "https://picsum.photos/seed/course2/600/340",
+        "popular": true,
+        "free": true,
+        "price": 0,
+        "rating": 4.8,
+        "students": 1920,
+        "topics": [
+          "Color Wheel",
+          "Warm/Cool",
+          "Complementary",
+          "Triads",
+          "Psychology",
+          "Web Palettes",
+          "Branding",
+          "Practice"
+        ]
+      },
+      {
+        "id": "c3",
+        "cat": "Advanced",
+        "title": "Avatar Design PRO",
+        "desc": "Create top-tier avatar artwork",
+        "level": "Advanced",
+        "duration": "5h",
+        "lessons": 16,
+        "img": "https://picsum.photos/seed/course3/600/340",
+        "popular": true,
+        "free": false,
+        "price": 15,
+        "rating": 5,
+        "students": 680,
+        "topics": [
+          "Trends",
+          "Composition",
+          "Light & Shadow",
+          "Neon",
+          "Glitch",
+          "Smoke",
+          "3D Elements",
+          "Textures",
+          "Cyberpunk",
+          "Minimalism",
+          "Gradients PRO",
+          "Color Grading",
+          "Animated PFP",
+          "Mockups",
+          "Portfolio",
+          "Freelance"
+        ]
+      },
+      {
+        "id": "c4",
+        "cat": "Advanced",
+        "title": "YouTube Thumbnail Master",
+        "desc": "Thumbnails that earn millions of views",
+        "level": "Advanced",
+        "duration": "4h",
+        "lessons": 14,
+        "img": "https://picsum.photos/seed/course4/600/340",
+        "popular": false,
+        "free": false,
+        "price": 15,
+        "rating": 4.7,
+        "students": 430,
+        "topics": [
+          "Click Psychology",
+          "Composition",
+          "Typography",
+          "Face",
+          "Emotions",
+          "Contrast",
+          "A/B Testing",
+          "Templates",
+          "Niches",
+          "Animation",
+          "CTR",
+          "Trends 2025",
+          "Mistakes",
+          "Project"
+        ]
+      },
+      {
+        "id": "c5",
+        "cat": "Branding",
+        "title": "Logo from Zero to Pro",
+        "desc": "Full logo & branding guide",
+        "level": "Intermediate",
+        "duration": "6h",
+        "lessons": 18,
+        "img": "https://picsum.photos/seed/course5/600/340",
+        "popular": true,
+        "free": false,
+        "price": 20,
+        "rating": 4.9,
+        "students": 1100,
+        "topics": [
+          "History",
+          "Types",
+          "Brief",
+          "Sketching",
+          "Color",
+          "Typography",
+          "Vector",
+          "Illustrator PRO",
+          "Adaptive",
+          "Animation",
+          "Guidelines",
+          "Mockups",
+          "Presentation",
+          "Pricing",
+          "Revisions",
+          "Copyright",
+          "Portfolio",
+          "Freelance"
+        ]
+      },
+      {
+        "id": "c6",
+        "cat": "Motion",
+        "title": "Motion Design Start",
+        "desc": "Bring your designs to life",
+        "level": "Intermediate",
+        "duration": "8h",
+        "lessons": 20,
+        "img": "https://picsum.photos/seed/course6/600/340",
+        "popular": true,
+        "free": false,
+        "price": 25,
+        "rating": 4.8,
+        "students": 790,
+        "topics": [
+          "After Effects",
+          "Keyframes",
+          "Easing",
+          "Text",
+          "Shape Layers",
+          "Masks",
+          "Precomps",
+          "Expressions",
+          "Logo Animation",
+          "Transitions",
+          "Particles",
+          "3D Layers",
+          "Camera",
+          "Render",
+          "GIF",
+          "Lottie",
+          "Web",
+          "Social",
+          "Showreel",
+          "Project"
+        ]
+      },
+      {
+        "id": "c7",
+        "cat": "Business",
+        "title": "Freelance Designer",
+        "desc": "Earn $1000+/month with design",
+        "level": "All Levels",
+        "duration": "4h",
+        "lessons": 15,
+        "img": "https://picsum.photos/seed/course7/600/340",
+        "popular": false,
+        "free": false,
+        "price": 10,
+        "rating": 4.6,
+        "students": 560,
+        "topics": [
+          "Niche",
+          "Portfolio",
+          "Platforms",
+          "Clients",
+          "Pricing",
+          "Negotiations",
+          "Contracts",
+          "Management",
+          "Deadlines",
+          "Feedback",
+          "Scaling",
+          "Passive Income",
+          "Brand",
+          "Social",
+          "Growth"
+        ]
+      },
+      {
+        "id": "c8",
+        "cat": "Business",
+        "title": "Design for Streamers",
+        "desc": "Full pack for Twitch / YouTube",
+        "level": "Intermediate",
+        "duration": "5h",
+        "lessons": 14,
+        "img": "https://picsum.photos/seed/course8/600/340",
+        "popular": false,
+        "free": false,
+        "price": 15,
+        "rating": 4.7,
+        "students": 380,
+        "topics": [
+          "Overlays",
+          "Twitch Panels",
+          "Alerts",
+          "Waiting Screens",
+          "Channel Header",
+          "Emotes",
+          "Branding",
+          "Pack",
+          "Animation",
+          "OBS",
+          "Sub Badges",
+          "Merch",
+          "Pricing",
+          "Portfolio"
+        ]
+      }
+    ]
+  },
+  "reviews": [
+    {
+      "id": "r1",
+      "name": "Darkslide",
+      "tg": "Darkslide",
+      "rating": 5,
+      "text": "Р Р°Р±РѕС‚Р° РІС‹РїРѕР»РЅРµРЅР° СЂР°РЅСЊС€Рµ СЃСЂРѕРєР° Рё РєР°С‡РµСЃС‚РІРѕ РїСЂРµРІР·РѕС€Р»Рѕ РІСЃРµ РѕР¶РёРґР°РЅРёСЏ. РђРІР°С‚Р°СЂРєР° РїРѕР»СѓС‡РёР»Р°СЃСЊ РЅРµРІРµСЂРѕСЏС‚РЅРѕР№ вЂ” СЂРµРєРѕРјРµРЅРґСѓСЋ РІСЃРµРј!",
+      "time": "2 РґРЅСЏ РЅР°Р·Р°Рґ",
+      "verified": true
+    },
+    {
+      "id": "r2",
+      "name": "VoidProxy",
+      "tg": "VoidProxy",
+      "rating": 5,
+      "text": "РћС‚Р»РёС‡РЅС‹Р№ РґРёР·Р°Р№РЅРµСЂ СЃ РіР»СѓР±РѕРєРёРј РїРѕРЅРёРјР°РЅРёРµРј СЃС‚РёР»СЏ. Р Р°Р±РѕС‚Р° РІС‹РїРѕР»РЅРµРЅР° РїСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅРѕ Рё Р±С‹СЃС‚СЂРѕ.",
+      "time": "5 РґРЅРµР№ РЅР°Р·Р°Рґ",
+      "verified": true
+    },
+    {
+      "id": "r3",
+      "name": "Nextra",
+      "tg": "Nextra",
+      "rating": 5,
+      "text": "Р—Р°РєР°Р·С‹РІР°Р» РїСЂРµРІСЊСЋ РґР»СЏ YouTube вЂ” РѕС‡РµРЅСЊ РґРѕРІРѕР»РµРЅ СЂРµР·СѓР»СЊС‚Р°С‚РѕРј. CTR РІС‹СЂРѕСЃ РЅР° 40% РїРѕСЃР»Рµ СЃРјРµРЅС‹ РїСЂРµРІСЊСЋ!",
+      "time": "1 РЅРµРґ РЅР°Р·Р°Рґ",
+      "verified": true
+    },
+    {
+      "id": "r4",
+      "name": "HoskeHeviz",
+      "tg": "hoskefromheviz",
+      "rating": 5,
+      "text": "Р‘Р»Р°РіРѕРґР°СЂСЋ Р·Р° СЂР°Р±РѕС‚Сѓ, РІСЃС‘ РїСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅРѕ, СѓС‡С‚РµРЅС‹ РІСЃРµ РґРµС‚Р°Р»Рё Рё РїРѕР¶РµР»Р°РЅРёСЏ.",
+      "time": "2 РЅРµРґ РЅР°Р·Р°Рґ",
+      "verified": true
+    },
+    {
+      "id": "r5",
+      "name": "Solevoy",
+      "tg": "fazenemoy",
+      "rating": 5,
+      "text": "Р РµРєРѕРјРµРЅРґСѓСЋ РІСЃРµРј вЂ” СЂР°Р±РѕС‚Р° Р±РµР·СѓРїСЂРµС‡РЅР°, РґРёР·Р°Р№РЅРµСЂ РїРѕРЅРёРјР°РµС‚ СЃ РїРѕР»СѓСЃР»РѕРІР°.",
+      "time": "3 РЅРµРґ РЅР°Р·Р°Рґ",
+      "verified": false
+    },
+    {
+      "id": "r6",
+      "name": "Aero",
+      "tg": "AeroDesig",
+      "rating": 5,
+      "text": "Р—Р°РєР°Р·С‹РІР°Р» Р»РѕРіРѕС‚РёРї РґР»СЏ СЃРІРѕРµРіРѕ РїСЂРѕРµРєС‚Р° вЂ” РїРѕР»СѓС‡РёР» С€РµРґРµРІСЂ. РЎРїР°СЃРёР±Рѕ РѕРіСЂРѕРјРЅРѕРµ!",
+      "time": "1 РјРµСЃ РЅР°Р·Р°Рґ",
+      "verified": true
+    },
+    {
+      "id": "r7",
+      "name": "Firessk",
+      "tg": "firessk",
+      "rating": 5,
+      "text": "Р‘РѕР»СЊС€РѕРµ СЃРїР°СЃРёР±Рѕ, РїРѕСЂРµРєРѕРјРµРЅРґСѓСЋ РІСЃРµРј Р·РЅР°РєРѕРјС‹Рј. Р‘С‹СЃС‚СЂРѕ Рё РѕС‡РµРЅСЊ РєР°С‡РµСЃС‚РІРµРЅРЅРѕ.",
+      "time": "1 РјРµСЃ РЅР°Р·Р°Рґ",
+      "verified": false
+    },
+    {
+      "id": "r8",
+      "name": "Helvite",
+      "tg": "Helvite0",
+      "rating": 5,
+      "text": "Р Р°Р±РѕС‚Р° РЅР° 10/10, РІСЃС‘ РґРµС‚Р°Р»СЊРЅРѕ Рё РїСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅРѕ. Р—Р°РєР°Р·С‹РІР°СЋ СѓР¶Рµ РІС‚РѕСЂРѕР№ СЂР°Р·!",
+      "time": "1 РјРµСЃ РЅР°Р·Р°Рґ",
+      "verified": true
+    },
+    {
+      "id": "r9",
+      "name": "Usepsyho",
+      "tg": "Usepsyho",
+      "rating": 5,
+      "text": "Р‘С‹СЃС‚СЂРѕ Рё РїСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅРѕ вЂ” РІСЃС‘ РёРјРµРЅРЅРѕ С‚Р°Рє, РєР°Рє Рё РїСЂРµРґСЃС‚Р°РІР»СЏР». 10/10!",
+      "time": "2 РјРµСЃ РЅР°Р·Р°Рґ",
+      "verified": true
+    },
+    {
+      "id": "r10",
+      "name": "Filling",
+      "tg": "Filling_tg",
+      "rating": 4,
+      "text": "РћС‚Р»РёС‡РЅР°СЏ СЂР°Р±РѕС‚Р°, РЅРµР±РѕР»СЊС€РёРµ РїСЂР°РІРєРё РїСЂРёРЅСЏС‚С‹ Р±РµР· РІРѕРїСЂРѕСЃРѕРІ. 9/10.",
+      "time": "2 РјРµСЃ РЅР°Р·Р°Рґ",
+      "verified": false
+    },
+    {
+      "id": "r11",
+      "name": "Arthur",
+      "tg": "Arthur_dsg",
+      "rating": 5,
+      "text": "РџСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅС‹Р№ РїРѕРґС…РѕРґ, С‡С‘С‚РєРѕРµ РїРѕРЅРёРјР°РЅРёРµ РўР—. РћС‡РµРЅСЊ РґРѕРІРѕР»РµРЅ!",
+      "time": "2 РјРµСЃ РЅР°Р·Р°Рґ",
+      "verified": true
+    },
+    {
+      "id": "r12",
+      "name": "Kupiz",
+      "tg": "Kupiz",
+      "rating": 5,
+      "text": "Р’СЃС‘ С‡С‘С‚РєРѕ Рё РєР°С‡РµСЃС‚РІРµРЅРЅРѕ. РџСЂРµРІСЊСЋ РЅР°Р±СЂР°Р»Рѕ 500Рє Р·Р° 2 РґРЅСЏ РїРѕСЃР»Рµ РїСѓР±Р»РёРєР°С†РёРё!",
+      "time": "3 РјРµСЃ РЅР°Р·Р°Рґ",
+      "verified": true
+    }
+  ],
+  "services": [
+    {
+      "id": 1,
+      "icon": "в—Џ",
+      "key": "avatar",
+      "priceUSD": 5,
+      "ru": "РђРІР°С‚Р°СЂРєР°",
+      "en": "Avatar",
+      "ua": "РђРІР°С‚Р°СЂРєР°",
+      "kz": "РђРІР°С‚Р°СЂ",
+      "by": "РђРІР°С‚Р°СЂРєР°",
+      "descRu": "РЈРЅРёРєР°Р»СЊРЅС‹Р№ Р°РІР°С‚Р°СЂ РІ С‚РІРѕС‘Рј СЃС‚РёР»Рµ",
+      "descEn": "Unique avatar in your style",
+      "timeRu": "1вЂ“2 РґРЅСЏ",
+      "timeEn": "1вЂ“2 days",
+      "features": [
+        "PNG + PSD",
+        "3 РїСЂР°РІРєРё",
+        "РСЃС…РѕРґРЅРёРє"
+      ]
+    },
+    {
+      "id": 2,
+      "icon": "в–¶",
+      "key": "preview",
+      "priceUSD": 5,
+      "ru": "РџСЂРµРІСЊСЋ",
+      "en": "Preview",
+      "ua": "РџСЂРµРІ'СЋ",
+      "kz": "РџСЂРµРІСЊСЋ",
+      "by": "РџСЂСЌРІ'СЋ",
+      "descRu": "YouTube / Twitch РїСЂРµРІСЊСЋ",
+      "descEn": "YouTube / Twitch thumbnail",
+      "timeRu": "1 РґРµРЅСЊ",
+      "timeEn": "1 day",
+      "features": [
+        "PNG 1280Г—720",
+        "3 РІР°СЂРёР°РЅС‚Р°",
+        "PSD С„Р°Р№Р»"
+      ]
+    },
+    {
+      "id": 3,
+      "icon": "в–¬",
+      "key": "banner",
+      "priceUSD": 5,
+      "ru": "Р‘Р°РЅРЅРµСЂ",
+      "en": "Banner",
+      "ua": "Р‘Р°РЅРµСЂ",
+      "kz": "Р‘Р°РЅРЅРµСЂ",
+      "by": "Р‘Р°РЅРµСЂ",
+      "descRu": "РЁР°РїРєР° РєР°РЅР°Р»Р° / РїСЂРѕС„РёР»СЏ",
+      "descEn": "Channel / profile header",
+      "timeRu": "1вЂ“2 РґРЅСЏ",
+      "timeEn": "1вЂ“2 days",
+      "features": [
+        "PNG + PSD",
+        "РђРґР°РїС‚РёРІ",
+        "3 РїСЂР°РІРєРё"
+      ]
+    },
+    {
+      "id": 4,
+      "icon": "вњ¦",
+      "key": "logo",
+      "priceUSD": 5,
+      "ru": "Р›РѕРіРѕС‚РёРї",
+      "en": "Logo",
+      "ua": "Р›РѕРіРѕС‚РёРї",
+      "kz": "Р›РѕРіРѕС‚РёРї",
+      "by": "Р›Р°РіР°С‚С‹Рї",
+      "descRu": "Р›РѕРіРѕС‚РёРї РґР»СЏ Р±СЂРµРЅРґР°",
+      "descEn": "Logo for your brand",
+      "timeRu": "2вЂ“3 РґРЅСЏ",
+      "timeEn": "2вЂ“3 days",
+      "features": [
+        "SVG + PNG",
+        "Р’СЃРµ С„РѕСЂРјР°С‚С‹",
+        "5 РїСЂР°РІРѕРє"
+      ]
+    },
+    {
+      "id": 5,
+      "icon": "в—‰",
+      "key": "pack",
+      "priceUSD": 18,
+      "ru": "РџРѕР»РЅС‹Р№ РїР°Рє",
+      "en": "Full Pack",
+      "ua": "РџРѕРІРЅРёР№ РїР°Рє",
+      "kz": "РўРѕР»С‹Т› РїР°Рє",
+      "by": "РџРѕСћРЅС‹ РїР°Рє",
+      "descRu": "РђРІР°С‚Р°СЂ + РїСЂРµРІСЊСЋ + Р±Р°РЅРЅРµСЂ",
+      "descEn": "Avatar + preview + banner",
+      "timeRu": "2вЂ“4 РґРЅСЏ",
+      "timeEn": "2вЂ“4 days",
+      "features": [
+        "3 СЂР°Р±РѕС‚С‹",
+        "РџСЂРёРѕСЂРёС‚РµС‚",
+        "РСЃС…РѕРґРЅРёРєРё"
+      ]
+    }
+  ],
+  "faq": {
+    "ru": [
+      {
+        "q": "РљР°Рє СЂР°Р±РѕС‚Р°РµС‚ РїСЂРѕС†РµСЃСЃ Р·Р°РєР°Р·Р°?",
+        "a": "1. РќР°РїРёСЃР°С‚СЊ РІ Telegram\n2. РћР±СЃСѓРґРёС‚СЊ РґРµС‚Р°Р»Рё\n3. РўР— Рё СЃСЂРѕРєРё\n4. РџСЂРµРґРѕРїР»Р°С‚Р° 50%\n5. 1-3 РґРЅСЏ СЂР°Р±РѕС‚С‹\n6. Р”Рѕ 3 РїСЂР°РІРѕРє Р±РµСЃРїР»Р°С‚РЅРѕ\n7. РС‚РѕРіРѕРІС‹Р№ СЂР°СЃС‡С‘С‚"
+      },
+      {
+        "q": "Р§С‚Рѕ СЏ РїРѕР»СѓС‡Сѓ РІ РёС‚РѕРіРµ?",
+        "a": "PSD/AI/AEP РёСЃС…РѕРґРЅРёРєРё, PNG/JPG/SVG, 3 Р±РµСЃРїР»Р°С‚РЅС‹С… РїСЂР°РІРєРё, РїРѕРґРґРµСЂР¶РєР°"
+      },
+      {
+        "q": "РЎРїРѕСЃРѕР±С‹ РѕРїР»Р°С‚С‹?",
+        "a": "Р‘Р°РЅРєРѕРІСЃРєР°СЏ РєР°СЂС‚Р°, CryptoBot (USDT/TON/BTC), СЃС…РµРјР° 50%+50%"
+      },
+      {
+        "q": "РЎСЂРѕС‡РЅС‹Р№ Р·Р°РєР°Р·?",
+        "a": "РћС‚ 3 С‡Р°СЃРѕРІ СЃ РЅР°РґР±Р°РІРєРѕР№ +20-50%"
+      },
+      {
+        "q": "Р¤РѕСЂРјР°С‚С‹ С„Р°Р№Р»РѕРІ?",
+        "a": "PNG, JPG, SVG, PSD, AI, GIF, MP4 вЂ” Р»СЋР±РѕР№ РїРѕ Р·Р°РїСЂРѕСЃСѓ"
+      },
+      {
+        "q": "РљРѕРЅС„РёРґРµРЅС†РёР°Р»СЊРЅРѕСЃС‚СЊ?",
+        "a": "РќРµ РїСѓР±Р»РёРєСѓСЋ Р±РµР· СЂР°Р·СЂРµС€РµРЅРёСЏ. NDA РїРѕ Р·Р°РїСЂРѕСЃСѓ"
+      },
+      {
+        "q": "РРЅРѕСЃС‚СЂР°РЅРЅС‹Рµ РєР»РёРµРЅС‚С‹?",
+        "a": "Р”Р°, РѕРїР»Р°С‚Р° РІ USDT/USD, СЂСѓСЃСЃРєРёР№ Рё Р°РЅРіР»РёР№СЃРєРёР№ СЏР·С‹Рє"
+      },
+      {
+        "q": "РЎРєРѕР»СЊРєРѕ РїСЂР°РІРѕРє?",
+        "a": "3 Р±РµСЃРїР»Р°С‚РЅС‹С…, РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РїРѕ РґРѕРіРѕРІРѕСЂС‘РЅРЅРѕСЃС‚Рё"
+      }
+    ],
+    "en": [
+      {
+        "q": "How does the order process work?",
+        "a": "1. Message on Telegram\n2. Discuss brief & timeline\n3. 50% upfront\n4. 1-3 days production\n5. 3 free revisions\n6. Final payment"
+      },
+      {
+        "q": "What will I receive?",
+        "a": "PSD/AI/AEP source files, PNG/JPG/SVG exports, 3 free revisions, support"
+      },
+      {
+        "q": "Payment methods?",
+        "a": "Any bank card, CryptoBot (USDT/TON/BTC), 50%+50% scheme"
+      },
+      {
+        "q": "Urgent orders?",
+        "a": "Rush from 3 hours with +20-50% surcharge"
+      },
+      {
+        "q": "File formats?",
+        "a": "PNG, JPG, SVG, PSD, AI, GIF, MP4 вЂ” any on request"
+      },
+      {
+        "q": "Confidentiality?",
+        "a": "No publishing without permission. NDA available"
+      },
+      {
+        "q": "International clients?",
+        "a": "Yes, USDT/USD payment, English & Russian"
+      },
+      {
+        "q": "How many revisions?",
+        "a": "3 free, extra by agreement"
+      }
+    ]
+  },
+  "home": {
+    "stats": [
+      {
+        "value": "50+",
+        "labelRu": "Проектов",
+        "labelEn": "Projects"
+      },
+      {
+        "value": "19+",
+        "labelRu": "Клиентов",
+        "labelEn": "Clients"
+      },
+      {
+        "value": "4.1",
+        "labelRu": "Рейтинг",
+        "labelEn": "Rating"
+      }
+    ],
+    "socials": [
+      {
+        "kind": "telegram",
+        "label": "Telegram",
+        "url": "https://t.me/+a7SsFZHmCaJiNDMy",
+        "accent": "#229ED9"
+      },
+      {
+        "kind": "tiktok",
+        "label": "TikTok",
+        "url": "https://www.tiktok.com/@rivaldsgn",
+        "accent": "rgba(240,240,255,0.85)"
+      },
+      {
+        "kind": "youtube",
+        "label": "YouTube",
+        "url": "https://www.youtube.com/@RivalDesign",
+        "accent": "#FF0000"
+      }
+    ]
+  },
+  "updatedAt": "2026-04-14T10:53:23.117Z"
+}

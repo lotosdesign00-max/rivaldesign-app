@@ -1,0 +1,276 @@
+/* FLAGSHIP INPUT STYLES */
+
+.flagship-input {
+  position: relative;
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE INPUT
+   ═══════════════════════════════════════════════════════════════ */
+
+.flagship-input__field {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--space-4);
+  font-family: var(--font-text);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: var(--glass-medium);
+  backdrop-filter: blur(var(--blur-md));
+  -webkit-backdrop-filter: blur(var(--blur-md));
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  outline: none;
+  transition: all var(--transition-normal);
+}
+
+.flagship-input__field::placeholder {
+  color: var(--text-tertiary);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.flagship-input__field:not(:placeholder-shown) ~ .flagship-input__label,
+.flagship-input__field:focus ~ .flagship-input__label {
+  transform: translateY(-28px) scale(0.85);
+  color: var(--accent-500);
+}
+
+.flagship-input__field:focus {
+  background: var(--glass-strong);
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), var(--shadow-md);
+}
+
+.flagship-input__field:focus::placeholder {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FLOATING LABEL
+   ═══════════════════════════════════════════════════════════════ */
+
+.flagship-input__label {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  pointer-events: none;
+  transition: all var(--transition-normal);
+  transform-origin: left center;
+  background: linear-gradient(to bottom, transparent 40%, var(--color-bg-primary) 40%);
+  padding: 0 4px;
+  margin-left: -4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VARIANTS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* GLASS */
+.flagship-input--glass .flagship-input__field {
+  background: var(--glass-medium);
+  border: 1px solid var(--border-subtle);
+}
+
+.flagship-input--glass .flagship-input__field:focus {
+  background: var(--glass-strong);
+  border-color: var(--accent-500);
+}
+
+/* ELEVATED */
+.flagship-input--elevated .flagship-input__field {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-sm);
+}
+
+.flagship-input--elevated .flagship-input__field:focus {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), var(--shadow-md);
+}
+
+/* PREMIUM */
+.flagship-input--premium .flagship-input__field {
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.05) 0%,
+    rgba(139, 92, 246, 0.03) 100%
+  );
+  backdrop-filter: blur(var(--blur-lg));
+  -webkit-backdrop-filter: blur(var(--blur-lg));
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.flagship-input--premium .flagship-input__field:focus {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), var(--shadow-lg), var(--shadow-glow-sm);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIZES
+   ═══════════════════════════════════════════════════════════════ */
+
+.flagship-input--sm .flagship-input__field {
+  height: 36px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-md);
+}
+
+.flagship-input--md .flagship-input__field {
+  height: 48px;
+  padding: 0 var(--space-4);
+  font-size: var(--text-base);
+  border-radius: var(--radius-lg);
+}
+
+.flagship-input--lg .flagship-input__field {
+  height: 56px;
+  padding: 0 var(--space-5);
+  font-size: var(--text-lg);
+  border-radius: var(--radius-xl);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ERROR */
+.flagship-input--error .flagship-input__field {
+  border-color: var(--color-error);
+}
+
+.flagship-input--error .flagship-input__field:focus {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1), var(--shadow-md);
+}
+
+.flagship-input--error .flagship-input__label {
+  color: var(--color-error);
+}
+
+/* SUCCESS */
+.flagship-input--success .flagship-input__field {
+  border-color: var(--color-success);
+}
+
+.flagship-input--success .flagship-input__field:focus {
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1), var(--shadow-md);
+}
+
+/* DISABLED */
+.flagship-input__field:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ICONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.flagship-input--with-icon-left .flagship-input__field {
+  padding-left: 44px;
+}
+
+.flagship-input--with-icon-right .flagship-input__field {
+  padding-right: 44px;
+}
+
+.flagship-input__icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--text-tertiary);
+  transition: color var(--transition-normal);
+  pointer-events: none;
+}
+
+.flagship-input__icon--left {
+  left: var(--space-4);
+}
+
+.flagship-input__icon--right {
+  right: var(--space-4);
+}
+
+.flagship-input__field:focus ~ .flagship-input__icon {
+  color: var(--accent-500);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPER TEXT
+   ═══════════════════════════════════════════════════════════════ */
+
+.flagship-input__helper {
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  transition: color var(--transition-normal);
+}
+
+.flagship-input--error .flagship-input__helper {
+  color: var(--color-error);
+}
+
+.flagship-input--success .flagship-input__helper {
+  color: var(--color-success);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEXTAREA
+   ═══════════════════════════════════════════════════════════════ */
+
+.flagship-input__field--textarea {
+  height: auto;
+  min-height: 120px;
+  padding: var(--space-4);
+  resize: vertical;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EFFECTS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Focus glow */
+.flagship-input__glow {
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  pointer-events: none;
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.3), transparent 70%);
+  filter: blur(12px);
+}
+
+.flagship-input__field:focus ~ .flagship-input__glow {
+  opacity: 1;
+}
+
+/* Character count */
+.flagship-input__count {
+  position: absolute;
+  right: var(--space-4);
+  bottom: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.flagship-input__count--warning {
+  color: var(--color-warning);
+}
+
+.flagship-input__count--error {
+  color: var(--color-error);
+}
