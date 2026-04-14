@@ -1150,12 +1150,20 @@ export default function App() {
       const bottom = Number(safe?.bottom || 0);
       const left = Number(safe?.left || 0);
       const stableHeight = Number(TG?.viewportStableHeight || TG?.viewportHeight || window.innerHeight || document.documentElement.clientHeight || 0);
+      const viewportWidth = Number(window.innerWidth || document.documentElement.clientWidth || 0);
+      const sideGap = Math.max(10, Math.min(16, viewportWidth * 0.036));
+      const designWidth = 480;
+      const availableWidth = Math.max(320, viewportWidth - left - right - sideGap * 2);
+      const shellScale = Math.min(1, availableWidth / designWidth);
 
       root.style.setProperty("--tg-safe-top", `${top}px`);
       root.style.setProperty("--tg-safe-right", `${right}px`);
       root.style.setProperty("--tg-safe-bottom", `${bottom}px`);
       root.style.setProperty("--tg-safe-left", `${left}px`);
       root.style.setProperty("--tg-app-height", `${stableHeight || window.innerHeight}px`);
+      root.style.setProperty("--tg-side-gap", `${sideGap}px`);
+      root.style.setProperty("--tg-shell-width", `${designWidth}px`);
+      root.style.setProperty("--tg-shell-scale", `${shellScale}`);
     };
 
     const syncViewport = () => window.requestAnimationFrame(applyTelegramViewport);
@@ -2416,7 +2424,7 @@ export default function App() {
       }}
     >
       <style>{`
-        :root{--font-body:"Inter",system-ui,sans-serif;--font-display:"Gilroy-Bold","Gilroy-Heavy","Inter",system-ui,sans-serif;--font-button:"Gilroy-Medium","Gilroy-Bold","Inter",system-ui,sans-serif;--font-number:"Gilroy-Heavy","Gilroy-Bold","Inter",system-ui,sans-serif;--font-micro:"Inter",system-ui,sans-serif;--tg-side-gap:clamp(10px,3.6vw,16px);}
+        :root{--font-body:"Inter",system-ui,sans-serif;--font-display:"Gilroy-Bold","Gilroy-Heavy","Inter",system-ui,sans-serif;--font-button:"Gilroy-Medium","Gilroy-Bold","Inter",system-ui,sans-serif;--font-number:"Gilroy-Heavy","Gilroy-Bold","Inter",system-ui,sans-serif;--font-micro:"Inter",system-ui,sans-serif;--tg-side-gap:clamp(10px,3.6vw,16px);--tg-shell-width:480px;--tg-shell-scale:1;}
         *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;}
         ::-webkit-scrollbar{width:0;height:0;}*{scrollbar-width:none;}
         html{scroll-behavior:smooth;overscroll-behavior:none;overflow:hidden;overflow-x:clip;height:100%;width:100%;max-width:100%;background:#030408;}
@@ -2546,17 +2554,6 @@ export default function App() {
         input[type=range]{-webkit-appearance:none;height:5px;border-radius:99px;outline:none;background:${th.border};}
         input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:${th.grad};cursor:pointer;box-shadow:0 2px 10px ${th.glow};}
         .swiper{overflow:visible!important;}
-        @media (max-width:390px){
-          .rs-content [style*="grid-template-columns: 1fr 1fr"],
-          .rs-content [style*="grid-template-columns: 1.08fr 0.92fr"]{
-            grid-template-columns:1fr !important;
-          }
-          .rs-content [style*="grid-template-columns: repeat(3, 1fr)"],
-          .rs-content [style*="grid-template-columns: repeat(3,minmax(0,1fr))"],
-          .rs-content [style*="grid-template-columns: repeat(3, minmax(0, 1fr))"]{
-            grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-          }
-        }
         @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
       `}</style>
 
@@ -2593,7 +2590,7 @@ export default function App() {
       {showLevelUp && <LevelUpNotification />}
       <SideDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} th={th} t={t} theme={theme} setTheme={setTheme} lang={lang} setLang={setLang} soundOn={soundOn} setSoundOn={setSoundOn} volume={volume} setVolume={setVolume} streak={streak} sfx={SFX} getLevel={getLevel} getLevelProgress={getLevelProgress} tgUser={tgUser} />
 
-      <div className="rs-shell" style={{ width: "100%", maxWidth: 480, display: "flex", flexDirection: "column", height: "var(--tg-app-height, 100dvh)", position: "relative", zIndex: 1, overflowX: "hidden" }}>
+      <div className="rs-shell" style={{ width: "var(--tg-shell-width, 480px)", maxWidth: "var(--tg-shell-width, 480px)", display: "flex", flexDirection: "column", height: "calc(var(--tg-app-height, 100dvh) / var(--tg-shell-scale, 1))", position: "relative", zIndex: 1, overflowX: "hidden", transform: "scale(var(--tg-shell-scale, 1))", transformOrigin: "top center", flexShrink: 0 }}>
         {/* Header */}
         <header style={{ flexShrink: 0, position: "sticky", top: 0, zIndex: 100, padding: "calc(12px + var(--tg-safe-top, 0px)) var(--tg-side-gap) 0", background: "transparent" }}>
           <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: 58, padding: "12px 14px", borderRadius: 24, background: `linear-gradient(180deg, ${th.nav} 0%, ${th.surface} 100%)`, border: `1px solid ${th.border}`, boxShadow: th.shadow, backdropFilter: "blur(28px)", overflow: "hidden" }}>
