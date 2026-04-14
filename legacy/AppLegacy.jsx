@@ -1151,8 +1151,8 @@ export default function App() {
       const left = Number(safe?.left || 0);
       const stableHeight = Number(TG?.viewportStableHeight || TG?.viewportHeight || window.innerHeight || document.documentElement.clientHeight || 0);
       const viewportWidth = Number(window.innerWidth || document.documentElement.clientWidth || 0);
-      const sideGap = Math.max(10, Math.min(16, viewportWidth * 0.036));
-      const designWidth = 480;
+      const sideGap = Math.max(6, Math.min(10, viewportWidth * 0.022));
+      const designWidth = 456;
       const availableWidth = Math.max(320, viewportWidth - left - right - sideGap * 2);
       const shellScale = Math.min(1, availableWidth / designWidth);
 
@@ -2424,7 +2424,7 @@ export default function App() {
       }}
     >
       <style>{`
-        :root{--font-body:"Inter",system-ui,sans-serif;--font-display:"Gilroy-Bold","Gilroy-Heavy","Inter",system-ui,sans-serif;--font-button:"Gilroy-Medium","Gilroy-Bold","Inter",system-ui,sans-serif;--font-number:"Gilroy-Heavy","Gilroy-Bold","Inter",system-ui,sans-serif;--font-micro:"Inter",system-ui,sans-serif;--tg-side-gap:clamp(10px,3.6vw,16px);--tg-shell-width:480px;--tg-shell-scale:1;}
+        :root{--font-body:"Inter",system-ui,sans-serif;--font-display:"Gilroy-Bold","Gilroy-Heavy","Inter",system-ui,sans-serif;--font-button:"Gilroy-Medium","Gilroy-Bold","Inter",system-ui,sans-serif;--font-number:"Gilroy-Heavy","Gilroy-Bold","Inter",system-ui,sans-serif;--font-micro:"Inter",system-ui,sans-serif;--tg-side-gap:clamp(6px,2.2vw,10px);--tg-shell-width:456px;--tg-shell-scale:1;}
         *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;}
         ::-webkit-scrollbar{width:0;height:0;}*{scrollbar-width:none;}
         html{scroll-behavior:smooth;overscroll-behavior:none;overflow:hidden;overflow-x:clip;height:100%;width:100%;max-width:100%;background:#030408;}
