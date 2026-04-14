@@ -2422,6 +2422,10 @@ export default function App() {
         html{scroll-behavior:smooth;overscroll-behavior:none;overflow:hidden;overflow-x:clip;height:100%;width:100%;max-width:100%;background:#030408;}
         body{margin:0;padding:0;overflow:hidden;overflow-x:clip;height:100%;width:100%;max-width:100%;overscroll-behavior-y:none;-webkit-overflow-scrolling:touch;font-family:var(--font-body);background:#030408;color:rgba(224,231,255,.95);}
         #root{height:100%;width:100%;max-width:100%;overflow:hidden;overflow-x:clip;}
+        .rs-shell{width:100%;max-width:100%;overflow-x:hidden;}
+        .rs-content{width:100%;max-width:100%;overflow-x:hidden;}
+        .rs-content *{min-width:0;}
+        .rs-content img,.rs-content svg,.rs-content video,.rs-content canvas{max-width:100%;}
         button,[role="button"]{font-family:var(--font-button);font-weight:600;letter-spacing:-.01em;touch-action:manipulation;}
         input,textarea,select{font-family:var(--font-body);}
         .type-display{font-family:var(--font-display);font-weight:700;letter-spacing:-.03em;}
@@ -2542,6 +2546,17 @@ export default function App() {
         input[type=range]{-webkit-appearance:none;height:5px;border-radius:99px;outline:none;background:${th.border};}
         input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:${th.grad};cursor:pointer;box-shadow:0 2px 10px ${th.glow};}
         .swiper{overflow:visible!important;}
+        @media (max-width:390px){
+          .rs-content [style*="grid-template-columns: 1fr 1fr"],
+          .rs-content [style*="grid-template-columns: 1.08fr 0.92fr"]{
+            grid-template-columns:1fr !important;
+          }
+          .rs-content [style*="grid-template-columns: repeat(3, 1fr)"],
+          .rs-content [style*="grid-template-columns: repeat(3,minmax(0,1fr))"],
+          .rs-content [style*="grid-template-columns: repeat(3, minmax(0, 1fr))"]{
+            grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+          }
+        }
         @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
       `}</style>
 
@@ -2578,7 +2593,7 @@ export default function App() {
       {showLevelUp && <LevelUpNotification />}
       <SideDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} th={th} t={t} theme={theme} setTheme={setTheme} lang={lang} setLang={setLang} soundOn={soundOn} setSoundOn={setSoundOn} volume={volume} setVolume={setVolume} streak={streak} sfx={SFX} getLevel={getLevel} getLevelProgress={getLevelProgress} tgUser={tgUser} />
 
-      <div style={{ width: "100%", maxWidth: 480, display: "flex", flexDirection: "column", height: "var(--tg-app-height, 100dvh)", position: "relative", zIndex: 1, overflowX: "hidden" }}>
+      <div className="rs-shell" style={{ width: "100%", maxWidth: 480, display: "flex", flexDirection: "column", height: "var(--tg-app-height, 100dvh)", position: "relative", zIndex: 1, overflowX: "hidden" }}>
         {/* Header */}
         <header style={{ flexShrink: 0, position: "sticky", top: 0, zIndex: 100, padding: "calc(12px + var(--tg-safe-top, 0px)) var(--tg-side-gap) 0", background: "transparent" }}>
           <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: 58, padding: "12px 14px", borderRadius: 24, background: `linear-gradient(180deg, ${th.nav} 0%, ${th.surface} 100%)`, border: `1px solid ${th.border}`, boxShadow: th.shadow, backdropFilter: "blur(28px)", overflow: "hidden" }}>
@@ -2690,7 +2705,7 @@ export default function App() {
           </div>
         )}
 
-        <main ref={mainRef} style={{ flex: 1, padding: "14px var(--tg-side-gap) calc(100px + var(--tg-safe-bottom, 0px))", overflowY: "auto", overflowX: "hidden", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}>
+        <main className="rs-content" ref={mainRef} style={{ flex: 1, padding: "14px var(--tg-side-gap) calc(100px + var(--tg-safe-bottom, 0px))", overflowY: "auto", overflowX: "hidden", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}>
           <div
             key={tab}
             style={{
