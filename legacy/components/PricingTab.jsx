@@ -134,10 +134,19 @@ export default function PricingTab({
   walletBalance = 0,
   createCheckoutOrder,
   openCryptoBot,
+  openStarsInvoice,
   openOrderTelegram,
 }) {
   const g = (typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {};
-  const { LANGS = {}, PROMO_CODES = {}, SERVICES = [], SFX = {}, ls = { get: (_k, d) => d, set: () => {} } } = g;
+  const {
+    LANGS = {},
+    PROMO_CODES = {},
+    SERVICES = [],
+    SFX = {},
+    ls = { get: (_k, d) => d, set: () => {} },
+    estimateStarsFromUsd = (value) => Math.max(1, Math.ceil(Number(value || 0) * 48)),
+    getLocalPerStar = () => 0.84,
+  } = g;
   const ui = th || {
     text: DS.text,
     sub: DS.sub,
@@ -185,6 +194,8 @@ export default function PricingTab({
     briefPlaceholder: "For example: dark premium YouTube preview with clean typography and metallic accents.",
     paymentBalance: "Balance",
     paymentBalanceDesc: "Instant inside the app",
+    paymentStars: "Telegram Stars",
+    paymentStarsDesc: "Native Telegram checkout inside the mini app",
     paymentCrypto: "CryptoBot",
     paymentCryptoDesc: "Create a payment draft and finish in CryptoBot",
     paymentManual: "Manual",
@@ -197,8 +208,10 @@ export default function PricingTab({
     promoOpenCourse: "Open course",
     orderCreated: "Order created in profile",
     orderBalance: "Order paid from balance",
+    orderStars: "Stars checkout opened",
     orderPending: "Payment draft created",
     itemsLabel: "services",
+    starsEstimate: "Estimated",
   } : {
     serviceTitle: "Услуги",
     priceRate: `Цены в ${L.cur} · $1 = ${L.rate} ${L.cur}`,
@@ -225,6 +238,8 @@ export default function PricingTab({
     briefPlaceholder: "Например: темное премиальное YouTube preview с чистой типографикой и металлическими акцентами.",
     paymentBalance: "Баланс",
     paymentBalanceDesc: "Моментально внутри приложения",
+    paymentStars: "Telegram Stars",
+    paymentStarsDesc: "Нативная оплата прямо внутри mini app",
     paymentCrypto: "CryptoBot",
     paymentCryptoDesc: "Создать черновик оплаты и завершить в CryptoBot",
     paymentManual: "Вручную",
@@ -237,8 +252,10 @@ export default function PricingTab({
     promoOpenCourse: "Открыть курс",
     orderCreated: "Заказ создан в профиле",
     orderBalance: "Заказ оплачен с баланса",
+    orderStars: "Окно оплаты Stars открыто",
     orderPending: "Черновик платежа создан",
     itemsLabel: "услуги",
+    starsEstimate: "Оценка",
   };
 
   const [quantities, setQuantities] = useState(() => {
@@ -251,7 +268,7 @@ export default function PricingTab({
   });
   const [calcComplexity, setCalcComplexity] = useState("standard");
   const [calcUrgent, setCalcUrgent] = useState("normal");
-  const [paymentMethod, setPaymentMethod] = useState(walletBalance > 0 ? "balance" : "cryptobot");
+  const [paymentMethod, setPaymentMethod] = useState(walletBalance > 0 ? "balance" : "stars");
   const [brief, setBrief] = useState("");
   const [promoInput, setPromoInput] = useState("");
   const [appliedPromos, setAppliedPromos] = useState(() => ls.get("rs_applied_promos4", []));
@@ -277,9 +294,11 @@ export default function PricingTab({
 
   useEffect(() => {
     if (paymentMethod === "balance" && walletBalance < summary.subtotalUsd) {
-      setPaymentMethod("cryptobot");
+      setPaymentMethod("stars");
     }
   }, [paymentMethod, summary.subtotalUsd, walletBalance]);
+  const estimatedStars = useMemo(() => estimateStarsFromUsd(summary.subtotalUsd), [estimateStarsFromUsd, summary.subtotalUsd]);
+  const localStarValue = useMemo(() => getLocalPerStar(L.code, LANGS), [L.code, LANGS, getLocalPerStar]);
 
   const updateQty = (svc, delta) => {
     SFX.tap?.();
@@ -380,12 +399,15 @@ export default function PricingTab({
 
     if (!result || result.error === "empty") return;
     if (result.error === "insufficient_balance") {
-      setPaymentMethod("cryptobot");
+      setPaymentMethod("stars");
       showToast?.(copy.balanceLow, "error");
       return;
     }
 
-    if (paymentMethod === "cryptobot") {
+    if (paymentMethod === "stars") {
+      openStarsInvoice?.(result.order);
+      showToast?.(copy.orderStars, "success");
+    } else if (paymentMethod === "cryptobot") {
       openCryptoBot?.(result.order);
       showToast?.(copy.orderPending, "success");
     } else if (paymentMethod === "manual") {
@@ -527,6 +549,7 @@ export default function PricingTab({
             <div style={{ display: "grid", gap: 10 }}>
               {[
                 { id: "balance", title: copy.paymentBalance, desc: copy.paymentBalanceDesc, disabled: walletBalance < summary.subtotalUsd },
+                { id: "stars", title: copy.paymentStars, desc: `${copy.paymentStarsDesc} · ${estimatedStars} ★`, disabled: false },
                 { id: "cryptobot", title: copy.paymentCrypto, desc: copy.paymentCryptoDesc, disabled: false },
                 { id: "manual", title: copy.paymentManual, desc: copy.paymentManualDesc, disabled: false },
               ].map((item) => (
@@ -541,11 +564,16 @@ export default function PricingTab({
                   style={{ minHeight: 58, borderRadius: 18, border: `1px solid ${paymentMethod === item.id ? th.accent : item.disabled ? "rgba(255,255,255,.06)" : th.border}`, background: paymentMethod === item.id ? `${th.accent}14` : "rgba(255,255,255,.03)", color: item.disabled ? "rgba(148,163,184,.45)" : th.text, cursor: item.disabled ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, padding: "14px 16px", textAlign: "left" }}
                 >
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 900 }}>{item.title}</div>
-                    <div style={{ fontSize: 11.5, color: item.disabled ? "rgba(148,163,184,.45)" : ui.sub, marginTop: 4 }}>{item.desc}</div>
-                    {item.id === "balance" && item.disabled && <div style={{ fontSize: 10.5, color: "#fbbf24", marginTop: 6 }}>{copy.balanceLow}</div>}
-                  </div>
-                  <div style={{ width: 18, height: 18, borderRadius: "50%", border: `2px solid ${paymentMethod === item.id ? th.accent : item.disabled ? "rgba(255,255,255,.12)" : th.sub}`, background: paymentMethod === item.id ? th.accent : "transparent", flexShrink: 0 }} />
+                      <div style={{ fontSize: 13, fontWeight: 900 }}>{item.title}</div>
+                      <div style={{ fontSize: 11.5, color: item.disabled ? "rgba(148,163,184,.45)" : ui.sub, marginTop: 4 }}>{item.desc}</div>
+                      {item.id === "stars" && (
+                        <div style={{ fontSize: 10.5, color: ui.sub, marginTop: 6 }}>
+                          {copy.starsEstimate}: 1 ★ ≈ {localStarValue} {L.cur}
+                        </div>
+                      )}
+                      {item.id === "balance" && item.disabled && <div style={{ fontSize: 10.5, color: "#fbbf24", marginTop: 6 }}>{copy.balanceLow}</div>}
+                    </div>
+                    <div style={{ width: 18, height: 18, borderRadius: "50%", border: `2px solid ${paymentMethod === item.id ? th.accent : item.disabled ? "rgba(255,255,255,.12)" : th.sub}`, background: paymentMethod === item.id ? th.accent : "transparent", flexShrink: 0 }} />
                 </button>
               ))}
             </div>
@@ -563,7 +591,7 @@ export default function PricingTab({
               <div>
                 <div style={{ fontSize: 11, color: premiumSub, fontWeight: 800, marginBottom: 6, textTransform: "uppercase", letterSpacing: ".12em" }}>{copy.payable}</div>
                 <div style={{ fontSize: 36, fontWeight: 900, color: premiumOnSurface, letterSpacing: "-.03em", fontFamily: "var(--font-number)" }}>{fmt(summary.subtotalUsd)}</div>
-                <div style={{ fontSize: 12, color: premiumSub, marginTop: 6, fontWeight: 600 }}>{totalItems} {copy.itemsLabel} · {getDelivery()}</div>
+                <div style={{ fontSize: 12, color: premiumSub, marginTop: 6, fontWeight: 600 }}>{totalItems} {copy.itemsLabel} · {getDelivery()} · {estimatedStars} ★</div>
               </div>
               <button onClick={placeOrder} style={{ padding: "16px 32px", borderRadius: 18, background: th?.id === "graphite" ? "rgba(17,17,17,0.94)" : "rgba(255,255,255,0.95)", color: th?.id === "graphite" ? "#ffffff" : "#111111", border: "none", fontSize: 15, fontWeight: 900, cursor: "pointer", boxShadow: "0 10px 30px rgba(0,0,0,0.3)", flexShrink: 0 }}>{copy.orderBtn}</button>
             </div>

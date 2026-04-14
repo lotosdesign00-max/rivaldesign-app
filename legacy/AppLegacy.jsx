@@ -27,6 +27,7 @@ const makeEntityId = (prefix) => `${prefix}_${Date.now()}_${Math.random().toStri
 const roundMoney = (value) => Math.round(Number(value || 0) * 100) / 100;
 const moneyUsd = (value) => `$${roundMoney(value).toFixed(2)}`;
 const REMOTE_BRIEF_MARK = "__RIVAL_META__::";
+const STARS_UAH_PER_STAR = 0.84;
 
 function encodeRemoteBrief(userBrief = "", meta = {}) {
   return `${REMOTE_BRIEF_MARK}${JSON.stringify({
@@ -81,6 +82,26 @@ function deriveInvoiceHash(input = "") {
   if (webMatch?.[1]) return webMatch[1];
 
   return "";
+}
+
+function getLangConfigByCode(currencyCode = "", langs = {}) {
+  return Object.values(langs || {}).find((item) => item?.code === currencyCode) || null;
+}
+
+function getUahPerUsd(langs = {}) {
+  return getLangConfigByCode("UAH", langs)?.rate || 40;
+}
+
+function getLocalPerStar(currencyCode = "USD", langs = {}) {
+  if (currencyCode === "UAH") return STARS_UAH_PER_STAR;
+  const localRate = getLangConfigByCode(currencyCode, langs)?.rate || 1;
+  const usdPerStar = STARS_UAH_PER_STAR / getUahPerUsd(langs);
+  return roundMoney(usdPerStar * localRate);
+}
+
+function estimateStarsFromUsd(amountUsd, langs = {}) {
+  const totalUah = roundMoney(Number(amountUsd || 0) * getUahPerUsd(langs));
+  return Math.max(1, Math.ceil(totalUah / STARS_UAH_PER_STAR));
 }
 
 /*в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
@@ -606,7 +627,7 @@ const FAQ_DATA = {
   ru: [
     { q: 'Как работает процесс заказа?', a: '1. Написать в Telegram\n2. Обсудить детали\n3. ТЗ и сроки\n4. Предоплата 50%\n5. 1-3 дня работы\n6. До 3 правок бесплатно\n7. Итоговый расчёт' },
     { q: 'Что я получу в итоге?', a: 'PSD/AI/AEP исходники, PNG/JPG/SVG, 3 бесплатных правки, поддержка' },
-    { q: 'Способы оплаты?', a: 'Банковская карта, CryptoBot (USDT/TON/BTC), схема 50%+50%' },
+    { q: 'Способы оплаты?', a: 'Telegram Stars внутри mini app, банковская карта, CryptoBot (USDT/TON/BTC), схема 50%+50%' },
     { q: 'Срочный заказ?', a: 'От 3 часов с надбавкой +20-50%' },
     { q: 'Форматы файлов?', a: 'PNG, JPG, SVG, PSD, AI, GIF, MP4 — любой по запросу' },
     { q: 'Конфиденциальность?', a: 'Не публикую без разрешения. NDA по запросу' },
@@ -616,7 +637,7 @@ const FAQ_DATA = {
   en: [
     { q: 'How does the order process work?', a: '1. Message on Telegram\n2. Discuss brief & timeline\n3. 50% upfront\n4. 1-3 days production\n5. 3 free revisions\n6. Final payment' },
     { q: 'What will I receive?', a: 'PSD/AI/AEP source files, PNG/JPG/SVG exports, 3 free revisions, support' },
-    { q: 'Payment methods?', a: 'Any bank card, CryptoBot (USDT/TON/BTC), 50%+50% scheme' },
+    { q: 'Payment methods?', a: 'Telegram Stars inside the mini app, any bank card, CryptoBot (USDT/TON/BTC), 50%+50% scheme' },
     { q: 'Urgent orders?', a: 'Rush from 3 hours with +20-50% surcharge' },
     { q: 'File formats?', a: 'PNG, JPG, SVG, PSD, AI, GIF, MP4 — any on request' },
     { q: 'Confidentiality?', a: 'No publishing without permission. NDA available' },
@@ -829,7 +850,7 @@ const FAQ_DATA = {
     { q: "📝 Как работает процесс заказа?", a: "1. Пишешь мне в Telegram\n2. Обсуждаем детали и стиль\n3. Согласуем ТЗ и сроки\n4. Предоплата 50%\n5. Выполнение за 1–3 дня\n6. Первый результат\n7. До 3 правок бесплатно\n8. Итоговый расчёт и файлы" },
     { q: "💾 Что я получу в итоге?", a: "✅ Исходники PSD/AI/AEP\n✅ PNG/JPG/SVG экспорт\n✅ 3 бесплатных правки\n✅ Поддержка после сдачи\n✅ Конфиденциальность" },
     { q: "✏️ Сколько правок включено?", a: "🔄 3 бесплатных правки\n💰 Доп. правки по договорённости\n⚡ Правки в течение суток" },
-    { q: "💳 Способы оплаты?", a: "💳 Карта любой страны\n💸 CryptoBot (USDT/TON/BTC)\n💵 Схема 50% + 50%\n🔒 Безопасная сделка" },
+    { q: "💳 Способы оплаты?", a: "⭐ Telegram Stars внутри mini app\n💳 Карта любой страны\n💸 CryptoBot (USDT/TON/BTC)\n💵 Схема 50% + 50%\n🔒 Безопасная сделка" },
     { q: "⚡ Срочный заказ?", a: "🔥 Срочность от 3 часов\n💰 Надбавка +20–50%\n📞 Напиши — обсудим!" },
     { q: "📁 Какие форматы файлов?", a: "📦 PNG · JPG · SVG\n🎨 PSD · AI\n🎬 AEP · GIF · MP4\n✅ Любой формат по запросу" },
     { q: "🔒 Моя работа останется конфиденциальной?", a: "🔒 Твой проект — только твой\n✅ Не публикую без разрешения\n✅ NDA по запросу" },
@@ -839,7 +860,7 @@ const FAQ_DATA = {
     { q: "📝 How does the order process work?", a: "1. Message me on Telegram\n2. Discuss details & style\n3. Agree on brief & timeline\n4. 50% upfront payment\n5. Production in 1–3 days\n6. First delivery\n7. Up to 3 free revisions\n8. Final payment & files" },
     { q: "💾 What will I receive?", a: "✅ Source files PSD/AI/AEP\n✅ PNG/JPG/SVG exports\n✅ 3 free revisions\n✅ Post-delivery support\n✅ Confidentiality" },
     { q: "✏️ How many revisions?", a: "🔄 3 free revisions\n💰 Extra revisions by agreement\n⚡ Revisions within 24 hours" },
-    { q: "💳 Payment methods?", a: "💳 Card from any country\n💸 CryptoBot (USDT/TON/BTC)\n💵 50% + 50% scheme\n🔒 Secure transaction" },
+    { q: "💳 Payment methods?", a: "⭐ Telegram Stars inside the mini app\n💳 Card from any country\n💸 CryptoBot (USDT/TON/BTC)\n💵 50% + 50% scheme\n🔒 Secure transaction" },
     { q: "⚡ Urgent orders?", a: "🔥 Rush from 3 hours\n💰 +20–50% surcharge\n📞 Write me — let's discuss!" },
     { q: "📁 What file formats?", a: "📦 PNG · JPG · SVG\n🎨 PSD · AI\n🎬 AEP · GIF · MP4\n✅ Any format on request" },
     { q: "🔒 Confidentiality?", a: "🔒 Your project stays private\n✅ No publishing without permission\n✅ NDA available" },
@@ -1141,6 +1162,9 @@ export default function App() {
       tgUser,
       isTg,
       ls,
+      STARS_UAH_PER_STAR,
+      getLocalPerStar,
+      estimateStarsFromUsd,
       COURSES: liveCourses,
       COURSE_CATS,
       ACHIEVEMENTS,
@@ -1617,6 +1641,20 @@ export default function App() {
     }
   }, []);
 
+  const attachStarsInvoiceMeta = useCallback((paymentId, orderId = null, invoice) => {
+    const nextMeta = {
+      starsInvoiceLink: invoice.invoiceLink || invoice.link || "",
+      starsAmount: Number(invoice.amountStars || invoice.stars_amount || 0),
+      starsInvoiceSlug: invoice.slug || "",
+      updatedAt: new Date().toISOString(),
+    };
+
+    setPaymentHistory(prev => prev.map(payment => payment.id === paymentId ? { ...payment, ...nextMeta } : payment));
+    if (orderId) {
+      setOrders(prev => prev.map(order => order.id === orderId ? { ...order, ...nextMeta, updatedAt: nextMeta.updatedAt } : order));
+    }
+  }, []);
+
   const requestCryptoInvoice = useCallback(async ({ paymentId, orderId = null, amountUSD, title, payload }) => {
     const response = await fetch("/api/crypto-pay/create-invoice", {
       method: "POST",
@@ -1638,6 +1676,28 @@ export default function App() {
     attachInvoiceMeta(paymentId, orderId, json.result);
     return json.result;
   }, [attachInvoiceMeta, lang]);
+
+  const requestStarsInvoice = useCallback(async ({ paymentId, orderId = null, amountUSD, amountStars, title, description, payload }) => {
+    const response = await fetch("/api/telegram-stars/create-invoice", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amountUSD,
+        amountStars,
+        title,
+        description,
+        payload,
+      }),
+    });
+
+    const json = await response.json().catch(() => null);
+    if (!response.ok || !json?.ok || !json?.result?.invoiceLink) {
+      throw new Error(json?.error || "Unable to create Telegram Stars invoice");
+    }
+
+    attachStarsInvoiceMeta(paymentId, orderId, json.result);
+    return json.result;
+  }, [attachStarsInvoiceMeta]);
 
   const settlePaidPayment = useCallback(async (payment, invoiceStatus = "paid") => {
     const at = new Date().toISOString();
@@ -1749,38 +1809,54 @@ export default function App() {
     });
   }, [lang, pushTimelineEntry, th.accent]);
 
-  const requestTopUp = useCallback(async (amountInput) => {
+  const requestTopUp = useCallback(async (amountInput, methodInput = "cryptobot") => {
     const amountUSD = roundMoney(Number(amountInput));
     if (!amountUSD || amountUSD <= 0) {
       showToast(lang === "en" ? "Enter a valid amount" : "Введи корректную сумму", "error");
       SFX.error?.();
       return null;
     }
+    const method = methodInput === "stars" ? "stars" : "cryptobot";
+    const starsAmount = estimateStarsFromUsd(amountUSD, LANGS);
     const payment = {
       id: makeEntityId("topup"),
       type: "topup",
-      method: "cryptobot",
-      title: lang === "en" ? "Balance top-up" : "Пополнение баланса",
+      method,
+      title: method === "stars"
+        ? (lang === "en" ? "Balance top-up · Telegram Stars" : "Пополнение баланса · Telegram Stars")
+        : (lang === "en" ? "Balance top-up" : "Пополнение баланса"),
       amountUSD,
       status: "pending",
       createdAt: new Date().toISOString(),
+      starsAmount: method === "stars" ? starsAmount : undefined,
     };
     setPaymentHistory(prev => [payment, ...prev]);
     try {
-      const invoice = await requestCryptoInvoice({
-        paymentId: payment.id,
-        amountUSD,
-        title: payment.title,
-        payload: JSON.stringify({ kind: "topup", paymentId: payment.id }),
-      });
+      const invoice = method === "stars"
+        ? await requestStarsInvoice({
+            paymentId: payment.id,
+            amountUSD,
+            amountStars: starsAmount,
+            title: lang === "en" ? "Rival Space Balance" : "Баланс Rival Space",
+            description: lang === "en"
+              ? `Top up the internal balance for ${starsAmount} Stars`
+              : `Пополнение внутреннего баланса на ${starsAmount} Stars`,
+            payload: JSON.stringify({ kind: "topup", paymentId: payment.id, amountUSD, starsAmount }),
+          })
+        : await requestCryptoInvoice({
+            paymentId: payment.id,
+            amountUSD,
+            title: payment.title,
+            payload: JSON.stringify({ kind: "topup", paymentId: payment.id }),
+          });
       if (remoteSync.user) {
         try {
           const remoteResult = await postLegacySync("/api/legacy-sync/create-topup", {
             amountUSD,
             status: "pending",
-            method: "cryptobot",
-            cryptoInvoiceId: invoice.invoice_id,
-            cryptoPayUrl: invoice.bot_invoice_url || invoice.mini_app_invoice_url || invoice.web_app_invoice_url || "",
+            method,
+            cryptoInvoiceId: method === "cryptobot" ? invoice.invoice_id : null,
+            cryptoPayUrl: method === "cryptobot" ? (invoice.bot_invoice_url || invoice.mini_app_invoice_url || invoice.web_app_invoice_url || "") : null,
           });
           setPaymentHistory(prev => prev.map(item => item.id === payment.id ? {
             ...item,
@@ -1788,39 +1864,58 @@ export default function App() {
           } : item));
         } catch {}
       }
-      showToast(lang === "en" ? "Invoice created" : "Счет создан", "success");
+      showToast(
+        method === "stars"
+          ? (lang === "en" ? "Stars checkout created" : "Оплата Stars создана")
+          : (lang === "en" ? "Invoice created" : "Счет создан"),
+        "success"
+      );
       SFX.success?.();
       return {
         ...payment,
-        cryptoInvoiceId: invoice.invoice_id,
-        cryptoInvoiceHash: invoice.hash || deriveInvoiceHash(invoice.bot_invoice_url || invoice.mini_app_invoice_url || invoice.web_app_invoice_url || ""),
-        cryptoInvoiceUrl: invoice.bot_invoice_url || invoice.mini_app_invoice_url || invoice.web_app_invoice_url || "",
-        cryptoInvoiceUrls: {
-          bot: invoice.bot_invoice_url || "",
-          mini: invoice.mini_app_invoice_url || "",
-          web: invoice.web_app_invoice_url || "",
-        },
+        ...(method === "stars"
+          ? {
+              starsInvoiceLink: invoice.invoiceLink || "",
+              starsAmount,
+              starsInvoiceSlug: invoice.slug || "",
+            }
+          : {
+              cryptoInvoiceId: invoice.invoice_id,
+              cryptoInvoiceHash: invoice.hash || deriveInvoiceHash(invoice.bot_invoice_url || invoice.mini_app_invoice_url || invoice.web_app_invoice_url || ""),
+              cryptoInvoiceUrl: invoice.bot_invoice_url || invoice.mini_app_invoice_url || invoice.web_app_invoice_url || "",
+              cryptoInvoiceUrls: {
+                bot: invoice.bot_invoice_url || "",
+                mini: invoice.mini_app_invoice_url || "",
+                web: invoice.web_app_invoice_url || "",
+              },
+            }),
       };
     } catch (error) {
       setPaymentHistory(prev => prev.map(item => item.id === payment.id ? { ...item, invoiceError: error.message } : item));
-      showToast(lang === "en" ? `CryptoBot error: ${error.message}` : `Ошибка CryptoBot: ${error.message}`, "error");
+      showToast(
+        method === "stars"
+          ? (lang === "en" ? `Telegram Stars error: ${error.message}` : `Ошибка Telegram Stars: ${error.message}`)
+          : (lang === "en" ? `CryptoBot error: ${error.message}` : `Ошибка CryptoBot: ${error.message}`),
+        "error"
+      );
       SFX.error?.();
     }
     return payment;
-  }, [lang, postLegacySync, remoteSync.user, requestCryptoInvoice, showToast]);
+  }, [lang, postLegacySync, remoteSync.user, requestCryptoInvoice, requestStarsInvoice, showToast]);
 
   const createCheckoutOrder = useCallback(async (payload) => {
     const items = Array.isArray(payload?.items) ? payload.items.filter(item => item.qty > 0) : [];
     if (!items.length) return { error: "empty" };
 
     const totalUSD = roundMoney(payload.totalUSD);
-    const paymentMethod = payload.paymentMethod || "cryptobot";
+    const paymentMethod = payload.paymentMethod || "stars";
     const createdAt = new Date().toISOString();
     const orderId = makeEntityId("order");
     const paymentId = makeEntityId("payment");
     const orderNo = String(Date.now()).slice(-6);
     const brief = String(payload.brief || "").trim();
     const localRate = LANGS[lang]?.rate || 1;
+    const starsAmount = estimateStarsFromUsd(totalUSD, LANGS);
 
     if (paymentMethod === "balance" && walletBalance < totalUSD) {
       showToast(lang === "en" ? "Not enough balance" : "Недостаточно баланса", "error");
@@ -1877,6 +1972,7 @@ export default function App() {
       status: paymentMethod === "balance" ? "paid" : "pending",
       createdAt,
       paidAt: paymentMethod === "balance" ? createdAt : null,
+      starsAmount: paymentMethod === "stars" ? starsAmount : undefined,
     };
 
     if (paymentMethod === "balance") {
@@ -1893,7 +1989,29 @@ export default function App() {
     setOrders(prev => [baseOrder, ...prev]);
     setPaymentHistory(prev => [payment, ...prev]);
 
-    if (paymentMethod === "cryptobot") {
+    if (paymentMethod === "stars") {
+      try {
+        const invoice = await requestStarsInvoice({
+          paymentId,
+          orderId,
+          amountUSD: totalUSD,
+          amountStars: starsAmount,
+          title: `${lang === "en" ? "Rival Space Order" : "Заказ Rival Space"} #${orderNo}`,
+          description: lang === "en"
+            ? `${items.map(item => item.name).join(", ")} • ${starsAmount} Stars`
+            : `${items.map(item => item.name).join(", ")} • ${starsAmount} Stars`,
+          payload: JSON.stringify({ kind: "order", paymentId, orderId, orderNo, amountUSD: totalUSD, starsAmount }),
+        });
+        baseOrder.starsInvoiceLink = invoice.invoiceLink || "";
+        baseOrder.starsAmount = starsAmount;
+        baseOrder.starsInvoiceSlug = invoice.slug || "";
+      } catch (error) {
+        setPaymentHistory(prev => prev.map(item => item.id === paymentId ? { ...item, invoiceError: error.message } : item));
+        setOrders(prev => prev.map(item => item.id === orderId ? { ...item, invoiceError: error.message } : item));
+        showToast(lang === "en" ? `Telegram Stars error: ${error.message}` : `Ошибка Telegram Stars: ${error.message}`, "error");
+        SFX.error?.();
+      }
+    } else if (paymentMethod === "cryptobot") {
       try {
         const invoice = await requestCryptoInvoice({
           paymentId,
@@ -1963,12 +2081,14 @@ export default function App() {
     showToast(
       paymentMethod === "balance"
         ? (lang === "en" ? "Order created and paid" : "Заказ создан и оплачен")
-        : (lang === "en" ? "Order draft created" : "Черновик заказа создан"),
+        : paymentMethod === "stars"
+          ? (lang === "en" ? "Stars checkout created" : "Оплата Stars создана")
+          : (lang === "en" ? "Order draft created" : "Черновик заказа создан"),
       "success"
     );
     SFX.order?.();
     return { order: baseOrder, payment };
-  }, [lang, postLegacySync, remoteSync.user, requestCryptoInvoice, showToast, syncRemoteState, walletBalance]);
+  }, [lang, postLegacySync, remoteSync.user, requestCryptoInvoice, requestStarsInvoice, showToast, syncRemoteState, walletBalance]);
 
   const refreshInvoiceStatus = useCallback(async (paymentId) => {
     const payment = paymentHistory.find(item => item.id === paymentId);
@@ -2083,6 +2203,49 @@ export default function App() {
       window.open("https://t.me/send", "_blank");
     }
   }, [lang, showToast]);
+
+  const openStarsInvoice = useCallback((context) => {
+    const invoiceLink = context?.starsInvoiceLink || "";
+    if (!invoiceLink) {
+      showToast(
+        context?.invoiceError || (lang === "en" ? "Telegram Stars checkout is not ready yet" : "Оплата Telegram Stars еще не готова"),
+        "error"
+      );
+      return;
+    }
+
+    const paymentId = context?.paymentId || context?.id || null;
+    const completeStarsPayment = async (status) => {
+      if (status === "paid" && paymentId) {
+        const payment = paymentHistory.find((item) => item.id === paymentId);
+        if (payment && payment.status !== "paid") {
+          await settlePaidPayment(payment, "paid");
+        }
+        return;
+      }
+
+      if (status === "cancelled") {
+        showToast(lang === "en" ? "Telegram Stars payment canceled" : "Оплата Telegram Stars отменена", "info");
+      }
+    };
+
+    try {
+      if (TG?.openInvoice) {
+        TG.openInvoice(invoiceLink, completeStarsPayment);
+        return;
+      }
+
+      if (invoiceLink.startsWith("http")) {
+        TG?.openLink?.(invoiceLink);
+        return;
+      }
+    } catch {
+      window.open(invoiceLink, "_blank");
+      return;
+    }
+
+    window.open(invoiceLink, "_blank");
+  }, [lang, paymentHistory, settlePaidPayment, showToast]);
 
   const requestPaymentDetails = useCallback((country) => {
     const countryName = lang === "en" ? country.nameEn : country.name;
@@ -2485,10 +2648,10 @@ export default function App() {
             {tab === "gallery" && <GalleryTab th={th} t={t} lang={lang} wishlist={wishlist} toggleWishlist={toggleWishlist} onOpenImage={item => setSelImage(item)} />}
             {tab === "ai" && <AITab th={th} t={t} lang={lang} showToast={showToast} />}
             {tab === "courses" && <CoursesTab th={th} t={t} lang={lang} showToast={showToast} addXPfn={addXPfn} onUnlockAchieve={unlockAchievement} streak={streak} setStreak={setStreak} />}
-            {tab === "pricing" && <PricingTab th={th} t={t} lang={lang} cart={cart} addToCart={addToCart} removeFromCart={removeFromCart} updateQty={updateQty} clearCart={clearCart} showToast={showToast} onUnlockAchieve={unlockAchievement} setTab={setTab} walletBalance={walletBalance} createCheckoutOrder={createCheckoutOrder} openCryptoBot={openCryptoBot} openOrderTelegram={openOrderTelegram} />}
+            {tab === "pricing" && <PricingTab th={th} t={t} lang={lang} cart={cart} addToCart={addToCart} removeFromCart={removeFromCart} updateQty={updateQty} clearCart={clearCart} showToast={showToast} onUnlockAchieve={unlockAchievement} setTab={setTab} walletBalance={walletBalance} createCheckoutOrder={createCheckoutOrder} openCryptoBot={openCryptoBot} openStarsInvoice={openStarsInvoice} openOrderTelegram={openOrderTelegram} />}
 
             {tab === "more" && <MoreTab th={th} t={t} lang={lang} showToast={showToast} streak={streak} onUnlockAchieve={unlockAchievement} addXPfn={addXPfn} />}
-            {tab === "profile" && <ProfileTab th={th} t={t} lang={lang} streak={streak} achievements={achievements} showToast={showToast} setTab={setTab} setSelectedAchievement={setSelectedAchievement} walletBalance={walletBalance} paymentHistory={paymentHistory} orders={orders} onRequestTopUp={requestTopUp} onMarkPaymentSubmitted={markPaymentSubmitted} onRefreshInvoiceStatus={refreshInvoiceStatus} onAddOrderMessage={addOrderMessage} onOpenCryptoBot={openCryptoBot} onOpenTelegram={openOrderTelegram} onRequestPaymentDetails={requestPaymentDetails} />}
+            {tab === "profile" && <ProfileTab th={th} t={t} lang={lang} streak={streak} achievements={achievements} showToast={showToast} setTab={setTab} setSelectedAchievement={setSelectedAchievement} walletBalance={walletBalance} paymentHistory={paymentHistory} orders={orders} onRequestTopUp={requestTopUp} onMarkPaymentSubmitted={markPaymentSubmitted} onRefreshInvoiceStatus={refreshInvoiceStatus} onAddOrderMessage={addOrderMessage} onOpenCryptoBot={openCryptoBot} onOpenStarsInvoice={openStarsInvoice} onOpenTelegram={openOrderTelegram} onRequestPaymentDetails={requestPaymentDetails} />}
           </div>
         </main>
 

@@ -13,6 +13,7 @@ export default function OrdersTab({
   onRefreshInvoiceStatus,
   onAddOrderMessage,
   onOpenCryptoBot,
+  onOpenStarsInvoice,
   onOpenTelegram,
   onRequestPaymentDetails,
 }) {
@@ -31,6 +32,7 @@ export default function OrdersTab({
         onRefreshInvoiceStatus={onRefreshInvoiceStatus}
         onAddOrderMessage={onAddOrderMessage}
         onOpenCryptoBot={onOpenCryptoBot}
+        onOpenStarsInvoice={onOpenStarsInvoice}
         onOpenTelegram={onOpenTelegram}
         onOpenPaymentDetails={() => setPaymentDetailsOpen(true)}
       />

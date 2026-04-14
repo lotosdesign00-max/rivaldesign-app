@@ -55,6 +55,9 @@ function paymentTypeLabel(payment, lang) {
 }
 
 function paymentMethodLabel(method, lang) {
+  if (method === "stars") {
+    return "Telegram Stars";
+  }
   if (method === "cryptobot") {
     return "CryptoBot";
   }
@@ -99,6 +102,7 @@ function OrderCard({
   onAddMessage,
   onOpenTelegram,
   onOpenCryptoBot,
+  onOpenStarsInvoice,
   onMarkPaymentSubmitted,
   onRefreshInvoiceStatus,
 }) {
@@ -202,7 +206,7 @@ function OrderCard({
       </div>
 
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-        {(order.status === "waiting_payment" || order.status === "payment_review") && (
+        {(order.status === "waiting_payment" || order.status === "payment_review") && order.paymentMethod !== "stars" && (
           <button
             onClick={() => onMarkPaymentSubmitted?.(order.paymentId, order.id)}
             style={{
@@ -239,6 +243,26 @@ function OrderCard({
             }}
           >
             {lang === "en" ? "Check payment" : "Проверить оплату"}
+          </button>
+        )}
+
+        {order.paymentMethod === "stars" && (
+          <button
+            onClick={() => onOpenStarsInvoice?.(order)}
+            style={{
+              flex: 1,
+              minWidth: 150,
+              height: 42,
+              borderRadius: 14,
+              border: `1px solid ${th.border}`,
+              background: "rgba(255,255,255,.05)",
+              color: th.text,
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: "pointer",
+            }}
+          >
+            {lang === "en" ? `Pay ${order.starsAmount || ""} Stars` : `Оплатить ${order.starsAmount || ""} Stars`}
           </button>
         )}
 
@@ -441,14 +465,19 @@ export default function ClientHub({
   onRefreshInvoiceStatus,
   onAddOrderMessage,
   onOpenCryptoBot,
+  onOpenStarsInvoice,
   onOpenTelegram,
   onOpenPaymentDetails,
 }) {
   const [section, setSection] = useState("balance");
   const [topupOpen, setTopupOpen] = useState(false);
   const [topupAmount, setTopupAmount] = useState("50");
+  const [topupMethod, setTopupMethod] = useState("stars");
   const [drafts, setDrafts] = useState({});
   const [paintReady, setPaintReady] = useState(false);
+  const g = (typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {};
+  const { estimateStarsFromUsd = (value) => Math.max(1, Math.ceil(Number(value || 0) * 48)) } = g;
+  const topupStars = useMemo(() => estimateStarsFromUsd(Number(topupAmount || 0)), [estimateStarsFromUsd, topupAmount]);
 
   const summary = useMemo(() => {
     const activeOrders = orders.filter((order) => ["waiting_payment", "payment_review", "queued", "in_progress", "preview_sent", "revision"].includes(order.status)).length;
@@ -499,9 +528,13 @@ export default function ClientHub({
   }, [topupOpen]);
 
   const submitTopUp = async () => {
-    const payment = await onRequestTopUp?.(topupAmount);
+    const payment = await onRequestTopUp?.(topupAmount, topupMethod);
     if (!payment) return;
     setTopupOpen(false);
+    if (topupMethod === "stars") {
+      onOpenStarsInvoice?.(payment);
+      return;
+    }
     onOpenCryptoBot?.(payment);
   };
 
@@ -612,8 +645,8 @@ export default function ClientHub({
             </div>
             <div style={{ fontSize: 12.5, color: th.sub, lineHeight: 1.6, marginTop: 10 }}>
               {lang === "en"
-                ? "Use the balance for instant payment inside the app, keep CryptoBot drafts for separate checkouts or request manual payment details here."
-                : "Используй баланс для мгновенной оплаты внутри приложения, храни черновики оплат через CryptoBot или запроси здесь ручные реквизиты."}
+                ? "Use the balance for instant payment inside the app, pay through Telegram Stars, keep CryptoBot drafts or request manual payment details here."
+                : "Используй баланс для мгновенной оплаты внутри приложения, плати через Telegram Stars, храни черновики CryptoBot или запроси здесь ручные реквизиты."}
             </div>
             <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
               <button
@@ -631,7 +664,7 @@ export default function ClientHub({
                   cursor: "pointer",
                 }}
               >
-                {lang === "en" ? "Top up through CryptoBot" : "Пополнить через CryptoBot"}
+                {lang === "en" ? "Top up balance" : "Пополнить баланс"}
               </button>
               <button
                 onClick={() => onOpenPaymentDetails?.()}
@@ -717,7 +750,7 @@ export default function ClientHub({
                       }}
                     >
                       <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                      {payment.status !== "paid" && (
+                      {payment.status !== "paid" && payment.method !== "stars" && (
                         <button
                           onClick={() => onMarkPaymentSubmitted?.(payment.id, payment.orderId)}
                           style={{
@@ -751,6 +784,24 @@ export default function ClientHub({
                           }}
                         >
                           {lang === "en" ? "Check payment" : "Проверить оплату"}
+                        </button>
+                      )}
+                      {payment.method === "stars" && (
+                        <button
+                          onClick={() => onOpenStarsInvoice?.(payment)}
+                          style={{
+                            minWidth: 148,
+                            height: 38,
+                            borderRadius: 12,
+                            border: `1px solid ${th.border}`,
+                            background: "transparent",
+                            color: th.text,
+                            fontSize: 11.5,
+                            fontWeight: 700,
+                            cursor: "pointer",
+                          }}
+                        >
+                          {lang === "en" ? `Pay ${payment.starsAmount || ""} Stars` : `Оплатить ${payment.starsAmount || ""} Stars`}
                         </button>
                       )}
                       {payment.method === "cryptobot" && (
@@ -817,6 +868,7 @@ export default function ClientHub({
                 onAddMessage={onAddOrderMessage}
                 onOpenTelegram={onOpenTelegram}
                 onOpenCryptoBot={onOpenCryptoBot}
+                onOpenStarsInvoice={onOpenStarsInvoice}
                 onMarkPaymentSubmitted={onMarkPaymentSubmitted}
                 onRefreshInvoiceStatus={onRefreshInvoiceStatus}
               />
@@ -874,13 +926,42 @@ export default function ClientHub({
               {lang === "en" ? "Balance top-up" : "Пополнение баланса"}
             </div>
             <div style={{ fontSize: 12.5, color: th.sub, lineHeight: 1.6, marginTop: 8 }}>
-              {lang === "en"
-                ? "Enter the amount in USDT. We'll create a payment draft and open the exact payment link."
-                : "Введи сумму в USDT. Мы создадим платежный черновик и откроем точную ссылку на оплату."}
+              {topupMethod === "stars"
+                ? (lang === "en"
+                  ? "Enter the base amount. We'll calculate Stars by the current in-app rate and open the native Telegram checkout."
+                  : "Введи базовую сумму. Мы пересчитаем её в Stars по текущему курсу приложения и откроем нативную оплату Telegram.")
+                : (lang === "en"
+                  ? "Enter the amount in USDT. We'll create a payment draft and open the exact payment link."
+                  : "Введи сумму в USDT. Мы создадим платежный черновик и откроем точную ссылку на оплату.")}
             </div>
             <div style={{ marginTop: 16 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+                {[
+                  { id: "stars", label: "Telegram Stars" },
+                  { id: "cryptobot", label: "CryptoBot" },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setTopupMethod(item.id)}
+                    style={{
+                      height: 42,
+                      borderRadius: 14,
+                      border: `1px solid ${topupMethod === item.id ? th.accent : th.border}`,
+                      background: topupMethod === item.id ? `${th.accent}16` : "rgba(255,255,255,.04)",
+                      color: topupMethod === item.id ? th.accent : th.text,
+                      fontSize: 12,
+                      fontWeight: 800,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
               <div className="type-micro" style={{ color: th.sub, fontSize: 10, marginBottom: 8 }}>
-                {lang === "en" ? "Amount (USDT)" : "Сумма (USDT)"}
+                {topupMethod === "stars"
+                  ? (lang === "en" ? "Amount (USD base)" : "Сумма (USD база)")
+                  : (lang === "en" ? "Amount (USDT)" : "Сумма (USDT)")}
               </div>
               <input
                 value={topupAmount}
@@ -898,6 +979,13 @@ export default function ClientHub({
                   outline: "none",
                 }}
               />
+              {topupMethod === "stars" && (
+                <div style={{ marginTop: 10, fontSize: 12, color: th.sub, lineHeight: 1.6 }}>
+                  {lang === "en"
+                    ? `This amount will open a native Telegram Stars payment for about ${topupStars} Stars.`
+                    : `Для этой суммы откроется нативная оплата Telegram Stars примерно на ${topupStars} Stars.`}
+                </div>
+              )}
             </div>
             <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
               <button
@@ -930,9 +1018,11 @@ export default function ClientHub({
                   cursor: "pointer",
                 }}
               >
-                {lang === "en" ? "Create payment draft" : "Создать черновик платежа"}
-              </button>
-            </div>
+                  {topupMethod === "stars"
+                    ? (lang === "en" ? "Open Stars checkout" : "Открыть оплату Stars")
+                    : (lang === "en" ? "Create payment draft" : "Создать черновик платежа")}
+                </button>
+              </div>
           </div>
         </div>
       )}

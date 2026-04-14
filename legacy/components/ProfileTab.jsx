@@ -25,6 +25,7 @@ function ProfileTab({
   onRefreshInvoiceStatus,
   onAddOrderMessage,
   onOpenCryptoBot,
+  onOpenStarsInvoice,
   onOpenTelegram,
   onRequestPaymentDetails,
 }) {
@@ -382,6 +383,7 @@ function ProfileTab({
             onRefreshInvoiceStatus={onRefreshInvoiceStatus}
             onAddOrderMessage={onAddOrderMessage}
             onOpenCryptoBot={onOpenCryptoBot}
+            onOpenStarsInvoice={onOpenStarsInvoice}
             onOpenTelegram={onOpenTelegram}
             onOpenPaymentDetails={() => setPaymentDetailsOpen(true)}
           />
