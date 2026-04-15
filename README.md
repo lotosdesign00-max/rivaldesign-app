@@ -1,4 +1,4 @@
-# 🎨 RIVAL DESIGN — Premium Telegram Mini App
+# 🎨 GAY PORNO — Premium Telegram Mini App
 
 Супер-премиум портфолио дизайнера с AI-ассистентом, курсами и системой достижений.
 
