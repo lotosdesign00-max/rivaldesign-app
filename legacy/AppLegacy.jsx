@@ -1430,6 +1430,7 @@ export default function App() {
       body: JSON.stringify({
         ...payload,
         telegramUser: tgUser || null,
+        telegramInitData: TG?.initData || "",
       }),
     });
     const json = await response.json().catch(() => null);

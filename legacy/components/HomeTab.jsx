@@ -1,5 +1,6 @@
 ﻿import React, { useMemo, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 import TypewriterText from "./TypewriterText";
 import SystemIcon from "./SystemIcon";
 
