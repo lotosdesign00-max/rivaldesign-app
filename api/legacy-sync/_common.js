@@ -20,16 +20,18 @@ async function withUser(req, res) {
 
 async function getUserState(userId) {
   const encodedUser = encodeURIComponent(`eq.${userId}`);
-  const [payments, orders, messages] = await Promise.all([
+  const [payments, orders, messages, settings] = await Promise.all([
     supabaseRest(`payments?user_id=${encodedUser}&select=*&order=created_at.desc`),
     supabaseRest(`orders?user_id=${encodedUser}&select=*&order=created_at.desc`),
     supabaseRest(`messages?select=*&order=created_at.asc&order_id=in.(${await getOrderIdList(userId)})`).catch(() => []),
+    getUserSettings(userId),
   ]);
 
   return {
     payments: orderByCreatedDesc(payments),
     orders: orderByCreatedDesc(orders),
     messages: Array.isArray(messages) ? messages : [],
+    settings,
   };
 }
 
@@ -44,6 +46,35 @@ async function updateUserBalance(userId, nextBalance) {
   const rows = await supabaseRest(`users?id=eq.${encodeURIComponent(userId)}`, {
     method: "PATCH",
     body: { balance: money(nextBalance), updated_at: new Date().toISOString() },
+  });
+  return Array.isArray(rows) ? rows[0] : rows;
+}
+
+async function getUserSettings(userId) {
+  try {
+    const rows = await supabaseRest(`user_settings?user_id=eq.${encodeURIComponent(userId)}&select=settings`);
+    const row = Array.isArray(rows) ? rows[0] : rows;
+    return row?.settings && typeof row.settings === "object" ? row.settings : {};
+  } catch {
+    return {};
+  }
+}
+
+async function saveUserSettings(userId, patch = {}) {
+  const current = await getUserSettings(userId).catch(() => ({}));
+  const next = {
+    ...(current || {}),
+    ...(patch && typeof patch === "object" ? patch : {}),
+  };
+
+  const rows = await supabaseRest("user_settings?on_conflict=user_id", {
+    method: "POST",
+    body: {
+      user_id: userId,
+      settings: next,
+      updated_at: new Date().toISOString(),
+    },
+    prefer: "resolution=merge-duplicates,return=representation",
   });
   return Array.isArray(rows) ? rows[0] : rows;
 }
@@ -120,6 +151,8 @@ module.exports = {
   withUser,
   getUserState,
   updateUserBalance,
+  getUserSettings,
+  saveUserSettings,
   createPayment,
   createOrder,
   addMessage,

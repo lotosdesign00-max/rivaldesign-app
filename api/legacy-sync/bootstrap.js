@@ -8,5 +8,6 @@ module.exports = handleApi(async (req, res) => {
     payments: state.payments,
     orders: state.orders,
     messages: state.messages,
+    settings: state.settings,
   };
 });

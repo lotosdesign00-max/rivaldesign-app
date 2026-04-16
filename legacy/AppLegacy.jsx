@@ -978,6 +978,57 @@ const OrbitalMark = ({ size = 18 }) => (
 const tgUserId = tgUser?.id || "local";
 const lsPendingWrites = new Map();
 let lsFlushTimer = null;
+const REMOTE_ENTITY_KEYS = new Set(["rs_wallet_balance4", "rs_payment_history4", "rs_orders4"]);
+const EXTRA_SETTING_KEYS = new Set(["freepack_subscribed"]);
+
+function shouldSyncSettingKey(key) {
+  return typeof key === "string" && ((key.startsWith("rs_") && !REMOTE_ENTITY_KEYS.has(key)) || EXTRA_SETTING_KEYS.has(key));
+}
+
+function getUserStoragePrefix() {
+  return `rs_${tgUserId}_`;
+}
+
+function parseStoredValue(value, fallback = null) {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function normalizeThemeId(stored) {
+  const id = stored === "graphite" ? "deepspace" : stored;
+  return THEMES[id] ? id : "deepspace";
+}
+
+function collectLocalSettings() {
+  if (typeof window === "undefined") return {};
+  const prefix = getUserStoragePrefix();
+  const settings = {};
+  try {
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const storageKey = localStorage.key(i);
+      if (!storageKey || !storageKey.startsWith(prefix)) continue;
+      const key = storageKey.slice(prefix.length);
+      if (!shouldSyncSettingKey(key)) continue;
+      settings[key] = parseStoredValue(localStorage.getItem(storageKey), null);
+    }
+  } catch {}
+  return settings;
+}
+
+function hydrateLocalSettings(settings = {}) {
+  if (typeof window === "undefined" || !settings || typeof settings !== "object") return;
+  const prefix = getUserStoragePrefix();
+  window.__RIVAL_REMOTE_SETTINGS_CACHE = { ...(window.__RIVAL_REMOTE_SETTINGS_CACHE || {}), ...settings };
+  for (const [key, value] of Object.entries(settings)) {
+    if (!shouldSyncSettingKey(key)) continue;
+    try {
+      localStorage.setItem(`${prefix}${key}`, JSON.stringify(value));
+    } catch {}
+  }
+}
 
 function flushLocalStorageQueue() {
   lsFlushTimer = null;
@@ -1008,6 +1059,13 @@ if (typeof window !== "undefined" && !window.__rsLocalStorageFlushBound) {
 const ls = {
   get: (k, d) => { 
     try { 
+      if (
+        typeof window !== "undefined"
+        && window.__RIVAL_REMOTE_SETTINGS_CACHE
+        && Object.prototype.hasOwnProperty.call(window.__RIVAL_REMOTE_SETTINGS_CACHE, k)
+      ) {
+        return window.__RIVAL_REMOTE_SETTINGS_CACHE[k];
+      }
       const key = `rs_${tgUserId}_${k}`;
       if (lsPendingWrites.has(key)) return JSON.parse(lsPendingWrites.get(key));
       const v = localStorage.getItem(key); 
@@ -1018,6 +1076,13 @@ const ls = {
     try { 
       const key = `rs_${tgUserId}_${k}`;
       scheduleLocalStorageWrite(key, JSON.stringify(v));
+      if (typeof window !== "undefined") {
+        if (!window.__RIVAL_REMOTE_SETTINGS_CACHE) window.__RIVAL_REMOTE_SETTINGS_CACHE = {};
+        if (shouldSyncSettingKey(k)) {
+          window.__RIVAL_REMOTE_SETTINGS_CACHE[k] = v;
+          window.__RIVAL_REMOTE_SETTINGS_SYNC?.(k, v);
+        }
+      }
     } catch {} 
   },
 };
@@ -1123,8 +1188,7 @@ export default function App() {
   const [theme, setTheme] = useState(() => {
     const stored = ls.get("rs_theme4", "graphite");
     const schema = ls.get("rs_theme_schema4", "v1");
-    const id = schema === "v1" && stored === "graphite" ? "deepspace" : stored;
-    if (id === "deepspace") return THEMES.deepspace;
+    const id = schema === "v1" && stored === "graphite" ? "deepspace" : normalizeThemeId(stored);
     return THEMES[id] || THEMES.deepspace;
   });
   const [lang, setLang] = useState(() => { const l = ls.get("rs_lang4", "ru"); return LANGS[l] ? l : "ru"; });
@@ -1154,6 +1218,10 @@ export default function App() {
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [levelUpData, setLevelUpData] = useState({ level: 0, xp: 0 });
   const [selectedAchievement, setSelectedAchievement] = useState(null);
+  const remoteSettingsAppliedRef = useRef(false);
+  const remoteSettingsReadyRef = useRef(false);
+  const remoteSettingsQueueRef = useRef({});
+  const remoteSettingsTimerRef = useRef(null);
 
   useEffect(() => { _soundEnabled = soundOn; }, [soundOn]);
   useEffect(() => { _volume = volume; }, [volume]);
@@ -1440,6 +1508,81 @@ export default function App() {
     return json.result;
   }, []);
 
+  const flushRemoteSettings = useCallback(async () => {
+    if (!remoteSync.user || !remoteSettingsReadyRef.current) return;
+    const patch = remoteSettingsQueueRef.current;
+    remoteSettingsQueueRef.current = {};
+    if (!patch || !Object.keys(patch).length) return;
+    try {
+      await postLegacySync("/api/legacy-sync/save-settings", { settings: patch });
+    } catch {}
+  }, [postLegacySync, remoteSync.user]);
+
+  const queueRemoteSetting = useCallback((key, value) => {
+    if (!remoteSync.user || !remoteSettingsReadyRef.current || !shouldSyncSettingKey(key)) return;
+    remoteSettingsQueueRef.current = {
+      ...remoteSettingsQueueRef.current,
+      [key]: value,
+    };
+    if (remoteSettingsTimerRef.current) clearTimeout(remoteSettingsTimerRef.current);
+    remoteSettingsTimerRef.current = setTimeout(() => {
+      remoteSettingsTimerRef.current = null;
+      flushRemoteSettings();
+    }, 650);
+  }, [flushRemoteSettings, remoteSync.user]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    window.__RIVAL_REMOTE_SETTINGS_SYNC = queueRemoteSetting;
+    return () => {
+      if (window.__RIVAL_REMOTE_SETTINGS_SYNC === queueRemoteSetting) {
+        window.__RIVAL_REMOTE_SETTINGS_SYNC = null;
+      }
+    };
+  }, [queueRemoteSetting]);
+
+  useEffect(() => () => {
+    if (remoteSettingsTimerRef.current) clearTimeout(remoteSettingsTimerRef.current);
+  }, []);
+
+  const applyRemoteSettings = useCallback((settings = {}) => {
+    if (!settings || typeof settings !== "object") return false;
+    const keys = Object.keys(settings).filter(shouldSyncSettingKey);
+    if (!keys.length) return false;
+
+    remoteSettingsReadyRef.current = false;
+    hydrateLocalSettings(settings);
+
+    if (settings.rs_theme4) {
+      setTheme(THEMES[normalizeThemeId(settings.rs_theme4)] || THEMES.deepspace);
+    }
+    if (settings.rs_lang4 && LANGS[settings.rs_lang4]) {
+      setLang(settings.rs_lang4);
+    }
+    if (typeof settings.rs_sound4 === "boolean") {
+      _soundEnabled = settings.rs_sound4;
+      setSoundOn(settings.rs_sound4);
+    }
+    if (typeof settings.rs_volume4 === "number") {
+      const nextVolume = Math.max(0, Math.min(1, settings.rs_volume4));
+      _volume = nextVolume;
+      setVolume(nextVolume);
+    }
+    if (Array.isArray(settings.rs_cart4)) {
+      setCart(settings.rs_cart4);
+    }
+    if (Array.isArray(settings.rs_wl4)) {
+      setWishlist(settings.rs_wl4);
+    }
+    if (settings.rs_streak4 && typeof settings.rs_streak4 === "object") {
+      setStreak(settings.rs_streak4);
+      const unlockedIds = settings.rs_streak4.achievementsUnlocked || [];
+      setAchievements(unlockedIds.map(id => ACHIEVEMENTS.find(a => a.id === id)).filter(Boolean));
+    }
+
+    return true;
+  }, []);
+
   const syncRemoteState = useCallback(async ({ forceApply = false, silent = true } = {}) => {
     if (!tgUser?.id) return null;
 
@@ -1449,8 +1592,17 @@ export default function App() {
       const remotePayments = Array.isArray(result?.payments) ? result.payments : [];
       const remoteOrders = Array.isArray(result?.orders) ? result.orders : [];
       const remoteMessages = Array.isArray(result?.messages) ? result.messages : [];
+      const remoteSettings = result?.settings && typeof result.settings === "object" ? result.settings : {};
+      const hasRemoteSettings = Object.keys(remoteSettings).some(shouldSyncSettingKey);
 
       setRemoteSync({ enabled: true, ready: true, user: remoteUser });
+
+      if (!remoteSettingsAppliedRef.current) {
+        if (hasRemoteSettings) {
+          applyRemoteSettings(remoteSettings);
+        }
+        remoteSettingsAppliedRef.current = true;
+      }
 
       const paymentById = Object.fromEntries(remotePayments.map((item) => [item.id, item]));
       const orderByPaymentId = Object.fromEntries(
@@ -1595,15 +1747,21 @@ export default function App() {
         setOrders(mappedOrders);
       }
 
+      remoteSettingsReadyRef.current = true;
+      if (!hasRemoteSettings) {
+        postLegacySync("/api/legacy-sync/save-settings", { settings: collectLocalSettings() }).catch(() => {});
+      }
+
       return result;
     } catch (error) {
+      remoteSettingsReadyRef.current = false;
       setRemoteSync(prev => ({ ...prev, ready: true }));
       if (!silent) {
         showToast(lang === "en" ? `Supabase sync unavailable: ${error.message}` : `Supabase недоступен: ${error.message}`, "info");
       }
       return null;
     }
-  }, [lang, orders.length, paymentHistory.length, postLegacySync, showToast]);
+  }, [applyRemoteSettings, lang, orders.length, paymentHistory.length, postLegacySync, showToast]);
 
   useEffect(() => {
     syncRemoteState({ silent: true });

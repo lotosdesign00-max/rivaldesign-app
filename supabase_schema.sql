@@ -112,6 +112,14 @@ CREATE TABLE IF NOT EXISTS notifications (
 CREATE INDEX idx_notifications_user_id ON notifications(user_id);
 CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read);
 
+-- User settings: synced Mini App preferences and feature state.
+CREATE TABLE IF NOT EXISTS user_settings (
+  user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  settings JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ─── RLS POLICIES (Row Level Security) ────────────────────────────────────
 
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
@@ -120,6 +128,7 @@ ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
 
 -- Users: can read own profile
 CREATE POLICY "Users can view own profile" ON users
@@ -156,6 +165,14 @@ CREATE POLICY "Users can send order messages" ON messages
 -- Notifications: users can view own notifications
 CREATE POLICY "Users can view own notifications" ON notifications
   FOR SELECT USING (auth.uid()::text = user_id::text);
+
+-- User settings: users can view and manage own settings
+CREATE POLICY "Users can view own settings" ON user_settings
+  FOR SELECT USING (auth.uid()::text = user_id::text);
+
+CREATE POLICY "Users can manage own settings" ON user_settings
+  FOR ALL USING (auth.uid()::text = user_id::text)
+  WITH CHECK (auth.uid()::text = user_id::text);
 
 -- Services: everyone can read active services
 CREATE POLICY "Everyone can view active services" ON services
@@ -205,6 +222,12 @@ CREATE POLICY "Admin update users" ON users
     EXISTS (SELECT 1 FROM users WHERE users.id::text = auth.uid()::text AND users.is_admin = TRUE)
   );
 
+-- Admin can manage all user settings
+CREATE POLICY "Admin full access settings" ON user_settings
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM users WHERE users.id::text = auth.uid()::text AND users.is_admin = TRUE)
+  );
+
 -- ─── SEED DATA ─────────────────────────────────────────────────────────────
 
 INSERT INTO services (name, name_en, description, price, image_url, sort_order) VALUES
@@ -234,6 +257,9 @@ CREATE TRIGGER update_payments_updated_at BEFORE UPDATE ON payments
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_user_settings_updated_at BEFORE UPDATE ON user_settings
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Generate order number
