@@ -308,6 +308,8 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
                       ? "0 12px 36px rgba(3,4,8,.5), 0 0 0 1px rgba(99,102,241,.15)"
                       : "0 4px 16px rgba(3,4,8,.3)",
                   position: "relative",
+                  contentVisibility: "auto",
+                  containIntrinsicSize: "420px",
                 }}
               >
                 {/* Image area */}
@@ -320,7 +322,10 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
                     <div className="gal-img-shimmer" style={{ width: "100%", aspectRatio: "1080/1280" }} />
                   )}
                   <img
-                    src={item.img} alt={item.title} loading="lazy"
+                    src={item.img} alt={item.title}
+                    loading={i < 2 ? "eager" : "lazy"}
+                    decoding="async"
+                    fetchPriority={i < 2 ? "high" : "auto"}
                     onLoad={() => handleImgLoad(item.id)}
                     style={{
                       width: "100%", aspectRatio: "1080/1280", objectFit: "cover",
@@ -451,6 +456,8 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
                   padding: "10px 12px",
                   animation: `galCardIn .32s ease ${i * .04}s both`,
                   backdropFilter: "blur(12px)",
+                  contentVisibility: "auto",
+                  containIntrinsicSize: "76px",
                 }}
               >
                 <div style={{ position: "relative", flexShrink: 0, borderRadius: 12, overflow: "hidden" }}>
@@ -458,7 +465,9 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
                     <div className="gal-img-shimmer" style={{ width: 72, height: 54 }} />
                   )}
                   <img
-                    src={item.img} alt={item.title} loading="lazy"
+                    src={item.img} alt={item.title}
+                    loading="lazy"
+                    decoding="async"
                     onLoad={() => handleImgLoad(item.id)}
                     style={{
                       width: 72, height: 54, objectFit: "cover", borderRadius: 12, display: "block",

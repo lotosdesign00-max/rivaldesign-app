@@ -65,6 +65,8 @@ function ServiceCard({ svc, qty, onAdd, onSub, onExamples, lang, th, isFullPack 
         transition: "all .3s cubic-bezier(.34,1.56,.64,1)",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
         gridColumn: isFullPack ? "1 / -1" : undefined,
+        contentVisibility: "auto",
+        containIntrinsicSize: isFullPack ? "260px" : "220px",
       }}
     >
       {isFullPack && (

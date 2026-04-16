@@ -1,6 +1,4 @@
 ﻿import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 import TypewriterText from "./components/TypewriterText";
 import MeshBg from "./components/MeshBg";
 import Confetti from "./components/Confetti";
@@ -13,16 +11,26 @@ import ImageModal from "./components/ImageModal";
 import SplashScreen from "./components/SplashScreen";
 import AchievementDetailModal from "./components/AchievementDetailModal";
 import HomeTab from "./components/HomeTab";
-import GalleryTab from "./components/GalleryTab";
-import CoursesTab from "./components/CoursesTab";
-import PricingTab from "./components/PricingTab";
-import MoreTab from "./components/MoreTab";
-import AITab from "./components/AITab";
-import ProfileTab from "./components/ProfileTab";
 import SystemIcon from "./components/SystemIcon";
-import OrdersTab from "./components/OrdersTab";
 import PaymentDetailsModal from "./components/PaymentDetailsModal";
 
+const loadGalleryTab = () => import("./components/GalleryTab");
+const loadAITab = () => import("./components/AITab");
+const loadCoursesTab = () => import("./components/CoursesTab");
+const loadPricingTab = () => import("./components/PricingTab");
+const loadMoreTab = () => import("./components/MoreTab");
+const loadProfileTab = () => import("./components/ProfileTab");
+const GalleryTab = React.lazy(loadGalleryTab);
+const AITab = React.lazy(loadAITab);
+const CoursesTab = React.lazy(loadCoursesTab);
+const PricingTab = React.lazy(loadPricingTab);
+const MoreTab = React.lazy(loadMoreTab);
+const ProfileTab = React.lazy(loadProfileTab);
+const preloadLazyTabs = () => {
+  [loadGalleryTab, loadAITab, loadCoursesTab, loadPricingTab, loadMoreTab, loadProfileTab].forEach((load) => {
+    load().catch(() => {});
+  });
+};
 const makeEntityId = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 const roundMoney = (value) => Math.round(Number(value || 0) * 100) / 100;
 const moneyUsd = (value) => `$${roundMoney(value).toFixed(2)}`;
@@ -968,10 +976,40 @@ const OrbitalMark = ({ size = 18 }) => (
 
 // ── HELPERS ──
 const tgUserId = tgUser?.id || "local";
+const lsPendingWrites = new Map();
+let lsFlushTimer = null;
+
+function flushLocalStorageQueue() {
+  lsFlushTimer = null;
+  for (const [key, value] of lsPendingWrites) {
+    try {
+      localStorage.setItem(key, value);
+    } catch {}
+  }
+  lsPendingWrites.clear();
+}
+
+function scheduleLocalStorageWrite(key, value) {
+  lsPendingWrites.set(key, value);
+  if (lsFlushTimer) return;
+  if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+    lsFlushTimer = window.requestIdleCallback(flushLocalStorageQueue, { timeout: 900 });
+  } else {
+    lsFlushTimer = setTimeout(flushLocalStorageQueue, 120);
+  }
+}
+
+if (typeof window !== "undefined" && !window.__rsLocalStorageFlushBound) {
+  window.__rsLocalStorageFlushBound = true;
+  window.addEventListener("pagehide", flushLocalStorageQueue, { passive: true });
+  window.addEventListener("beforeunload", flushLocalStorageQueue);
+}
+
 const ls = {
   get: (k, d) => { 
     try { 
       const key = `rs_${tgUserId}_${k}`;
+      if (lsPendingWrites.has(key)) return JSON.parse(lsPendingWrites.get(key));
       const v = localStorage.getItem(key); 
       return v ? JSON.parse(v) : d; 
     } catch { return d; } 
@@ -979,7 +1017,7 @@ const ls = {
   set: (k, v) => { 
     try { 
       const key = `rs_${tgUserId}_${k}`;
-      localStorage.setItem(key, JSON.stringify(v)); 
+      scheduleLocalStorageWrite(key, JSON.stringify(v));
     } catch {} 
   },
 };
@@ -1119,6 +1157,17 @@ export default function App() {
 
   useEffect(() => { _soundEnabled = soundOn; }, [soundOn]);
   useEffect(() => { _volume = volume; }, [volume]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const runPreload = () => preloadLazyTabs();
+    if ("requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(runPreload, { timeout: 1800 });
+      return () => window.cancelIdleCallback?.(idleId);
+    }
+    const timer = window.setTimeout(runPreload, 900);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const th = theme;
   const t = T[lang] || T.ru;
@@ -2715,14 +2764,16 @@ export default function App() {
               backfaceVisibility: "hidden",
             }}
           >
-            {tab === "home" && <HomeTab th={th} t={t} lang={lang} onGoGallery={() => setTab("gallery")} onGoCourses={() => setTab("courses")} onGoPricing={() => setTab("pricing")} onGoMore={() => setTab("more")} cartCount={cartCount} streak={streak} onUnlockAchieve={unlockAchievement} />}
-            {tab === "gallery" && <GalleryTab th={th} t={t} lang={lang} wishlist={wishlist} toggleWishlist={toggleWishlist} onOpenImage={item => setSelImage(item)} />}
-            {tab === "ai" && <AITab th={th} t={t} lang={lang} showToast={showToast} />}
-            {tab === "courses" && <CoursesTab th={th} t={t} lang={lang} showToast={showToast} addXPfn={addXPfn} onUnlockAchieve={unlockAchievement} streak={streak} setStreak={setStreak} />}
-            {tab === "pricing" && <PricingTab th={th} t={t} lang={lang} cart={cart} addToCart={addToCart} removeFromCart={removeFromCart} updateQty={updateQty} clearCart={clearCart} showToast={showToast} onUnlockAchieve={unlockAchievement} setTab={setTab} walletBalance={walletBalance} createCheckoutOrder={createCheckoutOrder} openCryptoBot={openCryptoBot} openStarsInvoice={openStarsInvoice} openOrderTelegram={openOrderTelegram} />}
+            <React.Suspense fallback={<div style={{ minHeight: 280, borderRadius: 28, border: `1px solid ${th.border}`, background: th.card, opacity: 0.7 }} />}>
+              {tab === "home" && <HomeTab th={th} t={t} lang={lang} onGoGallery={() => setTab("gallery")} onGoCourses={() => setTab("courses")} onGoPricing={() => setTab("pricing")} onGoMore={() => setTab("more")} cartCount={cartCount} streak={streak} onUnlockAchieve={unlockAchievement} />}
+              {tab === "gallery" && <GalleryTab th={th} t={t} lang={lang} wishlist={wishlist} toggleWishlist={toggleWishlist} onOpenImage={item => setSelImage(item)} />}
+              {tab === "ai" && <AITab th={th} t={t} lang={lang} showToast={showToast} />}
+              {tab === "courses" && <CoursesTab th={th} t={t} lang={lang} showToast={showToast} addXPfn={addXPfn} onUnlockAchieve={unlockAchievement} streak={streak} setStreak={setStreak} />}
+              {tab === "pricing" && <PricingTab th={th} t={t} lang={lang} cart={cart} addToCart={addToCart} removeFromCart={removeFromCart} updateQty={updateQty} clearCart={clearCart} showToast={showToast} onUnlockAchieve={unlockAchievement} setTab={setTab} walletBalance={walletBalance} createCheckoutOrder={createCheckoutOrder} openCryptoBot={openCryptoBot} openStarsInvoice={openStarsInvoice} openOrderTelegram={openOrderTelegram} />}
 
-            {tab === "more" && <MoreTab th={th} t={t} lang={lang} showToast={showToast} streak={streak} onUnlockAchieve={unlockAchievement} addXPfn={addXPfn} />}
-            {tab === "profile" && <ProfileTab th={th} t={t} lang={lang} streak={streak} achievements={achievements} showToast={showToast} setTab={setTab} setSelectedAchievement={setSelectedAchievement} walletBalance={walletBalance} paymentHistory={paymentHistory} orders={orders} onRequestTopUp={requestTopUp} onMarkPaymentSubmitted={markPaymentSubmitted} onRefreshInvoiceStatus={refreshInvoiceStatus} onAddOrderMessage={addOrderMessage} onOpenCryptoBot={openCryptoBot} onOpenStarsInvoice={openStarsInvoice} onOpenTelegram={openOrderTelegram} onRequestPaymentDetails={requestPaymentDetails} />}
+              {tab === "more" && <MoreTab th={th} t={t} lang={lang} showToast={showToast} streak={streak} onUnlockAchieve={unlockAchievement} addXPfn={addXPfn} />}
+              {tab === "profile" && <ProfileTab th={th} t={t} lang={lang} streak={streak} achievements={achievements} showToast={showToast} setTab={setTab} setSelectedAchievement={setSelectedAchievement} walletBalance={walletBalance} paymentHistory={paymentHistory} orders={orders} onRequestTopUp={requestTopUp} onMarkPaymentSubmitted={markPaymentSubmitted} onRefreshInvoiceStatus={refreshInvoiceStatus} onAddOrderMessage={addOrderMessage} onOpenCryptoBot={openCryptoBot} onOpenStarsInvoice={openStarsInvoice} onOpenTelegram={openOrderTelegram} onRequestPaymentDetails={requestPaymentDetails} />}
+            </React.Suspense>
           </div>
         </main>
 
@@ -2740,9 +2791,5 @@ export default function App() {
     </div>
   );
 }
-
-
-
-
 
 

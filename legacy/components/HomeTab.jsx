@@ -431,6 +431,8 @@ export default function HomeTab({
                     <img
                       src={item.img}
                       alt={item.title}
+                      loading="lazy"
+                      decoding="async"
                       style={{ width: "100%", aspectRatio: "1080 / 1280", objectFit: "cover", display: "block" }}
                     />
                     {item.popular && (

@@ -1,47 +1,13 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+﻿import React from "react";
 
 function MeshBg() {
-  const [parallax, setParallax] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    let raf = null;
-
-    const updateFromPoint = (x, y) => {
-      const nx = ((x / window.innerWidth) - 0.5) * 2;
-      const ny = ((y / window.innerHeight) - 0.5) * 2;
-      if (raf) cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => setParallax({ x: nx, y: ny }));
-    };
-
-    const handleMouseMove = (e) => updateFromPoint(e.clientX, e.clientY);
-    const handleTouchMove = (e) => {
-      const touch = e.touches?.[0];
-      if (!touch) return;
-      updateFromPoint(touch.clientX, touch.clientY);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: true });
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("touchmove", handleTouchMove);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
-
-  const drift = useMemo(() => {
-    const px = Number.isFinite(parallax.x) ? parallax.x : 0;
-    const py = Number.isFinite(parallax.y) ? parallax.y : 0;
-
-    return {
-      nebulaNear: `translate3d(${(-px * 10).toFixed(2)}px, ${(-py * 8).toFixed(2)}px, 0)`,
-      nebulaFar: `translate3d(${(px * 8).toFixed(2)}px, ${(py * 6).toFixed(2)}px, 0)`,
-      starsNear: `translate3d(${(-px * 6).toFixed(2)}px, ${(-py * 5).toFixed(2)}px, 0)`,
-      starsFar: `translate3d(${(px * 4).toFixed(2)}px, ${(py * 3).toFixed(2)}px, 0)`,
-      glow: `translate3d(${(px * 6).toFixed(2)}px, ${(-py * 4).toFixed(2)}px, 0)`,
-    };
-  }, [parallax]);
+  const drift = {
+    nebulaNear: "translate3d(0, 0, 0)",
+    nebulaFar: "translate3d(0, 0, 0)",
+    starsNear: "translate3d(0, 0, 0)",
+    starsFar: "translate3d(0, 0, 0)",
+    glow: "translate3d(0, 0, 0)",
+  };
 
   return (
     <>
@@ -250,4 +216,4 @@ function MeshBg() {
   );
 }
 
-export default MeshBg;
+export default React.memo(MeshBg);

@@ -1,4 +1,5 @@
 ﻿import React from "react";
+import "./SystemIcon.css";
 
 const base = {
   width: 18,
@@ -210,7 +211,7 @@ function iconFor(name) {
   }
 }
 
-export default function SystemIcon({ name = "star", size = 18, color = "currentColor", animated = true, tone = "soft", style, className }) {
+function SystemIcon({ name = "star", size = 18, color = "currentColor", animated = true, tone = "soft", style, className }) {
   const normalizedName = resolveIconName(name);
   const motionProfile = (() => {
     if (!animated) return "";
@@ -236,226 +237,6 @@ export default function SystemIcon({ name = "star", size = 18, color = "currentC
 
   return (
     <>
-      <style>{`
-        @keyframes rsStrokeTrace {
-          0%, 9% { stroke-dashoffset: 44; opacity: .18; }
-          18%, 78% { stroke-dashoffset: 0; opacity: 1; }
-          100% { stroke-dashoffset: 0; opacity: .96; }
-        }
-        @keyframes rsIconFloat {
-          0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
-          22% { transform: translate3d(0, -1.8px, 0) rotate(-2.4deg) scale(1.035); }
-          50% { transform: translate3d(0, -3.8px, 0) rotate(1.8deg) scale(1.07); }
-          78% { transform: translate3d(0, -1.4px, 0) rotate(-1deg) scale(1.028); }
-        }
-        @keyframes rsIconPulse {
-          0%, 100% { opacity: .88; filter: saturate(1) brightness(1); }
-          35% { opacity: .96; filter: saturate(1.16) brightness(1.08); }
-          58% { opacity: 1; filter: saturate(1.22) brightness(1.14); }
-          82% { opacity: .94; filter: saturate(1.08) brightness(1.04); }
-        }
-        @keyframes rsIconSpinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes rsIconTwinkle {
-          0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: .92; }
-          18% { transform: translate3d(0, -1.2px, 0) rotate(-6deg) scale(1.07); opacity: 1; }
-          42% { transform: translate3d(0, -3px, 0) rotate(5deg) scale(1.14); opacity: .97; }
-          65% { transform: translate3d(0, -1.4px, 0) rotate(-3deg) scale(1.06); opacity: 1; }
-        }
-        @keyframes rsIconBeat {
-          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-          16% { transform: translate3d(0, -1px, 0) scale(1.12); }
-          30% { transform: translate3d(0, 0, 0) scale(.985); }
-          48% { transform: translate3d(0, -1.8px, 0) scale(1.16); }
-          68% { transform: translate3d(0, 0, 0) scale(1.02); }
-        }
-        @keyframes rsIconGlide {
-          0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
-          28% { transform: translate3d(2px, -1.4px, 0) rotate(-4deg) scale(1.04); }
-          58% { transform: translate3d(3.6px, .2px, 0) rotate(2.5deg) scale(1.08); }
-          82% { transform: translate3d(1.2px, -.4px, 0) rotate(-1deg) scale(1.03); }
-        }
-        @keyframes rsIconLux {
-          0%, 100% { opacity: .94; filter: drop-shadow(0 0 0 rgba(255,255,255,0)); }
-          33% { opacity: .985; filter: drop-shadow(0 0 6px rgba(255,255,255,.08)); }
-          62% { opacity: 1; filter: drop-shadow(0 0 11px rgba(255,255,255,.16)); }
-          84% { opacity: .97; filter: drop-shadow(0 0 5px rgba(255,255,255,.06)); }
-        }
-        @keyframes rsIconBuild {
-          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-          26% { transform: translate3d(0, -1.1px, 0) scale(1.035); }
-          54% { transform: translate3d(0, -2.2px, 0) scale(1.07); }
-          78% { transform: translate3d(0, -.5px, 0) scale(1.02); }
-        }
-        @keyframes rsIconReveal {
-          0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: .94; }
-          40% { transform: translate3d(0, -1.2px, 0) scale(1.08); opacity: 1; }
-          72% { transform: translate3d(0, -.4px, 0) scale(1.03); opacity: .98; }
-        }
-        @keyframes rsIconOpenLatch {
-          0%, 100% { transform: translate3d(0, 0, 0) scaleX(1); }
-          22% { transform: translate3d(.8px, 0, 0) scaleX(1.04); }
-          48% { transform: translate3d(1.8px, 0, 0) scaleX(1.08); }
-          72% { transform: translate3d(.7px, 0, 0) scaleX(1.03); }
-        }
-        @keyframes rsIconUnlockArc {
-          0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
-          26% { transform: translate3d(-.3px, -1px, 0) rotate(-7deg); }
-          54% { transform: translate3d(-.8px, -1.8px, 0) rotate(-12deg); }
-          76% { transform: translate3d(-.2px, -.7px, 0) rotate(-4deg); }
-        }
-        @keyframes rsIconGiftLift {
-          0%, 100% { transform: translate3d(0, 0, 0); }
-          34% { transform: translate3d(0, -1px, 0); }
-          56% { transform: translate3d(0, -2px, 0); }
-          76% { transform: translate3d(0, -.7px, 0); }
-        }
-        @keyframes rsIconFocusDot {
-          0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: .9; }
-          35% { transform: translate3d(.8px, -.6px, 0) scale(1.14); opacity: 1; }
-          62% { transform: translate3d(-.3px, .3px, 0) scale(1.06); opacity: .96; }
-        }
-        @keyframes rsIconLaunchGlyph {
-          0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
-          25% { transform: translate3d(1px, -.8px, 0) rotate(-3deg) scale(1.04); }
-          54% { transform: translate3d(2.3px, -1.7px, 0) rotate(-6deg) scale(1.09); }
-          78% { transform: translate3d(.9px, -.5px, 0) rotate(-2deg) scale(1.03); }
-        }
-        @keyframes rsIconNeural {
-          0%, 100% { transform: scale(1); filter: brightness(1); }
-          28% { transform: scale(1.04); filter: brightness(1.08); }
-          56% { transform: scale(1.09); filter: brightness(1.15); }
-          80% { transform: scale(1.03); filter: brightness(1.04); }
-        }
-        @keyframes rsIconOrbitGlow {
-          0%, 100% { opacity: .86; filter: drop-shadow(0 0 0 rgba(255,255,255,0)); }
-          50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(255,255,255,.18)); }
-        }
-        .rs-icon-shell {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          transform: translateZ(0);
-          will-change: transform, opacity, filter;
-        }
-        .rs-icon-wrap {
-          transition: transform .22s ease, opacity .22s ease, filter .22s ease;
-          transform-origin: 50% 50%;
-          will-change: transform, opacity, filter;
-        }
-        .rs-icon-svg {
-          transition: transform .22s ease, opacity .22s ease, filter .22s ease;
-          transform-origin: 50% 50%;
-          will-change: transform, opacity, filter;
-          overflow: visible;
-        }
-        .rs-icon-svg[data-animated="true"] > * {
-          transform-box: fill-box;
-          transform-origin: center;
-          vector-effect: non-scaling-stroke;
-          will-change: transform, opacity, filter, stroke-dashoffset;
-        }
-        .rs-icon-svg[data-animated="true"] > *:nth-child(1) { --rs-delay: 0s; }
-        .rs-icon-svg[data-animated="true"] > *:nth-child(2) { --rs-delay: .08s; }
-        .rs-icon-svg[data-animated="true"] > *:nth-child(3) { --rs-delay: .16s; }
-        .rs-icon-svg[data-animated="true"] > *:nth-child(4) { --rs-delay: .24s; }
-        .rs-icon-svg[data-animated="true"] > *:nth-child(5) { --rs-delay: .32s; }
-        .rs-icon-svg[data-animated="true"] > *:nth-child(6) { --rs-delay: .4s; }
-        .rs-icon-svg[data-animated="true"] > *:nth-child(7) { --rs-delay: .48s; }
-        .rs-icon-svg[data-animated="true"] > *:nth-child(8) { --rs-delay: .56s; }
-        .rs-icon-shell--animated { animation: rsIconLux 4.8s cubic-bezier(.37,0,.22,1) infinite; }
-        .rs-icon-wrap--float { animation: rsIconFloat 4s cubic-bezier(.37,0,.22,1) infinite, rsIconPulse 4s ease-in-out infinite; }
-        .rs-icon-wrap--twinkle { animation: rsIconTwinkle 3.8s cubic-bezier(.37,0,.22,1) infinite, rsIconLux 4.5s ease-in-out infinite; }
-        .rs-icon-wrap--beat { animation: rsIconBeat 3.4s cubic-bezier(.4,0,.2,1) infinite, rsIconLux 4.6s ease-in-out infinite; }
-        .rs-icon-wrap--glide { animation: rsIconGlide 3.6s cubic-bezier(.37,0,.22,1) infinite, rsIconPulse 3.6s ease-in-out infinite; }
-        .rs-icon-wrap--pulse { animation: rsIconFloat 3.4s cubic-bezier(.37,0,.22,1) infinite, rsIconPulse 2.5s ease-in-out infinite; }
-        .rs-icon-svg--spin { animation: rsIconSpinSlow 8s linear infinite, rsIconPulse 3.6s ease-in-out infinite; }
-        .rs-icon-svg[data-animated="true"][data-scene="trace"] > *,
-        .rs-icon-svg[data-animated="true"][data-scene="build"] > *,
-        .rs-icon-svg[data-animated="true"][data-scene="flare"] > *,
-        .rs-icon-svg[data-animated="true"][data-scene="focus"] > *,
-        .rs-icon-svg[data-animated="true"][data-scene="launch"] > *,
-        .rs-icon-svg[data-animated="true"][data-scene="neural"] > *,
-        .rs-icon-svg[data-animated="true"][data-scene="unwrap"] > *,
-        .rs-icon-svg[data-animated="true"][data-scene="unlock"] > *,
-        .rs-icon-svg[data-animated="true"][data-scene="open"] > * {
-          stroke-dasharray: 44;
-          stroke-dashoffset: 44;
-          animation: rsStrokeTrace 5.2s cubic-bezier(.37,0,.22,1) infinite;
-          animation-delay: var(--rs-delay, 0s);
-        }
-        .rs-icon-svg[data-animated="true"][data-scene="build"] > * {
-          animation-name: rsStrokeTrace, rsIconBuild;
-          animation-duration: 5.2s, 5.2s;
-          animation-timing-function: cubic-bezier(.37,0,.22,1), cubic-bezier(.37,0,.22,1);
-          animation-iteration-count: infinite, infinite;
-          animation-delay: var(--rs-delay, 0s), 0s;
-        }
-        .rs-icon-svg[data-animated="true"][data-scene="flare"] > * {
-          animation-name: rsStrokeTrace, rsIconReveal, rsIconOrbitGlow;
-          animation-duration: 4.8s, 4.8s, 4.8s;
-          animation-timing-function: cubic-bezier(.37,0,.22,1), ease-in-out, ease-in-out;
-          animation-iteration-count: infinite, infinite, infinite;
-          animation-delay: var(--rs-delay, 0s), 0s, 0s;
-        }
-        .rs-icon-svg[data-animated="true"][data-scene="focus"] > * {
-          animation-name: rsStrokeTrace, rsIconReveal;
-          animation-duration: 5s, 5s;
-          animation-timing-function: cubic-bezier(.37,0,.22,1), ease-in-out;
-          animation-iteration-count: infinite, infinite;
-          animation-delay: var(--rs-delay, 0s), 0s;
-        }
-        .rs-icon-svg[data-animated="true"][data-scene="launch"] > * {
-          animation-name: rsStrokeTrace, rsIconLaunchGlyph;
-          animation-duration: 4.6s, 4.6s;
-          animation-timing-function: cubic-bezier(.37,0,.22,1), cubic-bezier(.37,0,.22,1);
-          animation-iteration-count: infinite, infinite;
-          animation-delay: var(--rs-delay, 0s), 0s;
-        }
-        .rs-icon-svg[data-animated="true"][data-scene="neural"] > * {
-          animation-name: rsStrokeTrace, rsIconNeural;
-          animation-duration: 4.9s, 4.9s;
-          animation-timing-function: cubic-bezier(.37,0,.22,1), ease-in-out;
-          animation-iteration-count: infinite, infinite;
-          animation-delay: var(--rs-delay, 0s), 0s;
-        }
-        .rs-icon-svg[data-animated="true"][data-scene="open"] > rect {
-          animation: rsStrokeTrace 5s cubic-bezier(.37,0,.22,1) infinite, rsIconBuild 5s cubic-bezier(.37,0,.22,1) infinite;
-        }
-        .rs-icon-svg[data-animated="true"][data-scene="open"] > path:nth-of-type(1) {
-          animation: rsStrokeTrace 5s cubic-bezier(.37,0,.22,1) infinite, rsIconOpenLatch 5s ease-in-out infinite;
-        }
-        .rs-icon-svg[data-animated="true"][data-scene="open"] > circle {
-          animation: rsStrokeTrace 5s cubic-bezier(.37,0,.22,1) infinite, rsIconFocusDot 5s ease-in-out infinite;
-        }
-        .rs-icon-svg[data-animated="true"][data-scene="unlock"] > rect {
-          animation: rsStrokeTrace 5.1s cubic-bezier(.37,0,.22,1) infinite, rsIconBuild 5.1s cubic-bezier(.37,0,.22,1) infinite;
-        }
-        .rs-icon-svg[data-animated="true"][data-scene="unlock"] > path {
-          animation: rsStrokeTrace 5.1s cubic-bezier(.37,0,.22,1) infinite, rsIconUnlockArc 5.1s ease-in-out infinite;
-        }
-        .rs-icon-svg[data-animated="true"][data-scene="unwrap"] > rect,
-        .rs-icon-svg[data-animated="true"][data-scene="unwrap"] > path {
-          animation-name: rsStrokeTrace, rsIconBuild;
-          animation-duration: 5.1s, 5.1s;
-          animation-timing-function: cubic-bezier(.37,0,.22,1), cubic-bezier(.37,0,.22,1);
-          animation-iteration-count: infinite, infinite;
-        }
-        .rs-icon-svg[data-animated="true"][data-scene="unwrap"] > path:nth-of-type(2),
-        .rs-icon-svg[data-animated="true"][data-scene="unwrap"] > path:nth-of-type(3),
-        .rs-icon-svg[data-animated="true"][data-scene="unwrap"] > path:nth-of-type(4) {
-          animation-name: rsStrokeTrace, rsIconGiftLift;
-          animation-duration: 5.1s, 5.1s;
-          animation-timing-function: cubic-bezier(.37,0,.22,1), ease-in-out;
-          animation-iteration-count: infinite, infinite;
-        }
-        .rs-icon-svg[data-animated="true"][data-scene="focus"] > circle:last-child,
-        .rs-icon-svg[data-animated="true"][data-scene="focus"] > path:last-child {
-          animation-name: rsStrokeTrace, rsIconFocusDot;
-          animation-duration: 5s, 5s;
-          animation-timing-function: cubic-bezier(.37,0,.22,1), ease-in-out;
-          animation-iteration-count: infinite, infinite;
-        }
-      `}</style>
       <span
         className={`rs-icon-shell ${animated ? "rs-icon-shell--animated" : ""} ${className || ""}`.trim()}
         style={{
@@ -479,3 +260,5 @@ export default function SystemIcon({ name = "star", size = 18, color = "currentC
     </>
   );
 }
+
+export default React.memo(SystemIcon);

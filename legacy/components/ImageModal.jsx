@@ -149,6 +149,9 @@ function ImageModal({ item, th, t, onClose, wishlist, toggleWishlist, showToast,
           <img
             src={item.img}
             alt={item.title}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
             onLoad={() => setImgLoaded(true)}
             style={{
               width: "100%", aspectRatio: "1080/1280",

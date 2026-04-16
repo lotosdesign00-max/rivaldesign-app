@@ -497,6 +497,5 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
   );
 }
 
-export default BottomNav;
-
+export default React.memo(BottomNav);
 

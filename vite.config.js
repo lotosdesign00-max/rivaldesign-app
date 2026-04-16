@@ -559,9 +559,21 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), cryptoPayPlugin(env)],
     build: {
+      cssCodeSplit: true,
+      sourcemap: false,
+      minify: "esbuild",
       rollupOptions: {
         input: {
           main: path.resolve(process.cwd(), "index.html"),
+        },
+        output: {
+          manualChunks(id) {
+            if (!id.includes("node_modules")) return undefined;
+            if (id.includes("react") || id.includes("scheduler")) return "vendor-react";
+            if (id.includes("swiper")) return "vendor-swiper";
+            if (id.includes("@supabase")) return "vendor-supabase";
+            return "vendor";
+          },
         },
       },
     },

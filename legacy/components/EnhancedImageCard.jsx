@@ -218,6 +218,8 @@ export default function EnhancedImageCard({
             src={image}
             alt={title}
             className="image-card-img"
+            loading="lazy"
+            decoding="async"
             onLoad={() => setIsLoaded(true)}
             style={{
               width: "100%",

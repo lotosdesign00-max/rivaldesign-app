@@ -726,7 +726,7 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
 
             {message.imageUrl && (
               <a href={message.imageUrl} target="_blank" rel="noreferrer" style={{ display: "block", marginBottom: message.text ? 8 : 0 }}>
-                <img src={message.imageUrl} alt={lang === "en" ? "Generated design" : "Сгенерированное изображение"} style={{ width: "100%", maxWidth: 280, borderRadius: 14, display: "block", border: `1px solid ${th.border}` }} />
+                  <img src={message.imageUrl} alt={lang === "en" ? "Generated design" : "Сгенерированное изображение"} loading="lazy" decoding="async" style={{ width: "100%", maxWidth: 280, borderRadius: 14, display: "block", border: `1px solid ${th.border}` }} />
               </a>
             )}
 
