@@ -1,6 +1,0 @@
-﻿PLACEHOLDER FOR VIDEO
-Course: Теория цвета
-Course ID: c2
-Lesson: 7
-
-Delete this file and put your own video here with the exact name: lesson-7.mp4

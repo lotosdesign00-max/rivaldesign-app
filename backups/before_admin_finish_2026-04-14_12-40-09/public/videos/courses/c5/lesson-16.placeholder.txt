@@ -1,6 +1,0 @@
-﻿PLACEHOLDER FOR VIDEO
-Course: Логотип с нуля до профи
-Course ID: c5
-Lesson: 16
-
-Delete this file and put your own video here with the exact name: lesson-16.mp4

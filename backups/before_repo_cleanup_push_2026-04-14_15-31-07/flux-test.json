@@ -1,7 +1,0 @@
-﻿{
-  "model": "black-forest-labs/flux.2-klein-4b",
-  "modalities": ["image"],
-  "messages": [
-    { "role": "user", "content": "minimal black poster with one white word RIVAL" }
-  ]
-}

@@ -1,6 +1,0 @@
-﻿PLACEHOLDER FOR VIDEO
-Course: YouTube Thumbnail Master
-Course ID: c4
-Lesson: 4
-
-Delete this file and put your own video here with the exact name: lesson-4.mp4

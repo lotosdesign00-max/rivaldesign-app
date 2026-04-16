@@ -1,6 +1,0 @@
-﻿PLACEHOLDER FOR VIDEO
-Course: Motion Design старт
-Course ID: c6
-Lesson: 10
-
-Delete this file and put your own video here with the exact name: lesson-10.mp4

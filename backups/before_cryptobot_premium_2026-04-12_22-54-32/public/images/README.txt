@@ -1,1 +1,0 @@
-Place your image files here (e.g. blackbean.jpg, poster1.jpg, avatar1.jpg).
