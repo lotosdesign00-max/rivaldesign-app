@@ -47,6 +47,8 @@ function ProfileTab({
   const levelProgress = Math.max(0, Math.min(1, getLevelProgress(safeStreak.xp)));
   const firstVisit = safeLs.get("rs_first_visit", new Date().toISOString());
   const daysInApp = Math.max(1, Math.floor((Date.now() - new Date(firstVisit).getTime()) / 86400000) + 1);
+  const avatarUrl = tgUser?.photo_url || "";
+  const avatarLetter = tgUser?.first_name?.[0]?.toUpperCase() || tgUser?.username?.[0]?.toUpperCase() || "R";
   const [showAchievementsList, setShowAchievementsList] = useState(false);
   const [showPackSection, setShowPackSection] = useState(false);
   const [showOrdersSection, setShowOrdersSection] = useState(false);
@@ -147,7 +149,26 @@ function ProfileTab({
             textShadow: "0 4px 16px rgba(0,0,0,0.4)"
           }}>
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 40%)", borderRadius: "inherit", pointerEvents: "none" }} />
-            {tgUser?.first_name?.[0]?.toUpperCase() || "R"}
+            <span style={{ position: "relative", zIndex: 1 }}>{avatarLetter}</span>
+            {avatarUrl && (
+              <img
+                src={avatarUrl}
+                alt={tgUser?.first_name ? `${tgUser.first_name} avatar` : "Telegram avatar"}
+                loading="eager"
+                decoding="async"
+                referrerPolicy="no-referrer"
+                onError={(event) => { event.currentTarget.style.display = "none"; }}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "inherit",
+                  objectFit: "cover",
+                  zIndex: 2,
+                }}
+              />
+            )}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 26, color: "#fff", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-.02em" }}>

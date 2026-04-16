@@ -35,6 +35,8 @@ function SideDrawer({
 
   const level = getLevel(safeStreak.xp);
   const prog = getLevelProgress(safeStreak.xp);
+  const avatarUrl = tgUser?.photo_url || "";
+  const avatarLetter = tgUser?.first_name?.[0]?.toUpperCase() || tgUser?.username?.[0]?.toUpperCase() || "R";
   const langItems = Object.entries(LANGS);
   const langShort = { ru: "RU", en: "EN", ua: "UA", kz: "KZ", by: "BY" };
   const themeItems = [
@@ -123,7 +125,26 @@ function SideDrawer({
             fontSize: 28, marginBottom: 14,
             boxShadow: "0 8px 24px rgba(99,102,241,.25), inset 0 1px 0 rgba(255,255,255,.08)",
           }}>
-            {tgUser?.first_name?.[0] || "R"}
+            <span style={{ position: "relative", zIndex: 1 }}>{avatarLetter}</span>
+            {avatarUrl && (
+              <img
+                src={avatarUrl}
+                alt={tgUser?.first_name ? `${tgUser.first_name} avatar` : "Telegram avatar"}
+                loading="eager"
+                decoding="async"
+                referrerPolicy="no-referrer"
+                onError={(event) => { event.currentTarget.style.display = "none"; }}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "inherit",
+                  objectFit: "cover",
+                  zIndex: 2,
+                }}
+              />
+            )}
           </div>
           <div className="type-display" style={{ position: "relative", zIndex: 1, fontSize: 16, color: "rgba(224,231,255,.95)" }}>
             {tgUser?.first_name || "Designer"}

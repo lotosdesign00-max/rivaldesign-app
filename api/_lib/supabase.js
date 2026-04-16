@@ -117,6 +117,7 @@ function getTelegramUser(body) {
     username: user.username || null,
     first_name: user.first_name || null,
     last_name: user.last_name || null,
+    photo_url: user.photo_url || null,
   };
 }
 
@@ -126,14 +127,28 @@ async function ensureUser(telegramUser) {
     username: telegramUser.username,
     first_name: telegramUser.first_name,
     last_name: telegramUser.last_name,
+    photo_url: telegramUser.photo_url,
     updated_at: new Date().toISOString(),
   };
 
-  const rows = await supabaseRest("users?on_conflict=telegram_id", {
-    method: "POST",
-    body: payload,
-    prefer: "resolution=merge-duplicates,return=representation",
-  });
+  let rows;
+  try {
+    rows = await supabaseRest("users?on_conflict=telegram_id", {
+      method: "POST",
+      body: payload,
+      prefer: "resolution=merge-duplicates,return=representation",
+    });
+  } catch (error) {
+    if (!String(error?.message || "").toLowerCase().includes("photo_url")) {
+      throw error;
+    }
+    const { photo_url, ...legacyPayload } = payload;
+    rows = await supabaseRest("users?on_conflict=telegram_id", {
+      method: "POST",
+      body: legacyPayload,
+      prefer: "resolution=merge-duplicates,return=representation",
+    });
+  }
   return Array.isArray(rows) ? rows[0] : rows;
 }
 

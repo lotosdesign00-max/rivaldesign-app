@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
   username TEXT,
   first_name TEXT,
   last_name TEXT,
+  photo_url TEXT,
   balance DECIMAL(10, 2) DEFAULT 0.00,
   is_admin BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW(),

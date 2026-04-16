@@ -2894,12 +2894,26 @@ export default function App() {
                 aria-label={t.navProfile}
                 title={t.navProfile}
               >
-                {/* Profile Icon — анимация «Проявление личности» */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", animation: "iconProfilePresence 3.5s ease-in-out infinite", transformOrigin: "center center" }}>
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" style={{ flexShrink: 0 }}>
-                    <circle cx="12" cy="9" r="3.8" fill={th.id === "graphite" ? "rgba(255,255,255,.6)" : th.accent} />
-                    <path d="M5.8 20.4c0-3.4 2.8-6.2 6.2-6.2s6.2 2.8 6.2 6.2" fill={th.id === "graphite" ? "rgba(255,255,255,.6)" : th.accent} strokeLinecap="round" />
-                  </svg>
+                <div style={{ width: 18, height: 18, borderRadius: 999, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", animation: "iconProfilePresence 3.5s ease-in-out infinite", transformOrigin: "center center", background: "rgba(255,255,255,.06)", position: "relative" }}>
+                  <span style={{ position: "absolute", inset: 0, display: tgUser?.photo_url ? "flex" : "none", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 900, color: th.text }}>
+                    {(tgUser?.first_name?.[0] || tgUser?.username?.[0] || "R").toUpperCase()}
+                  </span>
+                  {tgUser?.photo_url ? (
+                    <img
+                      src={tgUser.photo_url}
+                      alt={tgUser?.first_name ? `${tgUser.first_name} avatar` : "Telegram avatar"}
+                      loading="eager"
+                      decoding="async"
+                      referrerPolicy="no-referrer"
+                      onError={(event) => { event.currentTarget.style.display = "none"; }}
+                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    />
+                  ) : (
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" style={{ flexShrink: 0 }}>
+                      <circle cx="12" cy="9" r="3.8" fill={th.id === "graphite" ? "rgba(255,255,255,.6)" : th.accent} />
+                      <path d="M5.8 20.4c0-3.4 2.8-6.2 6.2-6.2s6.2 2.8 6.2 6.2" fill={th.id === "graphite" ? "rgba(255,255,255,.6)" : th.accent} strokeLinecap="round" />
+                    </svg>
+                  )}
                 </div>
               </button>
             </div>
