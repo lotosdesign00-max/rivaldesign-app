@@ -25,6 +25,7 @@ function buildFallbackReply(text, lang) {
 function getReadableError(error, lang, model, mode) {
   const isEn = lang === "en";
   const message = String(error?.message || "");
+  const lowMessage = message.toLowerCase();
   const target = mode === "image" ? (isEn ? "image model" : "модель изображений") : (isEn ? "text model" : "текстовая модель");
 
   if (message === "CLOUDFLARE_AI_CONFIG_MISSING") {
@@ -47,8 +48,8 @@ function getReadableError(error, lang, model, mode) {
 
   if (message.startsWith("CLOUDFLARE_AI_401") || message.startsWith("CLOUDFLARE_AI_403")) {
     return isEn
-      ? "Cloudflare Workers AI rejected the request. Check the API token permissions and account id."
-      : "Cloudflare Workers AI отклонил запрос. Проверь права API token и account id.";
+      ? "Cloudflare Workers AI rejected the request with 401/403. Check that the API token is active, has Workers AI permissions, and belongs to this account id."
+      : "Cloudflare Workers AI отклонил запрос с 401/403. Проверь, что API token активен, имеет права Workers AI и относится к этому account id.";
   }
 
   if (message.startsWith("CLOUDFLARE_AI_429")) {
@@ -124,9 +125,14 @@ function getReadableError(error, lang, model, mode) {
   }
 
   if (message.startsWith("OPENROUTER_401") || message.startsWith("OPENROUTER_403")) {
+    if (lowMessage.includes("user not found")) {
+      return isEn
+        ? "OpenRouter says this API key does not belong to an existing user. Create a fresh key in OpenRouter and restart the dev server."
+        : "OpenRouter ответил: этот API key не привязан к существующему пользователю. Создай новый ключ в OpenRouter и перезапусти dev-сервер.";
+    }
     return isEn
-      ? "OpenRouter rejected the request. Check the API key and account settings."
-      : "OpenRouter отклонил запрос. Проверь API key и настройки аккаунта.";
+      ? "OpenRouter rejected the request with 401/403. Check the API key, account settings, and whether the key was revoked."
+      : "OpenRouter отклонил запрос с 401/403. Проверь API key, настройки аккаунта и не был ли ключ отозван.";
   }
 
   return isEn
@@ -148,6 +154,24 @@ function extractTextContent(message) {
       .trim();
   }
   return "";
+}
+
+async function readApiError(response) {
+  const raw = await response.text().catch(() => "");
+  if (!raw) return "";
+
+  try {
+    const json = JSON.parse(raw);
+    return (
+      json?.error?.message ||
+      json?.error?.name ||
+      json?.errors?.[0]?.message ||
+      json?.errors?.[0]?.code ||
+      raw
+    );
+  } catch {
+    return raw.slice(0, 220);
+  }
 }
 
 function extractImageUrl(message, data) {
@@ -336,7 +360,8 @@ async function requestOpenRouterImage(prompt, aspect, model, apiKey, siteUrl, si
   });
 
   if (!response.ok) {
-    throw new Error(`OPENROUTER_${response.status}`);
+    const errorText = await readApiError(response);
+    throw new Error(`OPENROUTER_${response.status}${errorText ? `:${errorText}` : ""}`);
   }
 
   const data = await response.json();
@@ -385,14 +410,16 @@ async function requestCloudflareImage(prompt, aspect, model, accountId, apiToken
   });
 
   if (!response.ok) {
-    throw new Error(`CLOUDFLARE_AI_${response.status}`);
+    const errorText = await readApiError(response);
+    throw new Error(`CLOUDFLARE_AI_${response.status}${errorText ? `:${errorText}` : ""}`);
   }
 
   const data = await response.json();
   if (data?.success === false) {
     const cloudflareCode = data?.errors?.[0]?.code;
     if (cloudflareCode) {
-      throw new Error(`CLOUDFLARE_AI_${cloudflareCode}`);
+      const cloudflareMessage = data?.errors?.[0]?.message || "";
+      throw new Error(`CLOUDFLARE_AI_${cloudflareCode}${cloudflareMessage ? `:${cloudflareMessage}` : ""}`);
     }
   }
   const imageBase64 = data?.result?.image;
@@ -409,7 +436,8 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
   const qualityTextModel = import.meta.env.VITE_OPEN_MODEL_TEXT_QUALITY || import.meta.env.VITE_OPEN_MODEL_TEXT || import.meta.env.VITE_OPEN_MODEL || "qwen/qwen3.6-plus:free";
   const defaultTextPreset = safeLs.get("rs_ai_text_preset4", "quality") === "fast" ? "fast" : "quality";
   const defaultTextModel = defaultTextPreset === "fast" ? fastTextModel : qualityTextModel;
-  const fastImageModel = normalizeImageModel(import.meta.env.VITE_OPEN_MODEL_IMAGE_FAST || "@cf/black-forest-labs/flux-2-klein-4b");
+  const configuredImageModel = normalizeImageModel(import.meta.env.VITE_OPEN_MODEL_IMAGE || "");
+  const fastImageModel = normalizeImageModel(import.meta.env.VITE_OPEN_MODEL_IMAGE_FAST || configuredImageModel || "@cf/black-forest-labs/flux-2-klein-4b");
   const qualityImageModel = normalizeImageModel(import.meta.env.VITE_OPEN_MODEL_IMAGE_QUALITY || "@cf/black-forest-labs/flux-2-dev");
   const defaultImagePreset = safeLs.get("rs_ai_image_preset4", "fast") === "quality" ? "quality" : "fast";
   const defaultImageModel = defaultImagePreset === "quality" ? qualityImageModel : fastImageModel;
@@ -651,7 +679,8 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
             break;
           }
 
-          lastError = new Error(`OPENROUTER_${response.status}`);
+          const errorText = await readApiError(response);
+          lastError = new Error(`OPENROUTER_${response.status}${errorText ? `:${errorText}` : ""}`);
           if (![404, 429].includes(response.status)) {
             throw lastError;
           }
