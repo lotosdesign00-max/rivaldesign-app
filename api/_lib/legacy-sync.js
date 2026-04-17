@@ -7,7 +7,7 @@ const {
   ensureUser,
   money,
   orderByCreatedDesc,
-} = require("../_lib/supabase");
+} = require("./supabase");
 
 async function withUser(req, res) {
   if (!ensureSupabase(res)) throw new Error("Supabase is not configured");
@@ -128,24 +128,6 @@ async function addMessage(orderId, senderRole, text, senderId = null) {
   return Array.isArray(rows) ? rows[0] : rows;
 }
 
-function handleApi(handler) {
-  return async (req, res) => {
-    if (req.method !== "POST") {
-      sendJson(res, 405, { ok: false, error: "Method not allowed" });
-      return;
-    }
-
-    try {
-      const result = await handler(req, res);
-      if (!res.writableEnded) sendJson(res, 200, { ok: true, result });
-    } catch (error) {
-      if (!res.writableEnded) {
-        sendJson(res, 500, { ok: false, error: error instanceof Error ? error.message : "Unknown error" });
-      }
-    }
-  };
-}
-
 module.exports = {
   sendJson,
   withUser,
@@ -156,7 +138,6 @@ module.exports = {
   createPayment,
   createOrder,
   addMessage,
-  handleApi,
   money,
   supabaseRest,
 };
