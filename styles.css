@@ -91,14 +91,24 @@ html[data-rs-performance="smooth"] .rs-shooting-star {
   display: none !important;
 }
 
+html[data-rs-performance="smooth"] .rs-bottom-nav button {
+  contain: layout style;
+  min-width: 0;
+}
+
 html[data-rs-performance="smooth"] .rs-nav-icon-cycle {
-  animation: none !important;
-  transform: none !important;
+  animation-duration: 4.8s !important;
+  animation-timing-function: cubic-bezier(.37, 0, .22, 1) !important;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 html[data-rs-performance="smooth"] .rs-nav-icon-wrap {
   filter: none !important;
-  will-change: auto !important;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 html[data-rs-performance="smooth"] header > div,

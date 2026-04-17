@@ -220,17 +220,17 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
         
         @keyframes iconCoinPulse {
           
-          0%, 55% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 0px transparent); }
+          0%, 55% { transform: scale(1) translateY(0); opacity: .94; }
           
-          62% { transform: scale(1.05) translateY(-2px); filter: drop-shadow(0 0 2px rgba(99,102,241,0.3)); }
+          62% { transform: scale(1.05) translateY(-2px); opacity: .98; }
           
-          70% { transform: scale(1.28) translateY(-3px); filter: drop-shadow(0 0 12px rgba(99,102,241,0.8)); }
+          70% { transform: scale(1.28) translateY(-3px); opacity: 1; }
           
-          78% { transform: scale(1.1) translateY(1px); filter: drop-shadow(0 0 4px rgba(99,102,241,0.4)); }
+          78% { transform: scale(1.1) translateY(1px); opacity: .98; }
           
-          88% { transform: scale(1.01) translateY(0); filter: drop-shadow(0 0 0px transparent); }
+          88% { transform: scale(1.01) translateY(0); opacity: .95; }
           
-          100% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 0px transparent); }
+          100% { transform: scale(1) translateY(0); opacity: .94; }
         }
 
         
@@ -338,11 +338,12 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
           return (
             <button
               key={n.id}
-              onClick={(e) => handleTabClick(n.id, e)}
+              onClick={() => handleTabClick(n.id)}
               style={{
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+                justifyContent: "center",
                 gap: isHome ? 2 : 3,
                 border: "none",
                 background: "none",
@@ -350,6 +351,10 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
                 padding: isHome ? "6px 0 4px" : "8px 0 4px",
                 position: "relative",
                 zIndex: 1,
+                minWidth: 0,
+                minHeight: isHome ? 62 : 58,
+                contain: "layout style",
+                transform: "translateZ(0)",
                 WebkitTapHighlightColor: "transparent",
               }}
             >
@@ -396,6 +401,8 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
                 height: isHome ? 30 : 26,
                 alignItems: "center",
                 justifyContent: "center",
+                flexShrink: 0,
+                lineHeight: 0,
                 marginTop: isHome ? -10 : 0,
                 transform: isActive
                   ? isHome ? "translateY(-3px) scale(1.05)" : "scale(1.05)"
@@ -406,12 +413,16 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
                     ? `drop-shadow(0 0 10px ${th.accentC || th.accentB})`
                     : `drop-shadow(0 0 12px ${th.glow})`
                   : "drop-shadow(0 2px 4px rgba(0,0,0,0.5))",
+                backfaceVisibility: "hidden",
+                contain: "layout paint style",
                 transition: "filter .35s ease, transform .35s cubic-bezier(.34,1.56,.64,1)",
+                willChange: isActive ? "transform" : "auto",
               }}>
                 <span className="rs-nav-icon-cycle" style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  lineHeight: 0,
                   animation: (() => {
                       if (n.id === "home") return "iconBounce 3.5s ease-in-out infinite";
                       if (n.id === "ai") return "iconSpin 3.5s linear infinite";
@@ -419,7 +430,10 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
                       if (n.id === "courses") return "iconBookLayers 3.5s ease-in-out infinite";
                       return "iconPulse 3.5s ease-in-out infinite";
                     })(),
+                  backfaceVisibility: "hidden",
+                  contain: "layout paint style",
                   transformOrigin: "center center",
+                  willChange: "transform",
                 }}>
                   {n.id === "gallery" ? <PaletteMark  active={isActive} th={th} /> :
                    n.id === "ai"      ? <GearMark    active={isActive} th={th} /> :

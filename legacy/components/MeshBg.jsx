@@ -12,6 +12,7 @@ function MeshBg() {
   return (
     <>
       <div
+        aria-hidden="true"
         className="rs-mesh-bg"
         style={{
           position: "fixed",
@@ -19,6 +20,8 @@ function MeshBg() {
           zIndex: 0,
           pointerEvents: "none",
           overflow: "hidden",
+          contain: "strict",
+          transform: "translateZ(0)",
           background: "linear-gradient(180deg, #030408 0%, #040610 45%, #050810 100%)",
         }}
       >
