@@ -1273,6 +1273,31 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined" || typeof document === "undefined") return undefined;
+    const mediaQueries = [
+      window.matchMedia?.("(pointer: coarse)"),
+      window.matchMedia?.("(max-width: 760px)"),
+      window.matchMedia?.("(prefers-reduced-motion: reduce)"),
+    ].filter(Boolean);
+
+    const syncPerformanceMode = () => {
+      const coarse = window.matchMedia?.("(pointer: coarse)")?.matches;
+      const narrow = window.matchMedia?.("(max-width: 760px)")?.matches;
+      const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+      const lowMemory = Number(navigator.deviceMemory || 8) <= 4;
+      const lowCore = Number(navigator.hardwareConcurrency || 8) <= 4;
+      const smooth = Boolean(reduced || isTg || (coarse && narrow) || lowMemory || lowCore);
+      document.documentElement.dataset.rsPerformance = smooth ? "smooth" : "full";
+    };
+
+    syncPerformanceMode();
+    mediaQueries.forEach((query) => query.addEventListener?.("change", syncPerformanceMode));
+    return () => {
+      mediaQueries.forEach((query) => query.removeEventListener?.("change", syncPerformanceMode));
+    };
+  }, []);
+
+  useEffect(() => {
     syncTelegramChrome(th);
   }, [th.bg, th.nav]);
 
@@ -2582,6 +2607,21 @@ export default function App() {
         body{margin:0;padding:0;overflow:hidden;overflow-x:clip;height:var(--tg-app-height,100dvh);width:100%;max-width:100%;overscroll-behavior-y:none;-webkit-overflow-scrolling:touch;font-family:var(--font-body);background:var(--rs-tg-bg,#030408);color:var(--rs-tg-text,rgba(224,231,255,.95));}
         #root{height:var(--tg-app-height,100dvh);width:100%;max-width:100%;overflow:hidden;overflow-x:clip;}
         html[data-rs-paused] *,html[data-rs-paused] *::before,html[data-rs-paused] *::after{animation-play-state:paused!important;}
+        html[data-rs-performance="smooth"]{scroll-behavior:auto;}
+        html[data-rs-performance="smooth"] .rs-mesh-bg{contain:strict;transform:translateZ(0);}
+        html[data-rs-performance="smooth"] .rs-mesh-nebula{animation:none!important;transition:none!important;filter:blur(18px)!important;opacity:.52!important;transform:translate3d(0,0,0)!important;}
+        html[data-rs-performance="smooth"] .rs-mesh-nebula-b{display:none!important;}
+        html[data-rs-performance="smooth"] .rs-mesh-stars-near{animation:starfieldDrift 160s linear infinite!important;transition:none!important;opacity:.48!important;}
+        html[data-rs-performance="smooth"] .rs-mesh-stars-far{display:none!important;}
+        html[data-rs-performance="smooth"] .rs-mesh-glow{filter:none!important;transition:none!important;opacity:.45!important;}
+        html[data-rs-performance="smooth"] .rs-shooting-star{display:none!important;}
+        html[data-rs-performance="smooth"] .rs-icon-shell,html[data-rs-performance="smooth"] .rs-icon-wrap,html[data-rs-performance="smooth"] .rs-icon-svg,html[data-rs-performance="smooth"] .rs-icon-svg > *{animation:none!important;transition-duration:.12s!important;filter:none!important;will-change:auto!important;}
+        html[data-rs-performance="smooth"] .rs-icon-svg[data-animated="true"] > *{stroke-dasharray:none!important;stroke-dashoffset:0!important;}
+        html[data-rs-performance="smooth"] .rs-nav-icon-cycle{animation:none!important;transform:none!important;}
+        html[data-rs-performance="smooth"] .rs-nav-icon-wrap{filter:none!important;transition:transform .2s ease!important;}
+        html[data-rs-performance="smooth"] .rs-bottom-nav{backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;box-shadow:0 -14px 32px rgba(3,4,8,.46),inset 0 1px 0 rgba(255,255,255,.05)!important;}
+        html[data-rs-performance="smooth"] .rs-content{scroll-behavior:auto!important;contain:layout paint;}
+        html[data-rs-performance="smooth"] .rs-content > div{will-change:auto!important;}
         .rs-shell{width:100%;max-width:100%;overflow-x:hidden;}
         .rs-content{width:100%;max-width:100%;overflow-x:hidden;}
         .rs-content *{min-width:0;}

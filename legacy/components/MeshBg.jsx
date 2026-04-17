@@ -12,6 +12,7 @@ function MeshBg() {
   return (
     <>
       <div
+        className="rs-mesh-bg"
         style={{
           position: "fixed",
           inset: 0,
@@ -22,6 +23,7 @@ function MeshBg() {
         }}
       >
         <div
+          className="rs-mesh-nebula rs-mesh-nebula-a"
           style={{
             position: "absolute",
             top: "-20%",
@@ -38,6 +40,7 @@ function MeshBg() {
         />
 
         <div
+          className="rs-mesh-nebula rs-mesh-nebula-b"
           style={{
             position: "absolute",
             top: "30%",
@@ -54,6 +57,7 @@ function MeshBg() {
         />
 
         <div
+          className="rs-mesh-nebula rs-mesh-nebula-c"
           style={{
             position: "absolute",
             bottom: "-10%",
@@ -70,6 +74,7 @@ function MeshBg() {
         />
 
         <div
+          className="rs-mesh-stars rs-mesh-stars-near"
           style={{
             position: "absolute",
             inset: "-12%",
@@ -95,6 +100,7 @@ function MeshBg() {
         />
 
         <div
+          className="rs-mesh-stars rs-mesh-stars-far"
           style={{
             position: "absolute",
             inset: "-8%",
@@ -116,6 +122,7 @@ function MeshBg() {
         />
 
         <div
+          className="rs-mesh-glow"
           style={{
             position: "absolute",
             top: "0",
@@ -131,6 +138,7 @@ function MeshBg() {
         />
 
         <div
+          className="rs-mesh-vignette"
           style={{
             position: "absolute",
             inset: 0,
@@ -141,6 +149,7 @@ function MeshBg() {
         />
 
         <div
+          className="rs-shooting-star rs-shooting-star-a"
           style={{
             position: "absolute",
             top: "11%",
@@ -160,6 +169,7 @@ function MeshBg() {
         />
 
         <div
+          className="rs-shooting-star rs-shooting-star-b"
           style={{
             position: "absolute",
             top: "52%",

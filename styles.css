@@ -58,6 +58,55 @@ html[data-rs-paused] *::after {
   animation-play-state: paused !important;
 }
 
+html[data-rs-performance="smooth"] {
+  scroll-behavior: auto;
+}
+
+html[data-rs-performance="smooth"] .rs-icon-shell,
+html[data-rs-performance="smooth"] .rs-icon-wrap,
+html[data-rs-performance="smooth"] .rs-icon-svg,
+html[data-rs-performance="smooth"] .rs-icon-svg > * {
+  animation: none !important;
+  transition-duration: 0.12s !important;
+  filter: none !important;
+  will-change: auto !important;
+}
+
+html[data-rs-performance="smooth"] .rs-icon-svg[data-animated="true"] > * {
+  stroke-dasharray: none !important;
+  stroke-dashoffset: 0 !important;
+}
+
+html[data-rs-performance="smooth"] .rs-mesh-nebula {
+  animation: none !important;
+  transition: none !important;
+  filter: blur(18px) !important;
+  opacity: 0.52 !important;
+  transform: translate3d(0, 0, 0) !important;
+}
+
+html[data-rs-performance="smooth"] .rs-mesh-nebula-b,
+html[data-rs-performance="smooth"] .rs-mesh-stars-far,
+html[data-rs-performance="smooth"] .rs-shooting-star {
+  display: none !important;
+}
+
+html[data-rs-performance="smooth"] .rs-nav-icon-cycle {
+  animation: none !important;
+  transform: none !important;
+}
+
+html[data-rs-performance="smooth"] .rs-nav-icon-wrap {
+  filter: none !important;
+  will-change: auto !important;
+}
+
+html[data-rs-performance="smooth"] header > div,
+html[data-rs-performance="smooth"] .rs-bottom-nav {
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    SCROLLBAR
    ═══════════════════════════════════════════════════════════════ */

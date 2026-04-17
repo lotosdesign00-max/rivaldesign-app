@@ -25,6 +25,15 @@
           root.style.setProperty("--tg-app-height", `${height}px`);
           root.style.setProperty("--tg-stable-height", `${Math.max(320, Math.round(tg?.viewportStableHeight || height))}px`);
           root.style.setProperty("--rs-tg-bg", tg?.themeParams?.bg_color || "#030408");
+          const smooth = Boolean(
+            tg ||
+            window.matchMedia?.("(pointer: coarse)")?.matches ||
+            window.matchMedia?.("(max-width: 760px)")?.matches ||
+            window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ||
+            Number(navigator.deviceMemory || 8) <= 4 ||
+            Number(navigator.hardwareConcurrency || 8) <= 4
+          );
+          root.dataset.rsPerformance = smooth ? "smooth" : "full";
           tg?.ready?.();
           tg?.expand?.();
         } catch {}

@@ -289,6 +289,7 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
         }
       `}</style>
       <nav
+        className="rs-bottom-nav"
         style={{
           position: "fixed",
           bottom: 0,
@@ -389,7 +390,7 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
                   animation: "navArcIn .28s ease both",
                 }} />
               )}
-              <span style={{
+              <span className="rs-nav-icon-wrap" style={{
                 display: "flex",
                 width: isHome ? 30 : 26,
                 height: isHome ? 30 : 26,
@@ -407,7 +408,7 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
                   : "drop-shadow(0 2px 4px rgba(0,0,0,0.5))",
                 transition: "filter .35s ease, transform .35s cubic-bezier(.34,1.56,.64,1)",
               }}>
-                <span style={{
+                <span className="rs-nav-icon-cycle" style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
