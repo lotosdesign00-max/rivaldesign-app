@@ -27,10 +27,55 @@ async function readJsonBody(req) {
   });
 }
 
+async function readRawBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on("data", (chunk) => {
+      chunks.push(Buffer.from(chunk));
+    });
+    req.on("end", () => {
+      resolve(Buffer.concat(chunks));
+    });
+    req.on("error", reject);
+  });
+}
+
 function sendJson(res, statusCode, payload) {
   res.statusCode = statusCode;
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.end(JSON.stringify(payload));
+}
+
+async function proxyCloudflareAi(req, res, env) {
+  const token = env.CLOUDFLARE_API_TOKEN || env.VITE_CLOUDFLARE_API_TOKEN || "";
+  if (!token) {
+    sendJson(res, 500, { ok: false, error: "Missing CLOUDFLARE_API_TOKEN in server env" });
+    return;
+  }
+
+  const targetSuffix = String(req.url || "").replace(/^\/api\/cloudflare-ai/, "");
+  const targetUrl = `https://api.cloudflare.com/client/v4${targetSuffix}`;
+  const contentType = req.headers["content-type"];
+  const body = ["GET", "HEAD"].includes(req.method || "GET") ? undefined : await readRawBody(req);
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept: req.headers.accept || "application/json",
+  };
+
+  if (contentType) {
+    headers["Content-Type"] = contentType;
+  }
+
+  const cfResponse = await fetch(targetUrl, {
+    method: req.method,
+    headers,
+    body,
+  });
+
+  const responseBody = Buffer.from(await cfResponse.arrayBuffer());
+  res.statusCode = cfResponse.status;
+  res.setHeader("Content-Type", cfResponse.headers.get("content-type") || "application/json; charset=utf-8");
+  res.end(responseBody);
 }
 
 function getPathname(url = "") {
@@ -187,6 +232,11 @@ function cryptoPayPlugin(env) {
     try {
       if (req.method === "GET" && pathname === "/api/public-content") {
         sendJson(res, 200, { ok: true, result: readContentStore() });
+        return;
+      }
+
+      if (pathname.startsWith("/api/cloudflare-ai/")) {
+        await proxyCloudflareAi(req, res, env);
         return;
       }
 
@@ -574,15 +624,6 @@ export default defineConfig(({ mode }) => {
             if (id.includes("@supabase")) return "vendor-supabase";
             return "vendor";
           },
-        },
-      },
-    },
-    server: {
-      proxy: {
-        "/api/cloudflare-ai": {
-          target: "https://api.cloudflare.com/client/v4",
-          changeOrigin: true,
-          rewrite: (proxyPath) => proxyPath.replace(/^\/api\/cloudflare-ai/, ""),
         },
       },
     },

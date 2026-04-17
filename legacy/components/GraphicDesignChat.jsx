@@ -30,8 +30,8 @@ function getReadableError(error, lang, model, mode) {
 
   if (message === "CLOUDFLARE_AI_CONFIG_MISSING") {
     return isEn
-      ? "Cloudflare Workers AI is not configured yet. Add VITE_CLOUDFLARE_ACCOUNT_ID and VITE_CLOUDFLARE_API_TOKEN to .env."
-      : "Cloudflare Workers AI еще не настроен. Добавь VITE_CLOUDFLARE_ACCOUNT_ID и VITE_CLOUDFLARE_API_TOKEN в .env.";
+      ? "Cloudflare Workers AI is not configured yet. Add VITE_CLOUDFLARE_ACCOUNT_ID and server-only CLOUDFLARE_API_TOKEN to .env."
+      : "Cloudflare Workers AI еще не настроен. Добавь VITE_CLOUDFLARE_ACCOUNT_ID и серверный CLOUDFLARE_API_TOKEN в .env.";
   }
 
   if (message === "CLOUDFLARE_AI_IMAGE_FAILED") {
@@ -378,8 +378,8 @@ async function requestOpenRouterImage(prompt, aspect, model, apiKey, siteUrl, si
   return imageUrl;
 }
 
-async function requestCloudflareImage(prompt, aspect, model, accountId, apiToken) {
-  if (!accountId || !apiToken) {
+async function requestCloudflareImage(prompt, aspect, model, accountId) {
+  if (!accountId) {
     throw new Error("CLOUDFLARE_AI_CONFIG_MISSING");
   }
 
@@ -387,9 +387,7 @@ async function requestCloudflareImage(prompt, aspect, model, accountId, apiToken
   const payload = buildCloudflareImagePayload(prompt, aspect);
   const usesMultipart = normalizedModel.includes("flux-2-");
   let body;
-  let headers = {
-    Authorization: `Bearer ${apiToken}`,
-  };
+  let headers = {};
 
   if (usesMultipart) {
     const form = new FormData();
@@ -443,7 +441,6 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
   const defaultImageModel = defaultImagePreset === "quality" ? qualityImageModel : fastImageModel;
   const openRouterKey = import.meta.env.VITE_OPENROUTER_API_KEY;
   const cloudflareAccountId = import.meta.env.VITE_CLOUDFLARE_ACCOUNT_ID;
-  const cloudflareApiToken = import.meta.env.VITE_CLOUDFLARE_API_TOKEN;
   const siteUrl = import.meta.env.VITE_APP_URL || (typeof window !== "undefined" ? window.location.origin : "http://localhost");
   const siteName = import.meta.env.VITE_APP_NAME || "RivalDesign AI Chat";
 
@@ -595,7 +592,7 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
 
         try {
           imageUrl = isCloudflareImageModel(activeModel)
-            ? await requestCloudflareImage(text, imageAspect, activeModel, cloudflareAccountId, cloudflareApiToken)
+            ? await requestCloudflareImage(text, imageAspect, activeModel, cloudflareAccountId)
             : await requestOpenRouterImage(text, imageAspect, activeModel, openRouterKey, siteUrl, siteName);
         } catch (imageError) {
           const fallbackImageModel = normalizeImageModel(fastImageModel);
@@ -608,7 +605,7 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
             throw imageError;
           }
 
-          imageUrl = await requestCloudflareImage(text, imageAspect, fallbackImageModel, cloudflareAccountId, cloudflareApiToken);
+          imageUrl = await requestCloudflareImage(text, imageAspect, fallbackImageModel, cloudflareAccountId);
           resolvedImageModel = fallbackImageModel;
           showToast?.(
             lang === "en" ? "Quality render was unstable. Switched to Fast." : "Качественный рендер был нестабилен. Переключил на Быстро.",
