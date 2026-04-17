@@ -140,15 +140,32 @@ function ProfileTab({
         <div style={{ display: "flex", alignItems: "center", gap: 18, position: "relative", zIndex: 1 }}>
           {/* Avatar Premium */}
           <div style={{
-            position: "relative", width: 80, height: 80, borderRadius: 24,
-            background: "linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.04))",
-            border: `1px solid ${th.border}`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 34, fontWeight: 900, color: "#fff",
-            boxShadow: "0 10px 24px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.06)",
-            textShadow: "0 4px 16px rgba(0,0,0,0.4)"
+            position: "relative",
+            width: 82,
+            height: 82,
+            borderRadius: "50%",
+            padding: 2,
+            background: avatarUrl
+              ? "linear-gradient(135deg, rgba(255,255,255,.52), rgba(255,255,255,.08) 48%, rgba(129,140,248,.24))"
+              : "linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.045))",
+            boxShadow: "0 14px 30px rgba(0,0,0,.20)",
           }}>
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 40%)", borderRadius: "inherit", pointerEvents: "none" }} />
+            <div style={{
+              position: "relative",
+              width: "100%",
+              height: "100%",
+              borderRadius: "inherit",
+              overflow: "hidden",
+              background: "linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.025))",
+              border: `1px solid ${th.border}`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 34,
+              fontWeight: 900,
+              color: "#fff",
+              textShadow: "0 4px 16px rgba(0,0,0,0.4)"
+            }}>
             <span style={{ position: "relative", zIndex: 1 }}>{avatarLetter}</span>
             {avatarUrl && (
               <img
@@ -163,12 +180,12 @@ function ProfileTab({
                   inset: 0,
                   width: "100%",
                   height: "100%",
-                  borderRadius: "inherit",
                   objectFit: "cover",
                   zIndex: 2,
                 }}
               />
             )}
+            </div>
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 26, color: "#fff", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-.02em" }}>

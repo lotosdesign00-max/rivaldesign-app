@@ -13,6 +13,22 @@ import AchievementDetailModal from "./components/AchievementDetailModal";
 import HomeTab from "./components/HomeTab";
 import SystemIcon from "./components/SystemIcon";
 import PaymentDetailsModal from "./components/PaymentDetailsModal";
+import {
+  TG,
+  isTg,
+  tgUser,
+  tgReady,
+  tgHaptic,
+  tgNotif,
+  tgSelection,
+  bindTelegramTheme,
+  bindTelegramViewport,
+  setTelegramBackButton,
+  syncTelegramChrome,
+  openTelegramLink,
+  openExternalLink,
+  openInvoice as openTelegramInvoice,
+} from "./utils/tma";
 
 const loadGalleryTab = () => import("./components/GalleryTab");
 const loadAITab = () => import("./components/AITab");
@@ -27,9 +43,22 @@ const PricingTab = React.lazy(loadPricingTab);
 const MoreTab = React.lazy(loadMoreTab);
 const ProfileTab = React.lazy(loadProfileTab);
 const preloadLazyTabs = () => {
-  [loadGalleryTab, loadAITab, loadCoursesTab, loadPricingTab, loadMoreTab, loadProfileTab].forEach((load) => {
-    load().catch(() => {});
-  });
+  const queue = [loadGalleryTab, loadAITab, loadCoursesTab, loadPricingTab, loadMoreTab, loadProfileTab];
+  let index = 0;
+  const loadNext = () => {
+    const load = queue[index];
+    index += 1;
+    if (!load) return;
+    load().catch(() => {}).finally(() => {
+      if (index >= queue.length) return;
+      if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+        window.requestIdleCallback(loadNext, { timeout: 1200 });
+        return;
+      }
+      window.setTimeout(loadNext, 180);
+    });
+  };
+  loadNext();
 };
 const makeEntityId = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 const roundMoney = (value) => Math.round(Number(value || 0) * 100) / 100;
@@ -120,32 +149,6 @@ function estimateStarsFromUsd(amountUsd, langs = {}) {
 // ── TYPEWRITER ANIMATED TEXT COMPONENT ──
 
 
-// ── TELEGRAM SDK ──
-const TG = window.Telegram?.WebApp;
-const tgSupports = (version) => !!TG?.isVersionAtLeast?.(version);
-const tgReady = () => {
-  try {
-    TG?.ready();
-    TG?.expand();
-    if (tgSupports("6.1")) TG?.disableVerticalSwipes?.();
-    if (tgSupports("6.1")) TG?.enableClosingConfirmation?.();
-  } catch {}
-};
-const tgHaptic = (t = "light") => {
-  if (!tgSupports("6.1")) return;
-  try { TG?.HapticFeedback?.impactOccurred?.(t); } catch {}
-};
-const tgNotif = (t = "success") => {
-  if (!tgSupports("6.1")) return;
-  try { TG?.HapticFeedback?.notificationOccurred?.(t); } catch {}
-};
-const tgBackBtn = (show, cb) => {
-  if (!tgSupports("6.1")) return;
-  try { if (show) { TG?.BackButton?.show(); if (cb) TG?.BackButton?.onClick(cb); } else { TG?.BackButton?.hide(); TG?.BackButton?.offClick?.(cb); } } catch {}
-};
-const isTg = !!TG;
-const tgUser = TG?.initDataUnsafe?.user;
-
 // ── AUDIO ENGINE ──
 let _actx = null, _master = null, _soundEnabled = true, _volume = 0.55, _audioUnlocked = false;
 function actx() {
@@ -176,7 +179,7 @@ function note(f, t = "sine", v = 0.07, d = 0.12, delay = 0) {
 }
 const SFX = {
   tap: () => { note(880, "sine", .05, .07); tgHaptic("light"); },
-  tab: () => { note(660, "triangle", .06, .09); note(880, "sine", .04, .07, .04); tgHaptic("light"); },
+  tab: () => { note(660, "triangle", .06, .09); note(880, "sine", .04, .07, .04); tgSelection(); },
   open: () => { [440, 660, 880].forEach((f, i) => note(f, "sine", .06, .14, i * .04)); tgHaptic("medium"); },
   close: () => { [880, 660, 440].forEach((f, i) => note(f, "sine", .05, .1, i * .03)); },
   success: () => { [523, 659, 784, 1047].forEach((f, i) => note(f, "sine", .08, .18, i * .07)); tgNotif("success"); },
@@ -186,13 +189,13 @@ const SFX = {
   clear: () => { [380, 280, 180].forEach((f, i) => note(f, "sawtooth", .05, .1, i * .05)); tgHaptic("heavy"); },
   order: () => { [261, 329, 392, 523, 659, 784].forEach((f, i) => note(f, "sine", .09, .2, i * .06)); tgNotif("success"); },
   theme: () => { [300, 400, 500, 600].forEach((f, i) => note(f, "sine", .05, .12, i * .04)); tgHaptic("medium"); },
-  lang: () => { note(700, "sine", .06, .1); note(900, "sine", .05, .1, .06); tgHaptic("light"); },
+  lang: () => { note(700, "sine", .06, .1); note(900, "sine", .05, .1, .06); tgSelection(); },
   ai: () => { [200, 300, 400, 500, 600, 700, 800].forEach((f, i) => note(f, "sine", .04, .14, i * .04)); tgHaptic("medium"); },
   aiDone: () => { [784, 988, 1175, 1568].forEach((f, i) => note(f, "sine", .08, .2, i * .08)); tgNotif("success"); },
   like: () => { note(880, "sine", .07, .14); note(1100, "sine", .05, .1, .07); tgHaptic("light"); },
   copy: () => { note(800, "sine", .05, .08); note(1000, "sine", .04, .07, .05); tgHaptic("light"); },
-  filter: () => { note(600, "triangle", .04, .08); tgHaptic("light"); },
-  toggle: () => { note(700, "triangle", .05, .1); tgHaptic("light"); },
+  filter: () => { note(600, "triangle", .04, .08); tgSelection(); },
+  toggle: () => { note(700, "triangle", .05, .1); tgSelection(); },
   drawer: () => { [500, 700].forEach((f, i) => note(f, "sine", .05, .12, i * .05)); tgHaptic("medium"); },
   wishlist: () => { note(660, "sine", .07, .12); note(880, "sine", .05, .1, .07); tgHaptic("medium"); },
   confetti: () => { [400, 500, 600, 700, 800, 900, 1000].forEach((f, i) => note(f, "sine", .1, .25, i * .05)); tgNotif("success"); },
@@ -1254,56 +1257,27 @@ export default function App() {
     return sparkId;
   };
 
-  useEffect(() => { tgReady(); }, []);
+  useEffect(() => {
+    tgReady();
+    return bindTelegramTheme();
+  }, []);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return undefined;
+    const syncVisibility = () => {
+      document.documentElement.toggleAttribute("data-rs-paused", document.hidden);
+    };
+    syncVisibility();
+    document.addEventListener("visibilitychange", syncVisibility);
+    return () => document.removeEventListener("visibilitychange", syncVisibility);
+  }, []);
+
+  useEffect(() => {
+    syncTelegramChrome(th);
+  }, [th.bg, th.nav]);
 
   useLayoutEffect(() => {
-    if (typeof window === "undefined") return undefined;
-
-    const applyTelegramViewport = () => {
-      const root = document.documentElement;
-      const safe = TG?.contentSafeAreaInset || TG?.contentSafeAreaInsets || TG?.safeAreaInset || TG?.safeAreaInsets || {};
-      const top = Number(safe?.top || 0);
-      const right = Number(safe?.right || 0);
-      const bottom = Number(safe?.bottom || 0);
-      const left = Number(safe?.left || 0);
-      const stableHeight = Number(TG?.viewportStableHeight || TG?.viewportHeight || window.innerHeight || document.documentElement.clientHeight || 0);
-      const viewportWidth = Number(window.innerWidth || document.documentElement.clientWidth || 0);
-      const sideGap = Math.max(2, Math.min(4, viewportWidth * 0.012));
-      const barGap = Math.max(1, Math.min(2, viewportWidth * 0.008));
-      const designWidth = 420;
-      const availableWidth = Math.max(320, viewportWidth - left - right - sideGap * 2);
-      const shellScale = Math.min(1, availableWidth / designWidth);
-
-      root.style.setProperty("--tg-safe-top", `${top}px`);
-      root.style.setProperty("--tg-safe-right", `${right}px`);
-      root.style.setProperty("--tg-safe-bottom", `${bottom}px`);
-      root.style.setProperty("--tg-safe-left", `${left}px`);
-      root.style.setProperty("--tg-app-height", `${stableHeight || window.innerHeight}px`);
-      root.style.setProperty("--tg-side-gap", `${sideGap}px`);
-      root.style.setProperty("--tg-bar-gap", `${barGap}px`);
-      root.style.setProperty("--tg-shell-width", `${designWidth}px`);
-      root.style.setProperty("--tg-shell-scale", `${shellScale}`);
-    };
-
-    const syncViewport = () => window.requestAnimationFrame(applyTelegramViewport);
-
-    applyTelegramViewport();
-    window.addEventListener("resize", syncViewport);
-
-    try {
-      TG?.onEvent?.("viewportChanged", syncViewport);
-      TG?.onEvent?.("safeAreaChanged", syncViewport);
-      TG?.onEvent?.("contentSafeAreaChanged", syncViewport);
-    } catch {}
-
-    return () => {
-      window.removeEventListener("resize", syncViewport);
-      try {
-        TG?.offEvent?.("viewportChanged", syncViewport);
-        TG?.offEvent?.("safeAreaChanged", syncViewport);
-        TG?.offEvent?.("contentSafeAreaChanged", syncViewport);
-      } catch {}
-    };
+    return bindTelegramViewport({ designWidth: 420 });
   }, []);
 
   useEffect(() => {
@@ -1358,11 +1332,23 @@ export default function App() {
   }, [liveCourses, liveFaq, liveGallery, liveHome, liveLangs, liveReviews, liveServices]);
   
   useEffect(() => {
-    if (tab !== "home" || selImage || drawerOpen) {
-      const cb = () => { if (selImage) { setSelImage(null); SFX.close(); } else if (drawerOpen) { setDrawerOpen(false); } else { setTab("home"); SFX.tab(); } };
-      tgBackBtn(true, cb);
-      return () => tgBackBtn(false, cb);
-    } else { tgBackBtn(false); }
+    const shouldShowBack = tab !== "home" || selImage || drawerOpen;
+    if (!shouldShowBack) return setTelegramBackButton(null);
+
+    return setTelegramBackButton(() => {
+      if (selImage) {
+        setSelImage(null);
+        SFX.close();
+        return;
+      }
+      if (drawerOpen) {
+        setDrawerOpen(false);
+        SFX.close();
+        return;
+      }
+      setTab("home");
+      SFX.tab();
+    });
   }, [tab, selImage, drawerOpen]);
 
   useLayoutEffect(() => {
@@ -1446,44 +1432,6 @@ export default function App() {
   useEffect(() => {
     if (wishlist.length >= 5) unlockAchievement("wishlist_5");
   }, [wishlist]);
-
-  useEffect(() => {
-    if (tab !== "profile" || !mainRef.current) return undefined;
-
-    const el = mainRef.current;
-    let rafA = 0;
-    let rafB = 0;
-    let rafC = 0;
-
-    rafA = requestAnimationFrame(() => {
-      el.style.transform = "translateZ(0)";
-      el.style.willChange = "transform, scroll-position";
-      void el.offsetHeight;
-
-      const prevTop = el.scrollTop;
-      el.scrollTop = prevTop + 1;
-
-      rafB = requestAnimationFrame(() => {
-        el.scrollTop = prevTop;
-        void el.offsetHeight;
-
-        rafC = requestAnimationFrame(() => {
-          el.style.transform = "";
-          el.style.willChange = "";
-        });
-      });
-    });
-
-    return () => {
-      cancelAnimationFrame(rafA);
-      cancelAnimationFrame(rafB);
-      cancelAnimationFrame(rafC);
-      if (el) {
-        el.style.transform = "";
-        el.style.willChange = "";
-      }
-    };
-  }, [tab]);
 
   const showToast = useCallback((msg, type = "info") => {
     const id = Date.now();
@@ -2438,9 +2386,9 @@ export default function App() {
     if (invoiceUrl) {
       try {
         if (invoiceUrl.startsWith("https://t.me/")) {
-          TG?.openTelegramLink?.(invoiceUrl);
+          openTelegramLink(invoiceUrl);
         } else if (invoiceUrl.startsWith("http")) {
-          TG?.openLink?.(invoiceUrl);
+          openExternalLink(invoiceUrl);
         } else {
           window.open(invoiceUrl, "_blank");
         }
@@ -2455,11 +2403,7 @@ export default function App() {
         ? (lang === "en" ? `Order #${context.orderNo} payment draft.` : `Оплата заказа #${context.orderNo}.`)
         : (lang === "en" ? "CryptoBot payment draft." : "Черновик оплаты через CryptoBot.");
     showToast(target, "info");
-    try {
-      TG?.openTelegramLink?.("https://t.me/send");
-    } catch {
-      window.open("https://t.me/send", "_blank");
-    }
+    openTelegramLink("https://t.me/send");
   }, [lang, showToast]);
 
   const openStarsInvoice = useCallback((context) => {
@@ -2488,13 +2432,10 @@ export default function App() {
     };
 
     try {
-      if (TG?.openInvoice) {
-        TG.openInvoice(invoiceLink, completeStarsPayment);
-        return;
-      }
+      if (openTelegramInvoice(invoiceLink, completeStarsPayment)) return;
 
       if (invoiceLink.startsWith("http")) {
-        TG?.openLink?.(invoiceLink);
+        openExternalLink(invoiceLink);
         return;
       }
     } catch {
@@ -2634,12 +2575,13 @@ export default function App() {
       }}
     >
       <style>{`
-        :root{--font-body:"Inter",system-ui,sans-serif;--font-display:"Gilroy-Bold","Gilroy-Heavy","Inter",system-ui,sans-serif;--font-button:"Gilroy-Medium","Gilroy-Bold","Inter",system-ui,sans-serif;--font-number:"Gilroy-Heavy","Gilroy-Bold","Inter",system-ui,sans-serif;--font-micro:"Inter",system-ui,sans-serif;--tg-side-gap:clamp(2px,1.2vw,4px);--tg-bar-gap:clamp(1px,.8vw,2px);--tg-shell-width:420px;--tg-shell-scale:1;}
+        :root{--font-body:"Inter",system-ui,sans-serif;--font-display:"Gilroy-Bold","Gilroy-Heavy","Inter",system-ui,sans-serif;--font-button:"Gilroy-Medium","Gilroy-Bold","Inter",system-ui,sans-serif;--font-number:"Gilroy-Heavy","Gilroy-Bold","Inter",system-ui,sans-serif;--font-micro:"Inter",system-ui,sans-serif;--tg-app-height:100dvh;--tg-stable-height:100dvh;--tg-visual-height:100dvh;--tg-side-gap:clamp(2px,1.2vw,4px);--tg-bar-gap:clamp(1px,.8vw,2px);--tg-shell-width:420px;--tg-shell-scale:1;--rs-tg-bg:var(--tg-theme-bg-color,#030408);--rs-tg-text:var(--tg-theme-text-color,rgba(224,231,255,.95));--rs-tg-hint:var(--tg-theme-hint-color,#64748b);--rs-tg-secondary-bg:var(--tg-theme-secondary-bg-color,#090b14);}
         *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;}
         ::-webkit-scrollbar{width:0;height:0;}*{scrollbar-width:none;}
-        html{scroll-behavior:smooth;overscroll-behavior:none;overflow:hidden;overflow-x:clip;height:100%;width:100%;max-width:100%;background:#030408;}
-        body{margin:0;padding:0;overflow:hidden;overflow-x:clip;height:100%;width:100%;max-width:100%;overscroll-behavior-y:none;-webkit-overflow-scrolling:touch;font-family:var(--font-body);background:#030408;color:rgba(224,231,255,.95);}
-        #root{height:100%;width:100%;max-width:100%;overflow:hidden;overflow-x:clip;}
+        html{scroll-behavior:smooth;overscroll-behavior:none;overflow:hidden;overflow-x:clip;height:var(--tg-app-height,100dvh);width:100%;max-width:100%;background:var(--rs-tg-bg,#030408);color-scheme:dark;}
+        body{margin:0;padding:0;overflow:hidden;overflow-x:clip;height:var(--tg-app-height,100dvh);width:100%;max-width:100%;overscroll-behavior-y:none;-webkit-overflow-scrolling:touch;font-family:var(--font-body);background:var(--rs-tg-bg,#030408);color:var(--rs-tg-text,rgba(224,231,255,.95));}
+        #root{height:var(--tg-app-height,100dvh);width:100%;max-width:100%;overflow:hidden;overflow-x:clip;}
+        html[data-rs-paused] *,html[data-rs-paused] *::before,html[data-rs-paused] *::after{animation-play-state:paused!important;}
         .rs-shell{width:100%;max-width:100%;overflow-x:hidden;}
         .rs-content{width:100%;max-width:100%;overflow-x:hidden;}
         .rs-content *{min-width:0;}
@@ -2894,26 +2836,11 @@ export default function App() {
                 aria-label={t.navProfile}
                 title={t.navProfile}
               >
-                <div style={{ width: 18, height: 18, borderRadius: 999, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", animation: "iconProfilePresence 3.5s ease-in-out infinite", transformOrigin: "center center", background: "rgba(255,255,255,.06)", position: "relative" }}>
-                  <span style={{ position: "absolute", inset: 0, display: tgUser?.photo_url ? "flex" : "none", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 900, color: th.text }}>
-                    {(tgUser?.first_name?.[0] || tgUser?.username?.[0] || "R").toUpperCase()}
-                  </span>
-                  {tgUser?.photo_url ? (
-                    <img
-                      src={tgUser.photo_url}
-                      alt={tgUser?.first_name ? `${tgUser.first_name} avatar` : "Telegram avatar"}
-                      loading="eager"
-                      decoding="async"
-                      referrerPolicy="no-referrer"
-                      onError={(event) => { event.currentTarget.style.display = "none"; }}
-                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                    />
-                  ) : (
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" style={{ flexShrink: 0 }}>
-                      <circle cx="12" cy="9" r="3.8" fill={th.id === "graphite" ? "rgba(255,255,255,.6)" : th.accent} />
-                      <path d="M5.8 20.4c0-3.4 2.8-6.2 6.2-6.2s6.2 2.8 6.2 6.2" fill={th.id === "graphite" ? "rgba(255,255,255,.6)" : th.accent} strokeLinecap="round" />
-                    </svg>
-                  )}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", animation: "iconProfilePresence 3.5s ease-in-out infinite", transformOrigin: "center center" }}>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" style={{ flexShrink: 0 }}>
+                    <circle cx="12" cy="9" r="3.8" fill={th.id === "graphite" ? "rgba(255,255,255,.6)" : th.accent} />
+                    <path d="M5.8 20.4c0-3.4 2.8-6.2 6.2-6.2s6.2 2.8 6.2 6.2" fill={th.id === "graphite" ? "rgba(255,255,255,.6)" : th.accent} strokeLinecap="round" />
+                  </svg>
                 </div>
               </button>
             </div>

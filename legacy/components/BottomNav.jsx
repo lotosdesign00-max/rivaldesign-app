@@ -1,4 +1,4 @@
-﻿import React, { useRef } from "react";
+import React from "react";
 
 const NAV_ITEMS = [
   { id: "gallery", icon: "palette-mark", label: "navGallery" },
@@ -85,7 +85,6 @@ function ProfileMark({ active, th }) {
           <stop offset="100%" stopColor={active ? th.accentB : "rgba(100,116,139,.4)"} />
         </linearGradient>
       </defs>
-      {/* User avatar / profile icon */}
       <circle
         cx="12" cy="9" r="3.8"
         fill={active ? th.tag : "rgba(255,255,255,.02)"}
@@ -150,16 +149,9 @@ function PriceMark({ active, th }) {
 }
 
 function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, walletBalance = 0, sfx }) {
-  const rippleRef = useRef({});
-
-  const handleTabClick = (id, e) => {
-    sfx.tab();
+  const handleTabClick = (id) => {
+    sfx.tab?.();
     onChange(id);
-    // Create ripple
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    rippleRef.current[id] = { x, y, ts: Date.now() };
   };
 
   return (
@@ -175,79 +167,73 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
           80%  { transform: scale(0.95); }
           100% { transform: scale(1); }
         }
-        @keyframes navRipple {
-          0%   { transform: scale(0); opacity: 0.5; }
-          100% { transform: scale(3); opacity: 0; }
-        }
         @keyframes navGlowPulse {
           0%,100% { opacity: 0.55; }
           50%      { opacity: 0.9; }
         }
 
-        /* в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
-           CYCLIC ICON ANIMATIONS — Always visible, all synced at 3.5s
-           в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ */
+        
 
-        /* Default: bold scale pulse (palette, profile) */
+        
         @keyframes iconPulse {
           0%, 100% { transform: scale(1); }
           50%      { transform: scale(1.35); }
         }
 
-        /* Home: «Уют оживает» (Premium Living Home) */
-        /* Округлое, мягкое движение с инерцией — домик "вдыхает жизнь" */
+        
+        
         @keyframes iconBounce {
-          /* 0-30%: Покой */
+          
           0%, 30% { transform: translateY(0) scale(1) rotate(0deg); }
-          /* 38%: Собирается внутрь (набирает тепло) */
+          
           38% { transform: translateY(1px) scale(0.93) rotate(0deg); }
-          /* 50%: ПИК — Приподнимается, увеличивается, легкий приветственный наклон */
+          
           50% { transform: translateY(-6px) scale(1.28) rotate(3deg); }
-          /* 62%: Возврат вниз с инерцией */
+          
           62% { transform: translateY(1px) scale(1.05) rotate(-1deg); }
-          /* 75%: Вторичный упругий отскок (мягкий объект) */
+          
           75% { transform: translateY(-2px) scale(1.03) rotate(0deg); }
-          /* 88%: Почти на месте */
+          
           88% { transform: translateY(0) scale(1) rotate(0deg); }
-          /* 100%: Покой */
+          
           100% { transform: translateY(0) scale(1) rotate(0deg); }
         }
 
-        /* AI/Gear: «Точный запуск механизма» (Premium Mechanical Launch) */
-        /* Один сильный запуск, контр-откат зубцов, стабилизация — не лоадер */
+        
+        
         @keyframes iconSpin {
-          /* 0-55%: Покой */
+          
           0%, 55% { transform: scale(1) rotate(0deg); }
-          /* 62%: Активация (приближается, модуль включается) */
+          
           62% { transform: scale(1.08) rotate(-3deg); }
-          /* 68%: ПИК СИЛЫ — Резкий короткий проворот вперед */
+          
           68% { transform: scale(1.28) rotate(35deg); }
-          /* 76%: Контр-откат (зубцы сцепились) */
+          
           76% { transform: scale(1.12) rotate(28deg); }
-          /* 86%: Стабилизация */
+          
           86% { transform: scale(1.02) rotate(2deg); }
-          /* 100%: Возврат в исходное */
+          
           100% { transform: scale(1) rotate(0deg); }
         }
 
-        /* Pricing: «Вес ценности» (Premium Luxury Weight) */
-        /* Плотное движение дорогого объекта, без мультяшного bounce */
+        
+        
         @keyframes iconCoinPulse {
-          /* 0-55%: Покой, уверенность */
+          
           0%, 55% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 0px transparent); }
-          /* 62%: Подготовка (деликатное подтягивание вверх, словно взяли) */
+          
           62% { transform: scale(1.05) translateY(-2px); filter: drop-shadow(0 0 2px rgba(99,102,241,0.3)); }
-          /* 70%: ПИК — Корпус мягко расширяется (объем ценности внутри) */
+          
           70% { transform: scale(1.28) translateY(-3px); filter: drop-shadow(0 0 12px rgba(99,102,241,0.8)); }
-          /* 78%: Оседание (чуть ниже базы — ощущается вес) */
+          
           78% { transform: scale(1.1) translateY(1px); filter: drop-shadow(0 0 4px rgba(99,102,241,0.4)); }
-          /* 88%: Стабилизация */
+          
           88% { transform: scale(1.01) translateY(0); filter: drop-shadow(0 0 0px transparent); }
-          /* 100%: Покой */
+          
           100% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 0px transparent); }
         }
 
-        /* Orders/Clipboard: big flip */
+        
         @keyframes iconFlip {
           0%, 100% { transform: perspective(200px) rotateY(0deg) scale(1); }
           20%      { transform: perspective(200px) rotateY(30deg) scale(1.2); }
@@ -255,8 +241,8 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
           80%      { transform: perspective(200px) rotateY(-30deg) scale(1.2); }
         }
 
-        /* Courses/Book: «Знание раскрывается слоями» (Premium Knowledge Layers) */
-        /* Стопка книг мягко подается вверх, слои раскрываются, затем собирается обратно */
+        
+        
         @keyframes iconBookLayers {
           0%, 40%  { transform: translateY(0) scale(1); }
           48%      { transform: translateY(1px) scale(0.96); }
@@ -266,39 +252,39 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
           100%     { transform: translateY(0) scale(1); }
         }
 
-        /* Gallery/Palette: «Творческий жест кисти» (Premium Artist Stroke) */
-        /* Палитра ведет себя как жест руки художника, а не просто предмет */
+        
+        
         @keyframes iconPaletteTilt {
-          /* 0-25%: Покой */
+          
           0%, 25% { transform: translateY(0) scale(1) rotate(0deg); }
-          /* 33%: Подготовка (мягко уходит чуть назад) */
+          
           33% { transform: translateY(2px) scale(0.94) rotate(-2deg); }
-          /* 45%: Приподнимается + поворот запястья (кисть взяла палитру) */
+          
           45% { transform: translateY(-5px) scale(1.15) rotate(4deg); }
-          /* 55%: ПИК — Имитация мазка: переход в противоположный наклон */
+          
           55% { transform: translateY(-4px) scale(1.3) rotate(-5deg); }
-          /* 68%: Кисть отпускает, палитра плавно успокаивается */
+          
           68% { transform: translateY(0) scale(1.05) rotate(2deg); }
-          /* 82%: Послевкусие движения (остаточный кач) */
+          
           82% { transform: translateY(0) scale(1) rotate(-1deg); }
-          /* 100%: Покой */
+          
           100% { transform: translateY(0) scale(1) rotate(0deg); }
         }
 
-        /* Profile: «Проявление личности» (Premium Presence) */
-        /* Выход в присутствие с легким 3D-разворотом. Аватар "поворачивается к тебе". */
+        
+        
         @keyframes iconProfilePresence {
-          /* 0-45%: Покой, уверенность */
+          
           0%, 45% { transform: perspective(200px) scale(1) translateY(0) rotateY(0deg); }
-          /* 52%: Собирание внутрь (подготовка к выходу) */
+          
           52% { transform: perspective(200px) scale(0.94) translateY(1px) rotateY(0deg); }
-          /* 62%: Выход вперед-вверх (presence) */
+          
           62% { transform: perspective(200px) scale(1.28) translateY(-2px) rotateY(8deg); }
-          /* 70%: ПИК — Микро-поворот личности (показываем объем и характер) */
+          
           70% { transform: perspective(200px) scale(1.3) translateY(-1px) rotateY(-12deg); }
-          /* 82%: Стабилизация */
+          
           82% { transform: perspective(200px) scale(1.02) translateY(0) rotateY(2deg); }
-          /* 100%: Возврат в исходное */
+          
           100% { transform: perspective(200px) scale(1) translateY(0) rotateY(0deg); }
         }
       `}</style>
@@ -326,7 +312,6 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
           boxSizing: "border-box",
         }}
       >
-        {/* subtle top indigo shimmer */}
         <div style={{
           position: "absolute",
           top: 0, left: 0, right: 0,
@@ -336,7 +321,6 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
             : "linear-gradient(90deg, transparent 0%, rgba(99,102,241,0.5) 30%, rgba(139,92,246,0.4) 50%, rgba(34,211,238,0.3) 70%, transparent 100%)",
           pointerEvents: "none",
         }} />
-        {/* inner glow dot pattern */}
         <div style={{
           position: "absolute",
           inset: 0,
@@ -368,7 +352,6 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
                 WebkitTapHighlightColor: "transparent",
               }}
             >
-              {/* Home tab: elevated platform */}
               {isHome && (
                 <div style={{
                   position: "absolute",
@@ -394,8 +377,6 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
                   zIndex: -1,
                 }} />
               )}
-
-              {/* Active background pill (non-home) */}
               {isActive && !isHome && (
                 <div style={{
                   position: "absolute",
@@ -408,8 +389,6 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
                   animation: "navArcIn .28s ease both",
                 }} />
               )}
-
-              {/* Icon container */}
               <span style={{
                 display: "flex",
                 width: isHome ? 30 : 26,
@@ -428,7 +407,6 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
                   : "drop-shadow(0 2px 4px rgba(0,0,0,0.5))",
                 transition: "filter .35s ease, transform .35s cubic-bezier(.34,1.56,.64,1)",
               }}>
-                {/* Inner animated span — cyclic animation ALWAYS runs */}
                 <span style={{
                   display: "flex",
                   alignItems: "center",
@@ -449,8 +427,6 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
                                          <PriceMark  active={isActive} th={th} />}
                 </span>
               </span>
-
-              {/* Label */}
               <span style={{
                 fontSize: isHome ? 9 : 8.5,
                 fontWeight: 700,
@@ -465,8 +441,6 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
               }}>
                 {t[n.label] || n.label}
               </span>
-
-              {/* Orders badge — active orders count */}
               {n.id === "courses" && ordersCount > 0 && (
                 <span style={{
                   position: "absolute",

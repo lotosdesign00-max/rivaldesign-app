@@ -118,13 +118,33 @@ function SideDrawer({
 
           {/* Avatar */}
           <div style={{
-            position: "relative", zIndex: 1, width: 62, height: 62, borderRadius: 20,
-            background: "linear-gradient(135deg, rgba(99,102,241,.30), rgba(139,92,246,.22))",
-            border: "1px solid rgba(99,102,241,.35)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 28, marginBottom: 14,
-            boxShadow: "0 8px 24px rgba(99,102,241,.25), inset 0 1px 0 rgba(255,255,255,.08)",
+            position: "relative",
+            zIndex: 1,
+            width: 64,
+            height: 64,
+            borderRadius: "50%",
+            padding: 2,
+            marginBottom: 14,
+            background: avatarUrl
+              ? "linear-gradient(135deg, rgba(255,255,255,.45), rgba(255,255,255,.08) 48%, rgba(129,140,248,.24))"
+              : "linear-gradient(135deg, rgba(99,102,241,.28), rgba(139,92,246,.18))",
+            boxShadow: "0 10px 24px rgba(0,0,0,.20)",
           }}>
+            <div style={{
+              position: "relative",
+              width: "100%",
+              height: "100%",
+              borderRadius: "inherit",
+              overflow: "hidden",
+              background: "linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.025))",
+              border: "1px solid rgba(255,255,255,.10)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 28,
+              color: "rgba(255,255,255,.94)",
+              fontWeight: 900,
+            }}>
             <span style={{ position: "relative", zIndex: 1 }}>{avatarLetter}</span>
             {avatarUrl && (
               <img
@@ -139,12 +159,12 @@ function SideDrawer({
                   inset: 0,
                   width: "100%",
                   height: "100%",
-                  borderRadius: "inherit",
                   objectFit: "cover",
                   zIndex: 2,
                 }}
               />
             )}
+            </div>
           </div>
           <div className="type-display" style={{ position: "relative", zIndex: 1, fontSize: 16, color: "rgba(224,231,255,.95)" }}>
             {tgUser?.first_name || "Designer"}

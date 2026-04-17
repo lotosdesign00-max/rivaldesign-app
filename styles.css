@@ -23,6 +23,11 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  height: var(--tg-app-height, 100dvh);
+  width: 100%;
+  overflow-x: clip;
+  background: var(--rs-tg-bg, var(--color-bg-primary));
+  color-scheme: dark;
 }
 
 body {
@@ -32,14 +37,25 @@ body {
   font-size: var(--text-base);
   line-height: 1.5;
   color: var(--text-primary);
-  background: var(--color-bg-primary);
-  overflow-x: hidden;
+  background: var(--rs-tg-bg, var(--color-bg-primary));
+  width: 100%;
+  height: var(--tg-app-height, 100dvh);
+  overflow-x: clip;
   overscroll-behavior-y: contain;
 }
 
 #root {
-  min-height: 100vh;
+  min-height: var(--tg-app-height, 100dvh);
+  height: var(--tg-app-height, 100dvh);
+  width: 100%;
+  overflow-x: clip;
   position: relative;
+}
+
+html[data-rs-paused] *,
+html[data-rs-paused] *::before,
+html[data-rs-paused] *::after {
+  animation-play-state: paused !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
