@@ -223,10 +223,18 @@ def get_cryptopay() -> AioCryptoPay:
 
 def money(value, symbol: str = "₽") -> str:
     """Format money values without noisy decimals."""
-    amount = Decimal(str(value or "0"))
+    amount = safe_decimal(value)
     if amount == amount.to_integral():
         return f"{int(amount)}{symbol}"
     return f"{amount:.2f}{symbol}"
+
+
+def safe_decimal(value, default: str = "0") -> Decimal:
+    """Convert nullable database values to Decimal without crashing handlers."""
+    try:
+        return Decimal(str(value if value not in (None, "") else default))
+    except (InvalidOperation, ValueError):
+        return Decimal(default)
 
 
 def parse_amount(text: str) -> Decimal | None:
@@ -676,14 +684,21 @@ async def callback_order_receipt(callback):
 async def callback_profile(callback):
     """Show user profile."""
     loading = await callback.message.answer("Открываю профиль...")
-    user = await db.get_user(callback.from_user.id)
-    if not user:
-        user = await ensure_telegram_user(callback.from_user)
-    orders = await db.get_user_orders_for_user_id(user["id"]) if user else []
+    user = None
+    orders = []
+    try:
+        user = await db.get_user(callback.from_user.id)
+        if not user:
+            user = await ensure_telegram_user(callback.from_user)
+        if user:
+            orders = await db.get_user_orders_for_user_id(user["id"])
+    except Exception:
+        logger.exception("Could not load profile data for user_id=%s", callback.from_user.id)
+
     completed_orders = [order for order in orders if order.get("status") in {"delivered", "closed"}]
     active_orders = [order for order in orders if order.get("status") in ACTIVE_STATUSES]
-    total_amount = sum(Decimal(str(order.get("total_amount") or 0)) for order in completed_orders)
-    balance = Decimal(str(user.get("balance", "0.00")))
+    total_amount = sum(safe_decimal(order.get("total_amount")) for order in completed_orders)
+    balance = safe_decimal(user.get("balance") if user else 0)
     username = escape(callback.from_user.username or callback.from_user.first_name or "client")
 
     profile_text = (
