@@ -56,7 +56,13 @@ class Database:
         client = await self.get_client()
         headers = {"Prefer": prefer} if prefer else None
         response = await client.request(method, f"/{table}", params=params, json=json, headers=headers)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            raise RuntimeError(
+                f"Supabase {method} /{table} failed: "
+                f"{response.status_code} {response.text}"
+            ) from exc
         if response.status_code == 204 or not response.content:
             return None
         return response.json()
@@ -96,6 +102,8 @@ class Database:
         if existing:
             return existing[0]
 
+        # The current Supabase schema does not include photo_url, so keep the
+        # bot compatible with the live table instead of failing first orders.
         return await self._insert(
             "users",
             {
@@ -103,7 +111,6 @@ class Database:
                 "username": username,
                 "first_name": first_name,
                 "last_name": last_name,
-                "photo_url": photo_url,
                 "balance": "0.00",
             },
         )
