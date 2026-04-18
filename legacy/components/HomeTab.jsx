@@ -270,6 +270,23 @@ export default function HomeTab({
         html[data-rs-mobile="true"] .home-lift:hover {
           transform: none !important;
         }
+        @media (max-width: 390px) {
+          .home-tools-grid,
+          .home-trust-summary,
+          .home-all-reviews-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .home-tools-grid .home-lift {
+            min-height: 0 !important;
+          }
+          .home-dock-buttons {
+            gap: 6px !important;
+          }
+          .home-dock-buttons button {
+            padding-left: 6px !important;
+            padding-right: 6px !important;
+          }
+        }
       `}</style>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -510,7 +527,7 @@ export default function HomeTab({
             animation: "homeReveal .54s cubic-bezier(.22,1,.36,1) .14s both",
           }}
         >
-          <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+          <div className="home-dock-buttons" style={{ display: "flex", gap: 8, marginBottom: 16 }}>
             {dockButtons.map((item) => {
               const active = sheet === item.id;
               return (
@@ -549,7 +566,7 @@ export default function HomeTab({
 
           {sheet === "studio" && (
             <div style={{ animation: "homeReveal .32s ease both" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10, marginBottom: 14 }}>
+              <div className="home-tools-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10, marginBottom: 14 }}>
                 {tools.map((tool) => (
                   <div
                     key={tool.title}
@@ -650,7 +667,7 @@ export default function HomeTab({
           {sheet === "trust" && (
             <div style={{ animation: "homeReveal .32s ease both" }}>
               {trustMode === "summary" ? (
-                <div style={{ display: "grid", gridTemplateColumns: "1.08fr .92fr", gap: 10 }}>
+                <div className="home-trust-summary" style={{ display: "grid", gridTemplateColumns: "1.08fr .92fr", gap: 10 }}>
                   <Panel style={{ padding: 16, borderRadius: 22, height: "100%" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
                       <div>
@@ -772,7 +789,7 @@ export default function HomeTab({
                     </button>
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <div className="home-all-reviews-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                     {allReviews.map((item) => (
                       <div
                         key={item.id}

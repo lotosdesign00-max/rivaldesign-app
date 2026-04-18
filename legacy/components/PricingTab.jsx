@@ -109,12 +109,12 @@ function ServiceCard({ svc, qty, onAdd, onSub, onExamples, lang, th, isFullPack 
 
       <div style={{ fontSize: 10, color: ui.sub, marginBottom: 12 }}>{lang === "en" ? svc.timeEn : svc.timeRu}</div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div className="pricing-service-actions" style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <button onClick={onExamples} style={{ padding: "10px 14px", borderRadius: 12, background: effectiveHovered ? `${ui.accent}16` : `${ui.accent}10`, border: `1px solid ${effectiveHovered ? `${ui.accent}55` : `${ui.accent}22`}`, color: ui.text, fontSize: 10.5, fontWeight: 800, cursor: "pointer", flex: 1 }}>
           {lang === "en" ? "Examples" : "Примеры"}
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <div className="pricing-service-stepper" style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <button onClick={onSub} disabled={qty === 0} style={{ width: 34, height: 34, borderRadius: 10, border: qty === 0 ? `1px solid ${ui.accent}18` : `1px solid ${ui.accent}55`, background: qty === 0 ? `${ui.accent}0f` : `${ui.accent}18`, color: qty === 0 ? ui.sub : ui.text, fontSize: 18, fontWeight: 900, cursor: qty === 0 ? "not-allowed" : "pointer" }}>−</button>
           <div style={{ width: 32, textAlign: "center", fontSize: 16, fontWeight: 900, fontFamily: "var(--font-number)", color: isSelected ? ui.text : ui.sub, background: isSelected ? `${ui.accent}18` : `${ui.accent}0f`, borderRadius: 10, padding: "7px 0", border: isSelected ? `1px solid ${ui.accent}44` : `1px solid ${ui.accent}18` }}>{qty}</div>
           <button onClick={onAdd} style={{ width: 34, height: 34, borderRadius: 10, background: isFullPack ? "linear-gradient(135deg, #f59e0b, #d97706)" : `linear-gradient(135deg, ${ui.accent}, ${ui.accentB})`, color: th?.btnTxt || "#fff", border: "1px solid rgba(255,255,255,0.15)", fontSize: 18, fontWeight: 900, cursor: "pointer" }}>+</button>
@@ -429,7 +429,34 @@ export default function PricingTab({
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+    <>
+      <style>{`
+        @media (max-width: 390px) {
+          .pricing-service-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+          .pricing-option-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .pricing-service-card {
+            padding: 18px 16px !important;
+          }
+          .pricing-service-actions {
+            gap: 8px !important;
+          }
+          .pricing-service-actions > button {
+            min-height: 40px !important;
+          }
+          .pricing-service-stepper button,
+          .pricing-service-stepper div {
+            width: 38px !important;
+            height: 38px !important;
+            min-width: 38px !important;
+          }
+        }
+      `}</style>
+      <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <div
         style={{
           borderRadius: 28,
@@ -451,7 +478,7 @@ export default function PricingTab({
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+      <div className="pricing-service-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         {regularServices.map((svc) => (
           <ServiceCard
             key={svc.id}
@@ -486,7 +513,7 @@ export default function PricingTab({
           <div style={{ background: `linear-gradient(180deg, ${ui.card} 0%, ${ui.surface} 100%)`, borderRadius: 24, border: `1px solid ${ui.border}`, padding: 20, boxShadow: "0 10px 30px rgba(3,4,8,0.22)" }}>
             <div style={{ fontSize: 14, fontWeight: 900, color: ui.text, marginBottom: 4 }}>{copy.tariffTitle}</div>
             <div style={{ fontSize: 11, color: ui.sub, marginBottom: 14, fontWeight: 600 }}>{copy.tariffHint}</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+            <div className="pricing-option-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
               {[
                 { id: "standard", name: "STANDARD", color: "#6b7280", price: "$7" },
                 { id: "plus", name: "PLUS", color: "#6366f1", price: "$10" },
@@ -510,7 +537,7 @@ export default function PricingTab({
           <div style={{ background: `linear-gradient(180deg, ${ui.card} 0%, ${ui.surface} 100%)`, borderRadius: 24, border: `1px solid ${ui.border}`, padding: 20, boxShadow: "0 10px 30px rgba(3,4,8,0.22)" }}>
             <div style={{ fontSize: 14, fontWeight: 900, color: ui.text, marginBottom: 4 }}>{copy.urgencyTitle}</div>
             <div style={{ fontSize: 11, color: ui.sub, marginBottom: 14, fontWeight: 600 }}>{copy.urgencyHint}</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+            <div className="pricing-option-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
               {[
                 { id: "normal", name: copy.urgencyNormal, eta: copy.etaNormal, color: "#6b7280" },
                 { id: "fast", name: copy.urgencyFast, eta: copy.etaFast, color: "#f59e0b" },
@@ -635,7 +662,8 @@ export default function PricingTab({
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 
