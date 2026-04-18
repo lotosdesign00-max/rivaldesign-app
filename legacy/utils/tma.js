@@ -149,10 +149,11 @@ export const bindTelegramViewport = ({ designWidth = 420 } = {}) => {
     const stableHeight = Number(tg?.viewportStableHeight || telegramHeight || visualHeight || 0);
     const appHeight = Math.max(320, Math.round(telegramHeight || visualHeight || stableHeight || window.innerHeight));
     const viewportWidth = Number(window.innerWidth || document.documentElement.clientWidth || 0);
-    const sideGap = Math.max(2, Math.min(4, viewportWidth * 0.012));
-    const barGap = Math.max(1, Math.min(2, viewportWidth * 0.008));
-    const availableWidth = Math.max(320, viewportWidth - left - right - sideGap * 2);
-    const shellScale = Math.min(1, availableWidth / designWidth);
+    const availableWidth = Math.max(320, viewportWidth - left - right);
+    const shellWidth = Math.min(designWidth, availableWidth);
+    const sideGap = Math.max(14, Math.min(18, shellWidth * 0.04));
+    const barGap = Math.max(10, Math.min(14, shellWidth * 0.03));
+    const shellScale = 1;
     const coarse = Boolean(window.matchMedia?.("(pointer: coarse)")?.matches);
     const compact = viewportWidth <= 760;
     const mobileUa = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
@@ -167,7 +168,7 @@ export const bindTelegramViewport = ({ designWidth = 420 } = {}) => {
     root.style.setProperty("--tg-visual-height", `${Math.max(320, Math.round(visualHeight || appHeight))}px`);
     root.style.setProperty("--tg-side-gap", `${sideGap}px`);
     root.style.setProperty("--tg-bar-gap", `${barGap}px`);
-    root.style.setProperty("--tg-shell-width", `${designWidth}px`);
+    root.style.setProperty("--tg-shell-width", `${shellWidth}px`);
     root.style.setProperty("--tg-shell-scale", `${shellScale}`);
     root.dataset.rsMobile = mobile ? "true" : "false";
   };
