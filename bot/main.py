@@ -43,6 +43,7 @@ CRYPTOPAY_ASSET = os.getenv("CRYPTOPAY_ASSET", "USDT").strip().upper()
 WELCOME_VIDEO_ID = os.getenv("WELCOME_VIDEO_ID", "").strip()
 WELCOME_VIDEO_PATH = os.getenv("WELCOME_VIDEO_PATH", "").strip()
 PUBLIC_BOT_USERNAME = os.getenv("PUBLIC_BOT_USERNAME", "rivaldesign_bot").strip().lstrip("@")
+CACHED_WELCOME_VIDEO_ID: str | None = None
 
 if not BOT_TOKEN:
     raise RuntimeError("TELEGRAM_BOT_TOKEN is not set in bot/.env")
@@ -232,10 +233,20 @@ def welcome_text() -> str:
 
 async def send_main_menu(message: Message):
     """Send the reference-style welcome message with optional video."""
+    global CACHED_WELCOME_VIDEO_ID
     text = welcome_text()
     video = None
-    if WELCOME_VIDEO_ID:
+
+    cache_path = Path(__file__).parent / "assets" / "welcome_video_id.txt"
+    if CACHED_WELCOME_VIDEO_ID:
+        video = CACHED_WELCOME_VIDEO_ID
+    elif WELCOME_VIDEO_ID:
         video = WELCOME_VIDEO_ID
+    elif cache_path.exists():
+        cached = cache_path.read_text(encoding="utf-8").strip()
+        if cached:
+            CACHED_WELCOME_VIDEO_ID = cached
+            video = cached
     elif WELCOME_VIDEO_PATH:
         video_path = Path(WELCOME_VIDEO_PATH)
         if not video_path.is_absolute():
@@ -246,12 +257,20 @@ async def send_main_menu(message: Message):
             logger.warning("Welcome video path does not exist: %s", video_path)
 
     if video:
-        await message.answer_video(
+        sent = await message.answer_video(
             video=video,
             caption=text,
             parse_mode=ParseMode.HTML,
             reply_markup=main_menu_kb(),
         )
+        if isinstance(video, FSInputFile) and sent.video:
+            CACHED_WELCOME_VIDEO_ID = sent.video.file_id
+            try:
+                cache_path.parent.mkdir(parents=True, exist_ok=True)
+                cache_path.write_text(sent.video.file_id, encoding="utf-8")
+            except OSError as exc:
+                logger.warning("Could not cache welcome video file_id: %s", exc)
+            logger.info("Cached Telegram welcome video file_id. Add this to Railway as WELCOME_VIDEO_ID=%s", sent.video.file_id)
         return
 
     await message.answer(text=text, parse_mode=ParseMode.HTML, reply_markup=main_menu_kb())
