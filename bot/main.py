@@ -463,6 +463,9 @@ def build_admin_order_text(order: dict, session: dict, user) -> str:
     price = ORDER_PRICES_RUB.get(category_code, Decimal("1200"))
     username = escape(f"@{user.username}" if user.username else (user.full_name or str(user.id)))
     order_number = escape(str(order.get("order_number") or "новый заказ"))
+    brief = build_order_brief(session)
+    if len(brief) > 2600:
+        brief = brief[:2600].rstrip() + "\n...ТЗ обрезано, полная версия в Supabase."
     return (
         "<b>Новый заказ в Rival Space</b>\n\n"
         f"<b>{order_number}</b>\n"
@@ -472,7 +475,26 @@ def build_admin_order_text(order: dict, session: dict, user) -> str:
         f"Сумма: <b>{money(price)}</b>\n"
         "Статус: <b>Ожидает оплаты</b>\n\n"
         "<b>ТЗ:</b>\n"
-        f"<pre>{escape(build_order_brief(session))}</pre>"
+        f"<pre>{escape(brief)}</pre>"
+    )
+
+
+def build_admin_order_fallback(order: dict, session: dict, user) -> str:
+    """Plain notification that should pass even if Telegram rejects HTML."""
+    category_name = ORDER_CATEGORIES.get(session["category"], "Заказ")
+    brief = build_order_brief(session)
+    if len(brief) > 1800:
+        brief = brief[:1800].rstrip() + "\n...ТЗ обрезано, полная версия в Supabase."
+    username = f"@{user.username}" if user.username else (user.full_name or str(user.id))
+    return (
+        "Новый заказ в Rival Space\n\n"
+        f"{order.get('order_number') or 'новый заказ'}\n"
+        f"Клиент: {username}\n"
+        f"Telegram ID: {user.id}\n"
+        f"Тип: {category_name}\n"
+        f"Сумма: {money(ORDER_PRICES_RUB.get(session['category'], Decimal('1200')))}\n"
+        "Статус: Ожидает оплаты\n\n"
+        f"ТЗ:\n{brief}"
     )
 
 
@@ -493,7 +515,7 @@ def build_payment_text(session: dict) -> str:
     )
 
 
-async def notify_admin(bot: Bot, text: str):
+async def notify_admin(bot: Bot, text: str, fallback_text: str | None = None):
     """Send a notification to the configured designer/admin chat."""
     if not ADMIN_TELEGRAM_ID:
         logger.warning("ADMIN_TELEGRAM_ID is not set; admin notification skipped")
@@ -501,8 +523,15 @@ async def notify_admin(bot: Bot, text: str):
     try:
         await bot.send_message(chat_id=int(ADMIN_TELEGRAM_ID), text=text, parse_mode=ParseMode.HTML)
         return True
-    except Exception:
-        logger.exception("Could not send admin notification")
+    except Exception as exc:
+        logger.exception("Could not send admin notification as HTML")
+        if fallback_text:
+            try:
+                await bot.send_message(chat_id=int(ADMIN_TELEGRAM_ID), text=fallback_text[:3900])
+                return True
+            except Exception:
+                logger.exception("Could not send admin fallback notification")
+        logger.warning("Admin notification failed: %s", exc)
         return False
 
 
@@ -556,7 +585,13 @@ async def ensure_order_for_session(callback, session: dict) -> dict | None:
         )
     except Exception:
         logger.exception("Could not create order chat message for order_id=%s", order["id"])
-    await notify_admin(callback.bot, build_admin_order_text(order, session, callback.from_user))
+    sent = await notify_admin(
+        callback.bot,
+        build_admin_order_text(order, session, callback.from_user),
+        build_admin_order_fallback(order, session, callback.from_user),
+    )
+    if not sent:
+        logger.warning("Order %s was saved but admin notification was not delivered", order.get("id"))
     return order
 
 
