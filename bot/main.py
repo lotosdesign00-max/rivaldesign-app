@@ -44,7 +44,13 @@ CRYPTOPAY_ASSET = os.getenv("CRYPTOPAY_ASSET", "USDT").strip().upper()
 WELCOME_VIDEO_ID = os.getenv("WELCOME_VIDEO_ID", "").strip()
 WELCOME_VIDEO_PATH = os.getenv("WELCOME_VIDEO_PATH", "").strip()
 PUBLIC_BOT_USERNAME = os.getenv("PUBLIC_BOT_USERNAME", "rivaldesign_bot").strip().lstrip("@")
-ADMIN_TELEGRAM_ID = os.getenv("ADMIN_TELEGRAM_ID", os.getenv("TELEGRAM_ADMIN_ID", "")).strip()
+ADMIN_TELEGRAM_ID = (
+    os.getenv("ADMIN_TELEGRAM_ID")
+    or os.getenv("TELEGRAM_ADMIN_ID")
+    or os.getenv("ADMIN_ID")
+    or os.getenv("DESIGNER_TELEGRAM_ID")
+    or ""
+).strip()
 CACHED_WELCOME_VIDEO_ID: str | None = None
 
 if not BOT_TOKEN:
@@ -491,11 +497,21 @@ async def notify_admin(bot: Bot, text: str):
     """Send a notification to the configured designer/admin chat."""
     if not ADMIN_TELEGRAM_ID:
         logger.warning("ADMIN_TELEGRAM_ID is not set; admin notification skipped")
-        return
+        return False
     try:
         await bot.send_message(chat_id=int(ADMIN_TELEGRAM_ID), text=text, parse_mode=ParseMode.HTML)
+        return True
     except Exception:
         logger.exception("Could not send admin notification")
+        return False
+
+
+def admin_status_line() -> str:
+    """Return a safe status line for admin notification setup."""
+    if not ADMIN_TELEGRAM_ID:
+        return "ADMIN_TELEGRAM_ID: <code>missing</code>"
+    masked = ADMIN_TELEGRAM_ID[:3] + "***" + ADMIN_TELEGRAM_ID[-3:] if len(ADMIN_TELEGRAM_ID) > 6 else "***"
+    return f"ADMIN_TELEGRAM_ID: <code>set ({masked})</code>"
 
 
 def callback_order_id(data: str | None) -> str | None:
@@ -553,6 +569,7 @@ async def run_supabase_diagnostics(telegram_id: int) -> str:
         f"SUPABASE_URL: <code>{'set' if os.getenv('SUPABASE_URL') else 'missing'}</code>",
         f"SUPABASE_SERVICE_KEY: <code>{'set' if os.getenv('SUPABASE_SERVICE_KEY') else 'missing'}</code>",
         f"SUPABASE_SECRET_KEY: <code>{'set' if os.getenv('SUPABASE_SECRET_KEY') else 'missing'}</code>",
+        admin_status_line(),
     ]
     try:
         test_user = await db.get_or_create_user(
@@ -745,6 +762,30 @@ async def cmd_diag(message: Message):
     await message.answer("Проверяю Supabase из окружения бота...")
     result = await run_supabase_diagnostics(message.from_user.id)
     await message.answer(result, parse_mode=ParseMode.HTML)
+
+
+@router.message(Command("admin_test"))
+async def cmd_admin_test(message: Message):
+    """Send a test notification to the configured admin chat."""
+    if not ADMIN_TELEGRAM_ID:
+        await message.answer(
+            "ADMIN_TELEGRAM_ID не задан в окружении бота. Добавь его именно в Railway и сделай redeploy."
+        )
+        return
+
+    sent = await notify_admin(
+        message.bot,
+        "<b>Тест уведомлений Rival Space</b>\n\n"
+        f"Команду запустил: <code>{message.from_user.id}</code>\n"
+        "Если ты видишь это сообщение, админ-уведомления работают.",
+    )
+    if sent:
+        await message.answer("Тестовое уведомление отправлено админу.")
+    else:
+        await message.answer(
+            "Не смог отправить тест админу. Проверь, что ADMIN_TELEGRAM_ID это именно numeric ID, "
+            "и что этот аккаунт уже нажимал /start в боте."
+        )
 
 
 @router.callback_query(F.data == "menu_order")
