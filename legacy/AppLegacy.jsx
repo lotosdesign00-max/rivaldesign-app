@@ -2623,6 +2623,18 @@ export default function App() {
         html[data-rs-performance="smooth"] .rs-bottom-nav{backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;box-shadow:0 -14px 32px rgba(3,4,8,.46),inset 0 1px 0 rgba(255,255,255,.05)!important;}
         html[data-rs-performance="smooth"] .rs-content{scroll-behavior:auto!important;contain:layout paint;}
         html[data-rs-performance="smooth"] .rs-content > div{will-change:auto!important;}
+        html[data-rs-mobile="true"]{scroll-behavior:auto;overscroll-behavior:none;}
+        html[data-rs-mobile="true"] body,html[data-rs-mobile="true"] #root{overscroll-behavior:none;}
+        html[data-rs-mobile="true"] .rs-shell,html[data-rs-mobile="true"] .rs-content{contain:layout style;transform:translateZ(0);}
+        html[data-rs-mobile="true"] .rs-content{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scroll-behavior:auto!important;will-change:scroll-position;}
+        html[data-rs-mobile="true"] .rs-content > div{contain:layout style;}
+        html[data-rs-mobile="true"] .rs-content img,html[data-rs-mobile="true"] .rs-content svg{backface-visibility:hidden;}
+        html[data-rs-mobile="true"] .rs-mesh-nebula{animation:none!important;filter:none!important;opacity:.34!important;transform:translate3d(0,0,0)!important;}
+        html[data-rs-mobile="true"] .rs-mesh-nebula-c,html[data-rs-mobile="true"] .rs-mesh-glow{display:none!important;}
+        html[data-rs-mobile="true"] .rs-mesh-stars-near{animation:none!important;opacity:.46!important;transform:none!important;}
+        html[data-rs-mobile="true"] header > div,html[data-rs-mobile="true"] .rs-bottom-nav{backdrop-filter:blur(9px)!important;-webkit-backdrop-filter:blur(9px)!important;box-shadow:0 12px 28px rgba(3,4,8,.36),inset 0 1px 0 rgba(255,255,255,.05)!important;}
+        html[data-rs-mobile="true"] .rs-nav-icon-cycle{animation-duration:6.4s!important;}
+        html[data-rs-mobile="true"] .rs-content > div{animation-duration:.2s!important;animation-timing-function:cubic-bezier(.2,.8,.2,1)!important;}
         .rs-shell{width:100%;max-width:100%;overflow-x:hidden;}
         .rs-content{width:100%;max-width:100%;overflow-x:hidden;}
         .rs-content *{min-width:0;}

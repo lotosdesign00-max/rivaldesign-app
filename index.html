@@ -25,14 +25,17 @@
           root.style.setProperty("--tg-app-height", `${height}px`);
           root.style.setProperty("--tg-stable-height", `${Math.max(320, Math.round(tg?.viewportStableHeight || height))}px`);
           root.style.setProperty("--rs-tg-bg", tg?.themeParams?.bg_color || "#030408");
+          const coarse = Boolean(window.matchMedia?.("(pointer: coarse)")?.matches);
+          const compact = Boolean(window.matchMedia?.("(max-width: 760px)")?.matches);
+          const mobileUa = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
+          const mobile = Boolean(tg || coarse || compact || mobileUa);
           const smooth = Boolean(
-            tg ||
-            window.matchMedia?.("(pointer: coarse)")?.matches ||
-            window.matchMedia?.("(max-width: 760px)")?.matches ||
+            mobile ||
             window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ||
             Number(navigator.deviceMemory || 8) <= 4 ||
             Number(navigator.hardwareConcurrency || 8) <= 4
           );
+          root.dataset.rsMobile = mobile ? "true" : "false";
           root.dataset.rsPerformance = smooth ? "smooth" : "full";
           tg?.ready?.();
           tg?.expand?.();
