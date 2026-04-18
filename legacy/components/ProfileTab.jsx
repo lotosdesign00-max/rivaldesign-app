@@ -54,6 +54,7 @@ function ProfileTab({
   const [showOrdersSection, setShowOrdersSection] = useState(false);
   const [paymentDetailsOpen, setPaymentDetailsOpen] = useState(false);
   const [paintReady, setPaintReady] = useState(false);
+  const isMobilePerf = typeof document !== "undefined" && document.documentElement.dataset.rsMobile === "true";
   const activeOrdersCount = orders.filter((o) => ["waiting_payment", "payment_review", "queued", "in_progress", "preview_sent", "revision"].includes(o.status)).length;
   const isPackUnlocked = safeLs.get("freepack_subscribed", false);
 
@@ -104,24 +105,27 @@ function ProfileTab({
     rafA = window.requestAnimationFrame(() => {
       rafB = window.requestAnimationFrame(() => {
         setPaintReady(true);
-        window.dispatchEvent(new Event("resize"));
+        if (!isMobilePerf) {
+          window.dispatchEvent(new Event("resize"));
+        }
       });
     });
     return () => {
       window.cancelAnimationFrame(rafA);
       window.cancelAnimationFrame(rafB);
     };
-  }, []);
+  }, [isMobilePerf]);
 
   return (
     <div
+      className="profile-tab"
       style={{
         padding: "8px 0 40px",
         display: "flex",
         flexDirection: "column",
         gap: 18,
         transform: paintReady ? "translateZ(0)" : "translate3d(0,0,0)",
-        willChange: "transform",
+        willChange: isMobilePerf ? "auto" : "transform",
         backfaceVisibility: "hidden",
       }}
     >
@@ -441,6 +445,7 @@ function ProfileTab({
         {stats.map((stat) => (
           <div 
             key={stat.label} 
+            className="profile-hover-card"
             style={{
               background: "linear-gradient(180deg, rgba(13,15,26,.85) 0%, rgba(8,9,20,.90) 100%)",
               border: `1px solid ${stat.color}15`,
@@ -450,8 +455,8 @@ function ProfileTab({
               transition: "all .3s cubic-bezier(.34,1.56,.64,1)",
               position: "relative", overflow: "hidden"
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = `${stat.color}35`; e.currentTarget.style.boxShadow = `0 12px 30px ${stat.color}10, inset 0 1px 0 rgba(255,255,255,.05)`; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = `${stat.color}15`; e.currentTarget.style.boxShadow = "0 8px 30px rgba(3,4,8,.35), inset 0 1px 0 rgba(255,255,255,.03)"; }}
+            onMouseEnter={isMobilePerf ? undefined : e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = `${stat.color}35`; e.currentTarget.style.boxShadow = `0 12px 30px ${stat.color}10, inset 0 1px 0 rgba(255,255,255,.05)`; }}
+            onMouseLeave={isMobilePerf ? undefined : e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = `${stat.color}15`; e.currentTarget.style.boxShadow = "0 8px 30px rgba(3,4,8,.35), inset 0 1px 0 rgba(255,255,255,.03)"; }}
           >
             <div style={{ position: "absolute", top: -20, left: -20, width: 80, height: 80, borderRadius: "50%", background: `radial-gradient(circle, ${stat.color}10 0%, transparent 70%)`, pointerEvents: "none" }} />
             <div style={{
@@ -491,10 +496,10 @@ function ProfileTab({
           transition: "all .3s cubic-bezier(.34,1.56,.64,1)",
           transform: "translateY(0)"
         }}
-        onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; }}
-        onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; }}
-        onTouchStart={e => e.currentTarget.style.transform = "scale(0.98)"}
-        onTouchEnd={e => e.currentTarget.style.transform = "scale(1)"}
+        onMouseEnter={isMobilePerf ? undefined : e => { e.currentTarget.style.transform = "translateY(-2px)"; }}
+        onMouseLeave={isMobilePerf ? undefined : e => { e.currentTarget.style.transform = "translateY(0)"; }}
+        onTouchStart={isMobilePerf ? undefined : e => e.currentTarget.style.transform = "scale(0.98)"}
+        onTouchEnd={isMobilePerf ? undefined : e => e.currentTarget.style.transform = "scale(1)"}
       >
         <div style={{ position: "absolute", top: -30, right: -20, width: 140, height: 140, borderRadius: "50%", background: "radial-gradient(circle, rgba(99,102,241,.12) 0%, transparent 60%)", pointerEvents: "none" }} />
         <div style={{ display: "flex", alignItems: "center", gap: 16, minWidth: 0, position: "relative", zIndex: 1 }}>

@@ -12,6 +12,7 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
   const [view, setView] = useState("grid");
   const [hovered, setHovered] = useState(null);
   const [imgLoaded, setImgLoaded] = useState({});
+  const isMobilePerf = typeof document !== "undefined" && document.documentElement.dataset.rsMobile === "true";
 
   const filtered = useMemo(() => {
     let r = items.filter(i =>
@@ -112,6 +113,29 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
         .view-toggle-btn:active { transform: scale(0.92); }
         .search-clear-btn { transition: all .18s ease; cursor: pointer; }
         .search-clear-btn:hover { background: rgba(99,102,241,.25) !important; }
+        html[data-rs-mobile="true"] .gal-card,
+        html[data-rs-mobile="true"] .gal-list-row {
+          animation: none !important;
+          transition: transform .14s ease, border-color .14s ease, background .14s ease !important;
+          -webkit-backdrop-filter: none !important;
+          backdrop-filter: none !important;
+          will-change: auto !important;
+        }
+        html[data-rs-mobile="true"] .gal-card:hover,
+        html[data-rs-mobile="true"] .gal-list-row:hover {
+          transform: none !important;
+        }
+        html[data-rs-mobile="true"] .gal-img-shimmer {
+          animation-duration: 2.4s !important;
+        }
+        html[data-rs-mobile="true"] .cat-pill::after {
+          display: none !important;
+        }
+        html[data-rs-mobile="true"] .gal-sort-btn,
+        html[data-rs-mobile="true"] .view-toggle-btn,
+        html[data-rs-mobile="true"] .search-clear-btn {
+          transition-duration: .12s !important;
+        }
       `}</style>
 
       {/* ── HEADER ── */}
@@ -288,14 +312,14 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {filtered.map((item, i) => {
             const wl = wishlist.includes(item.id);
-            const isHov = hovered === item.id;
+            const isHov = !isMobilePerf && hovered === item.id;
             const loaded = imgLoaded[item.id];
             return (
               <div
                 key={item.id}
                 className="gal-card"
-                onMouseEnter={() => setHovered(item.id)}
-                onMouseLeave={() => setHovered(null)}
+                onMouseEnter={() => !isMobilePerf && setHovered(item.id)}
+                onMouseLeave={() => !isMobilePerf && setHovered(null)}
                 style={{
                   borderRadius: 20, overflow: "hidden",
                   background: "rgba(13,15,26,.85)",
@@ -323,9 +347,9 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
                   )}
                   <img
                     src={item.img} alt={item.title}
-                    loading={i < 2 ? "eager" : "lazy"}
+                    loading={i === 0 ? "eager" : "lazy"}
                     decoding="async"
-                    fetchPriority={i < 2 ? "high" : "auto"}
+                    fetchPriority={i === 0 ? "high" : "auto"}
                     onLoad={() => handleImgLoad(item.id)}
                     style={{
                       width: "100%", aspectRatio: "1080/1280", objectFit: "cover",

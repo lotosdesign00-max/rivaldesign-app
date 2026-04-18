@@ -28,6 +28,7 @@ function ServiceCard({ svc, qty, onAdd, onSub, onExamples, lang, th, isFullPack 
   const getSvcName = (s) => s?.[lang] || s?.en || s?.ru || "";
   const getSvcDesc = (s) => (lang === "en" ? s?.descEn : s?.descRu) || "";
   const [hovered, setHovered] = useState(false);
+  const isMobilePerf = typeof document !== "undefined" && document.documentElement.dataset.rsMobile === "true";
   const ui = th || {
     text: DS.text,
     sub: DS.sub,
@@ -38,17 +39,19 @@ function ServiceCard({ svc, qty, onAdd, onSub, onExamples, lang, th, isFullPack 
     accentB: DS.violet,
     btnTxt: "#fff",
   };
+  const effectiveHovered = !isMobilePerf && hovered;
 
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className="pricing-service-card"
+      onMouseEnter={() => !isMobilePerf && setHovered(true)}
+      onMouseLeave={() => !isMobilePerf && setHovered(false)}
       style={{
         position: "relative",
         borderRadius: isFullPack ? 26 : 22,
         border: isFullPack
-          ? `1px solid ${hovered ? "rgba(245,158,11,0.5)" : "rgba(245,158,11,0.35)"}`
-          : `1px solid ${isSelected ? `${ui.accentB}66` : hovered ? `${ui.accent}3d` : ui.border}`,
+          ? `1px solid ${effectiveHovered ? "rgba(245,158,11,0.5)" : "rgba(245,158,11,0.35)"}`
+          : `1px solid ${isSelected ? `${ui.accentB}66` : effectiveHovered ? `${ui.accent}3d` : ui.border}`,
         background: isFullPack
           ? "linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(139,92,246,0.08) 100%)"
           : isSelected
@@ -56,14 +59,14 @@ function ServiceCard({ svc, qty, onAdd, onSub, onExamples, lang, th, isFullPack 
             : `linear-gradient(180deg, ${ui.card} 0%, ${ui.surface} 100%)`,
         padding: isFullPack ? "20px 18px" : "16px 14px",
         boxShadow: isFullPack
-          ? `0 ${hovered ? "12px 40px" : "8px 32px"} rgba(245,158,11,${hovered ? 0.25 : 0.15}), inset 0 1px 0 rgba(255,255,255,0.08)`
+          ? `0 ${effectiveHovered ? "12px 40px" : "8px 32px"} rgba(245,158,11,${effectiveHovered ? 0.25 : 0.15}), inset 0 1px 0 rgba(255,255,255,0.08)`
           : isSelected
             ? `0 8px 24px ${ui.accent}30, inset 0 1px 0 rgba(255,255,255,0.05)`
-            : hovered
+            : effectiveHovered
               ? "0 8px 24px rgba(3,4,8,0.35), inset 0 1px 0 rgba(255,255,255,0.05)"
               : "0 4px 16px rgba(3,4,8,0.25), inset 0 1px 0 rgba(255,255,255,0.03)",
-        transition: "all .3s cubic-bezier(.34,1.56,.64,1)",
-        transform: hovered ? "translateY(-3px)" : "translateY(0)",
+        transition: isMobilePerf ? "transform .14s ease, border-color .14s ease, background .14s ease" : "all .3s cubic-bezier(.34,1.56,.64,1)",
+        transform: effectiveHovered ? "translateY(-3px)" : "translateY(0)",
         gridColumn: isFullPack ? "1 / -1" : undefined,
         contentVisibility: "auto",
         containIntrinsicSize: isFullPack ? "260px" : "220px",
@@ -107,7 +110,7 @@ function ServiceCard({ svc, qty, onAdd, onSub, onExamples, lang, th, isFullPack 
       <div style={{ fontSize: 10, color: ui.sub, marginBottom: 12 }}>{lang === "en" ? svc.timeEn : svc.timeRu}</div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <button onClick={onExamples} style={{ padding: "10px 14px", borderRadius: 12, background: hovered ? `${ui.accent}16` : `${ui.accent}10`, border: `1px solid ${hovered ? `${ui.accent}55` : `${ui.accent}22`}`, color: ui.text, fontSize: 10.5, fontWeight: 800, cursor: "pointer", flex: 1 }}>
+        <button onClick={onExamples} style={{ padding: "10px 14px", borderRadius: 12, background: effectiveHovered ? `${ui.accent}16` : `${ui.accent}10`, border: `1px solid ${effectiveHovered ? `${ui.accent}55` : `${ui.accent}22`}`, color: ui.text, fontSize: 10.5, fontWeight: 800, cursor: "pointer", flex: 1 }}>
           {lang === "en" ? "Examples" : "Примеры"}
         </button>
 
