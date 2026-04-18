@@ -544,6 +544,45 @@ async def ensure_order_for_session(callback, session: dict) -> dict | None:
     return order
 
 
+async def run_supabase_diagnostics(telegram_id: int) -> str:
+    """Create and remove a tiny test user/order using the current bot environment."""
+    test_user = None
+    test_order = None
+    report = [
+        "<b>Bot diagnostics</b>",
+        f"SUPABASE_URL: <code>{'set' if os.getenv('SUPABASE_URL') else 'missing'}</code>",
+        f"SUPABASE_SERVICE_KEY: <code>{'set' if os.getenv('SUPABASE_SERVICE_KEY') else 'missing'}</code>",
+        f"SUPABASE_SECRET_KEY: <code>{'set' if os.getenv('SUPABASE_SECRET_KEY') else 'missing'}</code>",
+    ]
+    try:
+        test_user = await db.get_or_create_user(
+            telegram_id=9000000000000 + int(str(telegram_id)[-6:]),
+            username="diag_user",
+            first_name="Diag",
+        )
+        report.append(f"User insert: <code>ok</code> <code>{test_user.get('id')}</code>")
+        test_order = await db.create_order(
+            user_id=test_user["id"],
+            service_name="Diagnostic order",
+            total_amount=Decimal("1.00"),
+            brief="diagnostic brief",
+        )
+        report.append(f"Order insert: <code>ok</code> <code>{test_order.get('order_number')}</code>")
+        return "\n".join(report)
+    except Exception as exc:
+        report.append(f"Error: <pre>{escape(str(exc)[:1200])}</pre>")
+        return "\n".join(report)
+    finally:
+        try:
+            async with db.session() as client:
+                if test_order:
+                    await client.delete("/orders", params={"id": f"eq.{test_order['id']}"})
+                if test_user:
+                    await client.delete("/users", params={"id": f"eq.{test_user['id']}"})
+        except Exception:
+            logger.exception("Could not clean diagnostic rows")
+
+
 async def create_deposit_invoice(message: Message, user_id: int, amount: Decimal):
     try:
         invoice = await get_cryptopay().create_invoice(
@@ -700,6 +739,14 @@ async def cmd_id(message: Message):
     await message.answer(f"Твой Telegram ID: <code>{message.from_user.id}</code>", parse_mode=ParseMode.HTML)
 
 
+@router.message(Command("diag"))
+async def cmd_diag(message: Message):
+    """Run a safe Supabase diagnostic from the deployed bot environment."""
+    await message.answer("Проверяю Supabase из окружения бота...")
+    result = await run_supabase_diagnostics(message.from_user.id)
+    await message.answer(result, parse_mode=ParseMode.HTML)
+
+
 @router.callback_query(F.data == "menu_order")
 @instant_ack
 async def callback_order(callback):
@@ -820,8 +867,11 @@ async def callback_order_confirm(callback):
             await ensure_order_for_session(callback, session)
         except Exception:
             logger.exception("Could not persist order for user_id=%s", callback.from_user.id)
+            result = await run_supabase_diagnostics(callback.from_user.id)
             await callback.message.answer(
-                "Не смог сохранить заказ в базе. Попробуй подтвердить ещё раз или напиши дизайнеру.",
+                "Не смог сохранить заказ в базе. Ниже диагностика из окружения бота:\n\n"
+                f"{result}",
+                parse_mode=ParseMode.HTML,
                 reply_markup=order_review_kb(),
             )
             return
