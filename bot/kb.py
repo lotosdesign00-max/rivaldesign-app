@@ -18,12 +18,12 @@ def main_menu_kb() -> InlineKeyboardMarkup:
     builder.row(InlineKeyboardButton(text="Оставить заказ", callback_data="menu_order"))
     builder.row(InlineKeyboardButton(text="Мой профиль", callback_data="menu_profile"))
     builder.row(
-        InlineKeyboardButton(text="Портфолио", web_app=WebAppInfo(url=WEBAPP_URL)),
-        InlineKeyboardButton(text="Цены", web_app=WebAppInfo(url=WEBAPP_URL)),
+        InlineKeyboardButton(text="Портфолио", url="https://t.me/rivalportfolio")
+        InlineKeyboardButton(text="Цены", url="https://t.me/rivalportfolio/4")
     )
     builder.row(
-        InlineKeyboardButton(text="Услуги", web_app=WebAppInfo(url=WEBAPP_URL)),
-        InlineKeyboardButton(text="Отзывы", web_app=WebAppInfo(url=WEBAPP_URL)),
+        InlineKeyboardButton(text="Блог", url="https://t.me/+a7SsFZHmCaJiNDMy")
+        InlineKeyboardButton(text="Отзывы", url="https://t.me/reparival")
     )
 
     return builder.as_markup()
