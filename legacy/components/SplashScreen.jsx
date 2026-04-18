@@ -1,4 +1,5 @@
 ﻿import React, { useEffect, useState } from "react";
+import BrandLogo from "./BrandLogo";
 
 const OrbitalMark = ({ size = 56, glowing = false }) => (
   <svg
@@ -239,7 +240,7 @@ function SplashScreen({ th, onDone, sfx, isTg }) {
           opacity: glowing ? 1 : 0,
         }} />
 
-        <OrbitalMark size={72} glowing={glowing} />
+        <BrandLogo size={96} glowing={glowing} />
 
         {/* Star burst particles */}
         {glowing && particles.map((p, i) => (

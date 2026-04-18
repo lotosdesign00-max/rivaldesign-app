@@ -9,6 +9,7 @@ import BottomNav from "./components/BottomNav";
 import SideDrawer from "./components/SideDrawer";
 import ImageModal from "./components/ImageModal";
 import SplashScreen from "./components/SplashScreen";
+import BrandLogo from "./components/BrandLogo";
 import AchievementDetailModal from "./components/AchievementDetailModal";
 import HomeTab from "./components/HomeTab";
 import SystemIcon from "./components/SystemIcon";
@@ -2868,7 +2869,7 @@ export default function App() {
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, position: "absolute", left: "50%", transform: "translateX(-50%)", zIndex: 1, padding: "0 12px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, flexShrink: 0 }}>
-                <OrbitalMark size={24} />
+                <BrandLogo size={30} />
               </div>
               <span className="type-display" style={{ 
                 fontSize: 15, 
