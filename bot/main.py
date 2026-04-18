@@ -44,6 +44,7 @@ CRYPTOPAY_ASSET = os.getenv("CRYPTOPAY_ASSET", "USDT").strip().upper()
 WELCOME_VIDEO_ID = os.getenv("WELCOME_VIDEO_ID", "").strip()
 WELCOME_VIDEO_PATH = os.getenv("WELCOME_VIDEO_PATH", "").strip()
 PUBLIC_BOT_USERNAME = os.getenv("PUBLIC_BOT_USERNAME", "rivaldesign_bot").strip().lstrip("@")
+ADMIN_TELEGRAM_ID = os.getenv("ADMIN_TELEGRAM_ID", os.getenv("TELEGRAM_ADMIN_ID", "")).strip()
 CACHED_WELCOME_VIDEO_ID: str | None = None
 
 if not BOT_TOKEN:
@@ -426,10 +427,56 @@ def build_review_text(session: dict) -> str:
     return "\n".join(lines)
 
 
+def build_order_brief(session: dict) -> str:
+    """Build a plain-text brief that can be stored in Supabase."""
+    category_code = session["category"]
+    answers = session.get("answers", {})
+    category_name = ORDER_CATEGORIES.get(category_code, "Заказ")
+    field_labels = {
+        "object": "Главный объект",
+        "environment": "Окружение",
+        "text_layer": "Текстовый слой",
+        "details": "Детали",
+        "colors": "Цветовая схема",
+        "concept": "Концепция",
+        "style": "Стиль",
+        "deadline": "Дедлайн",
+    }
+    lines = [f"Тип: {category_name}"]
+    for key, label in field_labels.items():
+        value = answers.get(key)
+        if value:
+            lines.append(f"{label}: {value}")
+    return "\n".join(lines)
+
+
+def build_admin_order_text(order: dict, session: dict, user) -> str:
+    """Render an admin notification for a newly confirmed order."""
+    category_code = session["category"]
+    category_name = ORDER_CATEGORIES.get(category_code, "Заказ")
+    price = ORDER_PRICES_RUB.get(category_code, Decimal("1200"))
+    username = escape(f"@{user.username}" if user.username else (user.full_name or str(user.id)))
+    order_number = escape(str(order.get("order_number") or "новый заказ"))
+    return (
+        "<b>Новый заказ в Rival Space</b>\n\n"
+        f"<b>{order_number}</b>\n"
+        f"Клиент: {username}\n"
+        f"Telegram ID: <code>{user.id}</code>\n"
+        f"Тип: <b>{escape(category_name)}</b>\n"
+        f"Сумма: <b>{money(price)}</b>\n"
+        "Статус: <b>Ожидает оплаты</b>\n\n"
+        "<b>ТЗ:</b>\n"
+        f"<pre>{escape(build_order_brief(session))}</pre>"
+    )
+
+
 def build_payment_text(session: dict) -> str:
     category_code = session["category"]
     price = ORDER_PRICES_RUB.get(category_code, Decimal("1200"))
+    order_number = session.get("order_number")
+    order_line = f"Заказ: <b>{escape(str(order_number))}</b>\n" if order_number else ""
     return (
+        order_line +
         f"<b>К оплате: {money(price)}</b>\n"
         "Статус: Ожидание транзакции\n\n"
         "Выберите метод оплаты. После подтверждения платежа система активирует заказ и зафиксирует дедлайн в рабочем графике.\n\n"
@@ -438,6 +485,63 @@ def build_payment_text(session: dict) -> str:
         "• Банковская карта (РФ)\n\n"
         "Транзакция защищена. Заказ будет передан дизайнеру автоматически."
     )
+
+
+async def notify_admin(bot: Bot, text: str):
+    """Send a notification to the configured designer/admin chat."""
+    if not ADMIN_TELEGRAM_ID:
+        logger.warning("ADMIN_TELEGRAM_ID is not set; admin notification skipped")
+        return
+    try:
+        await bot.send_message(chat_id=int(ADMIN_TELEGRAM_ID), text=text, parse_mode=ParseMode.HTML)
+    except Exception:
+        logger.exception("Could not send admin notification")
+
+
+def callback_order_id(data: str | None) -> str | None:
+    """Extract order id from callback data like action:uuid."""
+    if not data or ":" not in data:
+        return None
+    return data.split(":", 1)[1] or None
+
+
+async def ensure_order_for_session(callback, session: dict) -> dict | None:
+    """Persist the current order wizard session to Supabase once."""
+    if session.get("order_id"):
+        return {
+            "id": session.get("order_id"),
+            "order_number": session.get("order_number"),
+        }
+
+    user = await ensure_telegram_user(callback.from_user)
+    category_code = session["category"]
+    category_name = ORDER_CATEGORIES.get(category_code, "Заказ")
+    price = ORDER_PRICES_RUB.get(category_code, Decimal("1200"))
+    brief = build_order_brief(session)
+    order = await db.create_order(
+        user_id=user["id"],
+        service_name=category_name,
+        total_amount=price,
+        brief=brief,
+        status="waiting_payment",
+    )
+    if not order:
+        raise RuntimeError("Supabase did not return created order")
+
+    session["order_id"] = order["id"]
+    session["order_number"] = order.get("order_number")
+    session["db_user_id"] = user["id"]
+    try:
+        await db.create_order_message(
+            order_id=order["id"],
+            sender_id=user["id"],
+            sender_role="client",
+            text=brief,
+        )
+    except Exception:
+        logger.exception("Could not create order chat message for order_id=%s", order["id"])
+    await notify_admin(callback.bot, build_admin_order_text(order, session, callback.from_user))
+    return order
 
 
 async def create_deposit_invoice(message: Message, user_id: int, amount: Decimal):
@@ -473,11 +577,25 @@ async def create_deposit_invoice(message: Message, user_id: int, amount: Decimal
         )
 
 
-async def create_order_invoice(message: Message, session: dict):
+async def create_order_invoice(message: Message, session: dict, telegram_user):
     category_code = session["category"]
     price = ORDER_PRICES_RUB.get(category_code, Decimal("1200"))
     category_name = ORDER_CATEGORIES.get(category_code, "Заказ")
     try:
+        user = await ensure_telegram_user(telegram_user)
+        if not session.get("order_id"):
+            order = await db.create_order(
+                user_id=user["id"],
+                service_name=category_name,
+                total_amount=price,
+                brief=build_order_brief(session),
+                status="waiting_payment",
+            )
+            if order:
+                session["order_id"] = order["id"]
+                session["order_number"] = order.get("order_number")
+                session["db_user_id"] = user["id"]
+
         invoice = await get_cryptopay().create_invoice(
             amount=float(price),
             fiat="RUB",
@@ -488,19 +606,75 @@ async def create_order_invoice(message: Message, session: dict):
         pay_url = invoice_url(invoice)
         if not pay_url:
             raise RuntimeError("CryptoBot order invoice was created without a payment URL")
+        try:
+            payment = await db.create_payment(
+                user_id=session.get("db_user_id") or user["id"],
+                amount=price,
+                invoice_id=str(invoice.invoice_id),
+                pay_url=pay_url,
+                currency="RUB",
+            )
+            if payment and session.get("order_id"):
+                await db.attach_payment_to_order(session["order_id"], payment["id"])
+        except Exception:
+            logger.exception("Could not persist order payment draft")
         await message.answer(
             "<b>Счёт CryptoBot создан</b>\n\n"
-            f"Заказ: <b>{escape(category_name)}</b>\n"
+            f"Заказ: <b>{escape(str(session.get('order_number') or category_name))}</b>\n"
             f"Сумма: <b>{money(price)}</b>\n"
             "Оплатите счёт и нажмите «Я оплатил» или отправьте чек.",
             parse_mode=ParseMode.HTML,
-            reply_markup=order_crypto_payment_kb(pay_url),
+            reply_markup=order_crypto_payment_kb(pay_url, session.get("order_id")),
         )
     except Exception as e:
         logger.exception("Failed to create order invoice: %s", e)
         await message.answer(
             "Не удалось создать счёт CryptoBot для заказа. Можно выбрать банковскую карту или попробовать позже.",
-            reply_markup=order_payment_kb(),
+            reply_markup=order_payment_kb(session.get("order_id")),
+        )
+
+
+async def create_order_invoice_for_persisted_order(message: Message, order: dict, telegram_user):
+    """Create a CryptoBot invoice when the in-memory session is gone."""
+    category_name = str(order.get("service_name") or "Заказ")
+    price = safe_decimal(order.get("total_amount"), "1200")
+    try:
+        await ensure_telegram_user(telegram_user)
+        invoice = await get_cryptopay().create_invoice(
+            amount=float(price),
+            fiat="RUB",
+            currency_type="fiat",
+            accepted_assets=["USDT", "TON", "BTC"],
+            description=f"Rival Space: {category_name}",
+        )
+        pay_url = invoice_url(invoice)
+        if not pay_url:
+            raise RuntimeError("CryptoBot order invoice was created without a payment URL")
+        try:
+            payment = await db.create_payment(
+                user_id=order["user_id"],
+                amount=price,
+                invoice_id=str(invoice.invoice_id),
+                pay_url=pay_url,
+                currency="RUB",
+            )
+            if payment:
+                await db.attach_payment_to_order(order["id"], payment["id"])
+        except Exception:
+            logger.exception("Could not persist order payment draft")
+        await message.answer(
+            "<b>Счёт CryptoBot создан</b>\n\n"
+            f"Заказ: <b>{escape(str(order.get('order_number') or category_name))}</b>\n"
+            f"Сумма: <b>{money(price)}</b>\n"
+            "Оплатите счёт и нажмите «Я оплатил» или отправьте чек.",
+            parse_mode=ParseMode.HTML,
+            reply_markup=order_crypto_payment_kb(pay_url, order["id"]),
+        )
+    except Exception as e:
+        logger.exception("Failed to create persisted order invoice: %s", e)
+        await message.answer(
+            "Не удалось создать счёт CryptoBot для заказа. Можно выбрать банковскую карту или попробовать позже.",
+            reply_markup=order_payment_kb(order.get("id")),
         )
 
 
@@ -518,6 +692,12 @@ async def cmd_menu(message: Message):
     SESSIONS.pop(message.from_user.id, None)
     run_background(ensure_telegram_user(message.from_user))
     await send_main_menu(message)
+
+
+@router.message(Command("id"))
+async def cmd_id(message: Message):
+    """Show the user's Telegram ID for admin setup."""
+    await message.answer(f"Твой Telegram ID: <code>{message.from_user.id}</code>", parse_mode=ParseMode.HTML)
 
 
 @router.callback_query(F.data == "menu_order")
@@ -636,45 +816,89 @@ async def callback_order_restart(callback):
 async def callback_order_confirm(callback):
     session = get_order_session(callback.from_user.id)
     if session:
-        await callback.message.answer(build_payment_text(session), parse_mode=ParseMode.HTML, reply_markup=order_payment_kb())
+        try:
+            await ensure_order_for_session(callback, session)
+        except Exception:
+            logger.exception("Could not persist order for user_id=%s", callback.from_user.id)
+            await callback.message.answer(
+                "Не смог сохранить заказ в базе. Попробуй подтвердить ещё раз или напиши дизайнеру.",
+                reply_markup=order_review_kb(),
+            )
+            return
+        await callback.message.answer(
+            build_payment_text(session),
+            parse_mode=ParseMode.HTML,
+            reply_markup=order_payment_kb(session.get("order_id")),
+        )
     await ack_callback(callback)
 
 
-@router.callback_query(F.data == "order_pay_crypto")
+@router.callback_query(F.data.startswith("order_pay_crypto"))
 @instant_ack
 async def callback_order_pay_crypto(callback):
     session = get_order_session(callback.from_user.id)
     if session:
-        await create_order_invoice(callback.message, session)
+        await create_order_invoice(callback.message, session, callback.from_user)
+        await ack_callback(callback)
+        return
+    order_id = callback_order_id(callback.data)
+    if order_id:
+        order = await db.get_order(order_id)
+        if order:
+            await create_order_invoice_for_persisted_order(callback.message, order, callback.from_user)
     await ack_callback(callback)
 
 
-@router.callback_query(F.data == "order_pay_card")
+@router.callback_query(F.data.startswith("order_pay_card"))
 @instant_ack
 async def callback_order_pay_card(callback):
+    session = get_order_session(callback.from_user.id)
+    order_id = session.get("order_id") if session else callback_order_id(callback.data)
     await callback.message.answer(
         "<b>Оплата банковской картой</b>\n\n"
         "Напиши дизайнеру в Telegram для получения актуальных реквизитов. После оплаты отправь чек через кнопку «Отправить чек».",
         parse_mode=ParseMode.HTML,
-        reply_markup=order_payment_kb(),
+        reply_markup=order_payment_kb(order_id),
     )
     await ack_callback(callback)
 
 
-@router.callback_query(F.data == "order_paid")
+@router.callback_query(F.data.startswith("order_paid"))
 @instant_ack
 async def callback_order_paid(callback):
+    session = get_order_session(callback.from_user.id)
+    order_id = session.get("order_id") if session else callback_order_id(callback.data)
+    order_number = session.get("order_number") if session else order_id
+    if order_id:
+        try:
+            await db.update_order(order_id, {"status": "payment_review"})
+            await notify_admin(
+                callback.bot,
+                "<b>Клиент отметил оплату</b>\n\n"
+                f"Заказ: <b>{escape(str(order_number))}</b>\n"
+                f"Клиент: <code>{callback.from_user.id}</code>\n"
+                "Статус переведён в проверку оплаты.",
+            )
+        except Exception:
+            logger.exception("Could not mark order payment review for order_id=%s", order_id)
     await callback.message.answer(
         "Платёж отмечен как отправленный. Если оплата уже прошла, отправь чек или дождись подтверждения дизайнера.",
-        reply_markup=order_payment_kb(),
+        reply_markup=order_payment_kb(order_id),
     )
     await ack_callback(callback)
 
 
-@router.callback_query(F.data == "order_receipt")
+@router.callback_query(F.data.startswith("order_receipt"))
 @instant_ack
 async def callback_order_receipt(callback):
-    SESSIONS[callback.from_user.id] = {"mode": "receipt_waiting"}
+    session = get_order_session(callback.from_user.id)
+    order_id = session.get("order_id") if session else callback_order_id(callback.data)
+    SESSIONS[callback.from_user.id] = {
+        "mode": "receipt_waiting",
+        "order_id": order_id,
+        "order_number": session.get("order_number") if session else None,
+        "db_user_id": session.get("db_user_id") if session else None,
+    }
     await callback.message.answer("Пришли чек файлом, фото или текстом. Я сохраню его в заявке.")
     await ack_callback(callback)
 
@@ -838,6 +1062,38 @@ async def handle_text_state(message: Message):
         return
 
     if session.get("mode") == "receipt_waiting":
+        order_id = session.get("order_id")
+        order_number = session.get("order_number") or order_id or "заказ"
+        user = await ensure_telegram_user(message.from_user)
+        receipt_text = message.text or message.caption or "Клиент отправил чек вложением."
+        attachment_url = None
+        if message.document:
+            attachment_url = message.document.file_id
+        elif message.photo:
+            attachment_url = message.photo[-1].file_id
+        elif message.video:
+            attachment_url = message.video.file_id
+
+        if order_id:
+            try:
+                await db.update_order(order_id, {"status": "payment_review"})
+                await db.create_order_message(
+                    order_id=order_id,
+                    sender_id=session.get("db_user_id") or user["id"],
+                    sender_role="client",
+                    text=receipt_text,
+                    attachment_url=attachment_url,
+                )
+                await notify_admin(
+                    message.bot,
+                    "<b>Клиент отправил чек</b>\n\n"
+                    f"Заказ: <b>{escape(str(order_number))}</b>\n"
+                    f"Клиент: <code>{message.from_user.id}</code>\n"
+                    f"Сообщение: {escape(receipt_text)}\n"
+                    + (f"Вложение file_id: <code>{escape(attachment_url)}</code>" if attachment_url else ""),
+                )
+            except Exception:
+                logger.exception("Could not save receipt for order_id=%s", order_id)
         SESSIONS.pop(user_id, None)
         await message.answer(
             "Чек получен. Дизайнер проверит оплату и подтвердит заказ.",

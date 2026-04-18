@@ -142,24 +142,26 @@ def order_review_kb() -> InlineKeyboardMarkup:
     ])
 
 
-def order_payment_kb() -> InlineKeyboardMarkup:
+def order_payment_kb(order_id: str | None = None) -> InlineKeyboardMarkup:
     """Order payment methods keyboard."""
+    suffix = f":{order_id}" if order_id else ""
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Оплатить CryptoBot", callback_data="order_pay_crypto")],
-        [InlineKeyboardButton(text="Банковская карта / реквизиты", callback_data="order_pay_card")],
-        [InlineKeyboardButton(text="Я оплатил", callback_data="order_paid")],
-        [InlineKeyboardButton(text="Отправить чек", callback_data="order_receipt")],
+        [InlineKeyboardButton(text="Оплатить CryptoBot", callback_data=f"order_pay_crypto{suffix}")],
+        [InlineKeyboardButton(text="Банковская карта / реквизиты", callback_data=f"order_pay_card{suffix}")],
+        [InlineKeyboardButton(text="Я оплатил", callback_data=f"order_paid{suffix}")],
+        [InlineKeyboardButton(text="Отправить чек", callback_data=f"order_receipt{suffix}")],
         [InlineKeyboardButton(text="Проверить заказ", callback_data="order_show_review")],
         [InlineKeyboardButton(text="Главное меню", callback_data="back_to_menu")],
     ])
 
 
-def order_crypto_payment_kb(pay_url: str) -> InlineKeyboardMarkup:
+def order_crypto_payment_kb(pay_url: str, order_id: str | None = None) -> InlineKeyboardMarkup:
     """CryptoBot order payment keyboard."""
+    suffix = f":{order_id}" if order_id else ""
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Открыть оплату", url=pay_url)],
-        [InlineKeyboardButton(text="Я оплатил", callback_data="order_paid")],
-        [InlineKeyboardButton(text="Отправить чек", callback_data="order_receipt")],
+        [InlineKeyboardButton(text="Я оплатил", callback_data=f"order_paid{suffix}")],
+        [InlineKeyboardButton(text="Отправить чек", callback_data=f"order_receipt{suffix}")],
         [InlineKeyboardButton(text="Главное меню", callback_data="back_to_menu")],
     ])
 

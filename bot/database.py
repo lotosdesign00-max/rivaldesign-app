@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timezone
 from decimal import Decimal
 from pathlib import Path
+from secrets import randbelow
 from typing import Any
 
 import httpx
@@ -155,6 +156,11 @@ class Database:
             },
         )
 
+    async def get_order(self, order_id: str) -> dict | None:
+        """Get one order by ID."""
+        orders = await self._select("orders", {"select": "*", "id": f"eq.{order_id}", "limit": "1"})
+        return orders[0] if orders else None
+
     async def update_balance(self, telegram_id: int, amount: Decimal) -> bool:
         """Add amount to user's balance."""
         user = await self.get_user(telegram_id)
@@ -176,6 +182,7 @@ class Database:
         amount: Decimal,
         invoice_id: str | None = None,
         pay_url: str | None = None,
+        currency: str = "USD",
     ) -> dict | None:
         """Create a pending payment record."""
         return await self._insert(
@@ -183,6 +190,7 @@ class Database:
             {
                 "user_id": user_id,
                 "amount": str(amount),
+                "currency": currency,
                 "status": "pending",
                 "crypto_invoice_id": invoice_id,
                 "crypto_pay_url": pay_url,
@@ -206,6 +214,62 @@ class Database:
             },
         )
         return bool(updated)
+
+    async def create_order(
+        self,
+        *,
+        user_id: str,
+        service_name: str,
+        total_amount: Decimal,
+        brief: str,
+        status: str = "waiting_payment",
+        payment_id: str | None = None,
+    ) -> dict | None:
+        """Create a new design order."""
+        order_number = f"RD-{datetime.now(timezone.utc):%Y%m%d}-{randbelow(10000):04d}"
+        return await self._insert(
+            "orders",
+            {
+                "order_number": order_number,
+                "user_id": user_id,
+                "service_name": service_name,
+                "total_amount": str(total_amount),
+                "status": status,
+                "payment_id": payment_id,
+                "brief": brief,
+            },
+        )
+
+    async def update_order(self, order_id: str, payload: dict) -> dict | None:
+        """Update an order and return the updated row."""
+        payload = {**payload, "updated_at": datetime.now(timezone.utc).isoformat()}
+        updated = await self._update("orders", {"id": f"eq.{order_id}"}, payload)
+        return updated[0] if updated else None
+
+    async def attach_payment_to_order(self, order_id: str, payment_id: str) -> dict | None:
+        """Attach a payment draft to an order."""
+        return await self.update_order(order_id, {"payment_id": payment_id})
+
+    async def create_order_message(
+        self,
+        *,
+        order_id: str,
+        sender_id: str,
+        text: str,
+        sender_role: str = "client",
+        attachment_url: str | None = None,
+    ) -> dict | None:
+        """Store a message inside an order chat."""
+        return await self._insert(
+            "messages",
+            {
+                "order_id": order_id,
+                "sender_id": sender_id,
+                "sender_role": sender_role,
+                "text": text,
+                "attachment_url": attachment_url,
+            },
+        )
 
     async def get_services(self) -> list[dict]:
         """Get all active services."""
