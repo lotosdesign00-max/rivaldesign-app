@@ -1,48 +1,88 @@
-# Rival Design Telegram Bot
+# Rival Space Telegram Bot
 
-Premium Telegram bot for Rival Design brand ecosystem.
+Python bot for the Rival Space ecosystem: menu, profile, balance, CryptoBot deposits, order wizard, order history, and WebApp launch button.
 
-## Setup
+## Local Start On Windows
+
+```powershell
+cd C:\Users\igors\Desktop\rivaldesign-app-main\bot
+
+# Create virtual environment once
+py -m venv .venv
+
+# Install dependencies
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+
+# Create .env if it does not exist yet
+Copy-Item .env.example .env
+
+# Fill .env with real values, then run
+.\.venv\Scripts\python.exe main.py
+```
+
+To stop the bot after running it in terminal, press `Ctrl+C`.
+
+## Railway Deploy
+
+Recommended setup: create a separate Railway service from the same GitHub repository and set the service root directory to `bot`.
+
+Railway reads `bot/railway.json` and starts the worker with:
 
 ```bash
-cd bot
-pip install -r requirements.txt
-
-# Copy and configure environment
-cp .env.example .env
-# Edit .env with your tokens
-
-# Run bot
 python main.py
 ```
 
-## Structure
+Python is pinned with `.python-version` / `runtime.txt` to `3.12.0` to avoid package build issues on newer Python versions.
 
-- `main.py` - Bot logic, handlers, routing
-- `database.py` - Supabase async operations
-- `kb.py` - Inline keyboard definitions
-- `requirements.txt` - Python dependencies
+### Railway Variables
 
-## Features
+Add these in Railway service `Variables`. Do not commit real values to GitHub.
 
-- Premium UI with video welcome
-- User profile with real-time balance
-- Status system (Эфеб/Полит)
-- CryptoBot deposits via aiocryptopay
-- Order category selection
-- Order history
+```env
+TELEGRAM_BOT_TOKEN=
+PUBLIC_BOT_USERNAME=rivaldesign_bot
+SUPABASE_URL=
+SUPABASE_SERVICE_KEY=
+SUPABASE_SECRET_KEY=
+CRYPTOPAY_API_TOKEN=
+CRYPTOPAY_ASSET=USDT
+WEBAPP_URL=
+WELCOME_VIDEO_ID=
+WELCOME_VIDEO_PATH=assets/welcome.mp4
+```
 
-## Status System
+### Expected Logs
 
-- `Эфеб` — < 5 completed orders
-- `Полит` — ≥ 5 orders (10% discount)
+After deploy, Railway logs should show:
 
-## Environment Variables
+```text
+Rival Design Bot started
+Start polling
+Run polling for bot @rivaldesign_bot
+```
 
-| Variable | Description |
-|----------|-------------|
-| `TELEGRAM_BOT_TOKEN` | Bot token from @BotFather |
-| `SUPABASE_URL` | Supabase project URL |
-| `SUPABASE_SERVICE_KEY` | Supabase service role key |
-| `CRYPTOPAY_API_TOKEN` | CryptoBot API token |
-| `WEBAPP_URL` | Rival Space Mini App URL |
+Run only one polling instance for the same Telegram bot token. If Railway is running the bot, stop the local terminal version.
+
+## Checks
+
+```powershell
+# Safe import check, does not start polling
+.\.venv\Scripts\python.exe -c "import main; print('bot import ok')"
+
+# Compile check
+.\.venv\Scripts\python.exe -m py_compile main.py database.py kb.py
+```
+
+## Required Env Variables
+
+| Variable | Purpose |
+| --- | --- |
+| `TELEGRAM_BOT_TOKEN` | Bot token from BotFather. |
+| `PUBLIC_BOT_USERNAME` | Username shown in the welcome/profile text. |
+| `SUPABASE_URL` | Supabase project URL. |
+| `SUPABASE_SERVICE_KEY` | Supabase service role key for server-side bot operations. |
+| `CRYPTOPAY_API_TOKEN` | CryptoPay API token from CryptoBot. |
+| `CRYPTOPAY_ASSET` | Payment asset, usually `USDT`. |
+| `WEBAPP_URL` | Public Vercel URL of the Rival Space Mini App. |
+| `WELCOME_VIDEO_ID` | Optional Telegram video `file_id` for the welcome message. |
+| `WELCOME_VIDEO_PATH` | Local fallback video path bundled with the bot. |
