@@ -164,6 +164,37 @@ STATUS_LABELS = {
 ACTIVE_STATUSES = {"waiting_payment", "payment_review", "queued", "in_progress", "preview_sent", "revision"}
 
 
+def run_background(coro):
+    """Run non-critical async work without blocking Telegram responses."""
+    task = asyncio.create_task(coro)
+
+    def on_done(done_task):
+        try:
+            done_task.result()
+        except Exception:
+            logger.exception("Background task failed")
+
+    task.add_done_callback(on_done)
+    return task
+
+
+async def ack_callback(callback):
+    """Answer callback queries quickly so Telegram removes the button spinner."""
+    try:
+        await callback.answer()
+    except Exception:
+        logger.debug("Callback already answered or expired", exc_info=True)
+
+
+def instant_ack(handler):
+    """Decorator for callback handlers that must acknowledge taps immediately."""
+    async def wrapper(callback, *args, **kwargs):
+        await ack_callback(callback)
+        return await handler(callback, *args, **kwargs)
+
+    return wrapper
+
+
 def get_cryptopay() -> AioCryptoPay:
     """Create CryptoPay client inside an active asyncio loop."""
     global cryptopay
@@ -451,7 +482,7 @@ async def create_order_invoice(message: Message, session: dict):
 async def cmd_start(message: Message):
     """Handle /start command."""
     SESSIONS.pop(message.from_user.id, None)
-    await ensure_user(message)
+    run_background(ensure_telegram_user(message.from_user))
     await send_main_menu(message)
 
 
@@ -459,37 +490,40 @@ async def cmd_start(message: Message):
 async def cmd_menu(message: Message):
     """Handle /menu command."""
     SESSIONS.pop(message.from_user.id, None)
-    await ensure_user(message)
+    run_background(ensure_telegram_user(message.from_user))
     await send_main_menu(message)
 
 
 @router.callback_query(F.data == "menu_order")
+@instant_ack
 async def callback_order(callback):
     """Show order category selection."""
-    await ensure_telegram_user(callback.from_user)
+    run_background(ensure_telegram_user(callback.from_user))
     await callback.message.answer(
         "<b>Выбери направление заказа</b>\n\n"
         "Нажми на нужный тип работы — дальше откроется оформление заказа.",
         parse_mode=ParseMode.HTML,
         reply_markup=order_category_kb(),
     )
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data.in_(CATEGORY_CALLBACKS))
+@instant_ack
 async def callback_order_category(callback):
     """Selected order category."""
     category_code = callback.data.replace("order_", "", 1)
     reset_order_session(callback.from_user.id, category_code)
     await send_order_step(callback.message, callback.from_user.id)
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "order_skip")
+@instant_ack
 async def callback_order_skip(callback):
     session = get_order_session(callback.from_user.id)
     if not session:
-        await callback.answer()
+        await ack_callback(callback)
         return
     step_number = session["step"]
     step = ORDER_STEPS.get(step_number)
@@ -497,32 +531,35 @@ async def callback_order_skip(callback):
         session["answers"][step["key"]] = "Пропустить"
         session["step"] += 1
         await send_order_step(callback.message, callback.from_user.id)
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "order_back")
+@instant_ack
 async def callback_order_back(callback):
     session = get_order_session(callback.from_user.id)
     if session:
         session["step"] = max(2, int(session.get("step", 2)) - 1)
         await send_order_step(callback.message, callback.from_user.id)
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "order_style_back")
+@instant_ack
 async def callback_order_style_back(callback):
     session = get_order_session(callback.from_user.id)
     if session:
         session["step"] = 8
         await send_order_step(callback.message, callback.from_user.id)
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data.startswith("order_style_"))
+@instant_ack
 async def callback_order_style(callback):
     session = get_order_session(callback.from_user.id)
     if not session:
-        await callback.answer()
+        await ack_callback(callback)
         return
     style_code = callback.data.replace("order_style_", "", 1)
     session["answers"]["style"] = STYLE_LABELS.get(style_code, style_code)
@@ -533,55 +570,61 @@ async def callback_order_style(callback):
         parse_mode=ParseMode.HTML,
         reply_markup=order_deadline_kb(),
     )
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data.startswith("order_deadline_"))
+@instant_ack
 async def callback_order_deadline(callback):
     session = get_order_session(callback.from_user.id)
     if not session:
-        await callback.answer()
+        await ack_callback(callback)
         return
     hours = callback.data.replace("order_deadline_", "", 1)
     session["answers"]["deadline"] = f"{hours} ч."
     await callback.message.answer(build_review_text(session), parse_mode=ParseMode.HTML, reply_markup=order_review_kb())
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "order_show_review")
+@instant_ack
 async def callback_order_show_review(callback):
     session = get_order_session(callback.from_user.id)
     if session:
         await callback.message.answer(build_review_text(session), parse_mode=ParseMode.HTML, reply_markup=order_review_kb())
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "order_restart")
+@instant_ack
 async def callback_order_restart(callback):
     session = get_order_session(callback.from_user.id)
     if session:
         reset_order_session(callback.from_user.id, session["category"])
         await send_order_step(callback.message, callback.from_user.id)
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "order_confirm")
+@instant_ack
 async def callback_order_confirm(callback):
     session = get_order_session(callback.from_user.id)
     if session:
         await callback.message.answer(build_payment_text(session), parse_mode=ParseMode.HTML, reply_markup=order_payment_kb())
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "order_pay_crypto")
+@instant_ack
 async def callback_order_pay_crypto(callback):
     session = get_order_session(callback.from_user.id)
     if session:
         await create_order_invoice(callback.message, session)
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "order_pay_card")
+@instant_ack
 async def callback_order_pay_card(callback):
     await callback.message.answer(
         "<b>Оплата банковской картой</b>\n\n"
@@ -589,30 +632,36 @@ async def callback_order_pay_card(callback):
         parse_mode=ParseMode.HTML,
         reply_markup=order_payment_kb(),
     )
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "order_paid")
+@instant_ack
 async def callback_order_paid(callback):
     await callback.message.answer(
         "Платёж отмечен как отправленный. Если оплата уже прошла, отправь чек или дождись подтверждения дизайнера.",
         reply_markup=order_payment_kb(),
     )
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "order_receipt")
+@instant_ack
 async def callback_order_receipt(callback):
     SESSIONS[callback.from_user.id] = {"mode": "receipt_waiting"}
     await callback.message.answer("Пришли чек файлом, фото или текстом. Я сохраню его в заявке.")
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "menu_profile")
+@instant_ack
 async def callback_profile(callback):
     """Show user profile."""
-    user = await ensure_telegram_user(callback.from_user)
-    orders = await db.get_user_orders(callback.from_user.id)
+    loading = await callback.message.answer("Открываю профиль...")
+    user = await db.get_user(callback.from_user.id)
+    if not user:
+        user = await ensure_telegram_user(callback.from_user)
+    orders = await db.get_user_orders_for_user_id(user["id"]) if user else []
     completed_orders = [order for order in orders if order.get("status") in {"delivered", "closed"}]
     active_orders = [order for order in orders if order.get("status") in ACTIVE_STATUSES]
     total_amount = sum(Decimal(str(order.get("total_amount") or 0)) for order in completed_orders)
@@ -629,11 +678,12 @@ async def callback_profile(callback):
         f"— Активно: <b>{len(active_orders)}</b>"
     )
 
-    await callback.message.answer(text=profile_text, parse_mode=ParseMode.HTML, reply_markup=profile_kb())
-    await callback.answer()
+    await loading.edit_text(text=profile_text, parse_mode=ParseMode.HTML, reply_markup=profile_kb())
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "profile_deposit")
+@instant_ack
 async def callback_deposit(callback):
     """Show deposit options."""
     await callback.message.answer(
@@ -642,20 +692,22 @@ async def callback_deposit(callback):
         parse_mode=ParseMode.HTML,
         reply_markup=deposit_kb(),
     )
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "deposit_manual")
+@instant_ack
 async def callback_deposit_manual(callback):
     SESSIONS[callback.from_user.id] = {"mode": "deposit_manual"}
     await callback.message.answer(
         "Введи сумму пополнения в USDT одним сообщением.\n\nНапример: <b>7.5</b>",
         parse_mode=ParseMode.HTML,
     )
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data.startswith("deposit_"))
+@instant_ack
 async def callback_deposit_amount(callback):
     """Create invoice for deposit."""
     amount = parse_amount(callback.data.split("_", 1)[1])
@@ -663,7 +715,7 @@ async def callback_deposit_amount(callback):
         await callback.message.answer("Не понял сумму. Попробуй ещё раз.", reply_markup=deposit_kb())
     else:
         await create_deposit_invoice(callback.message, callback.from_user.id, amount)
-    await callback.answer()
+    await ack_callback(callback)
 
 
 def build_orders_text(title: str, orders: list[dict]) -> str:
@@ -682,6 +734,7 @@ def build_orders_text(title: str, orders: list[dict]) -> str:
 
 
 @router.callback_query(F.data == "profile_orders")
+@instant_ack
 async def callback_orders(callback):
     """Show user orders history."""
     orders = await db.get_user_orders(callback.from_user.id)
@@ -691,10 +744,11 @@ async def callback_orders(callback):
         parse_mode=ParseMode.HTML,
         reply_markup=orders_kb(),
     )
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "profile_active_orders")
+@instant_ack
 async def callback_active_orders(callback):
     """Show active orders."""
     orders = await db.get_user_orders(callback.from_user.id)
@@ -704,16 +758,17 @@ async def callback_active_orders(callback):
         parse_mode=ParseMode.HTML,
         reply_markup=orders_kb(),
     )
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.callback_query(F.data == "back_to_menu")
+@instant_ack
 async def callback_back_to_menu(callback):
     """Return to main menu."""
     SESSIONS.pop(callback.from_user.id, None)
-    await ensure_telegram_user(callback.from_user)
+    run_background(ensure_telegram_user(callback.from_user))
     await send_main_menu(callback.message)
-    await callback.answer()
+    await ack_callback(callback)
 
 
 @router.message()

@@ -142,11 +142,15 @@ class Database:
         if not user:
             return []
 
+        return await self.get_user_orders_for_user_id(user["id"])
+
+    async def get_user_orders_for_user_id(self, user_id: str) -> list[dict]:
+        """Get user's order history by internal Supabase user id."""
         return await self._select(
             "orders",
             {
                 "select": "*",
-                "user_id": f"eq.{user['id']}",
+                "user_id": f"eq.{user_id}",
                 "order": "created_at.desc",
             },
         )
