@@ -620,7 +620,6 @@ export default defineConfig(({ mode }) => {
           manualChunks(id) {
             if (!id.includes("node_modules")) return undefined;
             if (id.includes("react") || id.includes("scheduler")) return "vendor-react";
-            if (id.includes("swiper")) return "vendor-swiper";
             if (id.includes("@supabase")) return "vendor-supabase";
             return "vendor";
           },

@@ -307,7 +307,7 @@ const GALLERY = {
     { id: "a6", cat: "Аватарки", title: "Pixel аватар", desc: "Пиксельное ретро искусство", img: "https://picsum.photos/seed/rsa6/1080/1280", tags: ["pixel", "retro"], popular: false, views: 310 },
     { id: "p1", cat: "Превью", title: "YouTube превью Gaming", desc: "Эпичный геймерский дизайн", img: "https://picsum.photos/seed/rsp1/1080/1280", tags: ["youtube", "game"], popular: true, views: 3400 },
     { id: "p2", cat: "Превью", title: "Twitch превью", desc: "Стримерский дизайн с индивидуальностью", img: "https://picsum.photos/seed/rsp2/1080/1280", tags: ["twitch", "stream"], popular: false, views: 780 },
-    { id: "p3", cat: "Превью", title: "Viral превью", desc: "Заставит кликать каждого", img: "/images/podborka av 4.png", tags: ["viral", "bright"], popular: true, views: 5600 },
+    { id: "p3", cat: "Превью", title: "Viral превью", desc: "Заставит кликать каждого", img: "/images/optimized/podborka-av-4.jpg", tags: ["viral", "bright"], popular: true, views: 5600 },
     { id: "p4", cat: "Превью", title: "Минимал превью", desc: "Элегантная лаконичность", img: "https://picsum.photos/seed/rsp4/1080/1280", tags: ["minimal", "clean"], popular: false, views: 290 },
     { id: "p5", cat: "Превью", title: "Dark превью", desc: "Тёмная тема, максимум атмосферы", img: "https://picsum.photos/seed/rsp5/1080/1280", tags: ["dark", "cinematic"], popular: true, views: 1870 },
     { id: "b1", cat: "Баннеры", title: "Twitch баннер PRO", desc: "Профессиональная шапка канала", img: "https://picsum.photos/seed/rsb1/1080/1280", tags: ["twitch", "channel"], popular: true, views: 2200 },
@@ -350,19 +350,19 @@ GALLERY.by = GALLERY.ru.map(i => ({ ...i, cat: { "Аватарки": "Авата
 // Prefer real local works over picsum placeholders in gallery.
 const LOCAL_GALLERY_ASSETS = {
   avatars: [
-    "/images/podborka av 1.jpg",
-    "/images/podborka av 2.jpg",
-    "/images/podborka av 3.jpg",
-    "/images/podborka av 4.png",
-    "/images/podborka av 5.png",
+    "/images/optimized/podborka-av-1.jpg",
+    "/images/optimized/podborka-av-2.jpg",
+    "/images/optimized/podborka-av-3.jpg",
+    "/images/optimized/podborka-av-4.jpg",
+    "/images/optimized/podborka-av-5.jpg",
   ],
   previews: [
-    "/images/podborka prewiew 1.jpg",
-    "/images/podborka prewiew 2.jpg",
-    "/images/podborka prewiew 3.jpg",
-    "/images/podborka prewiew 4.jpg",
-    "/images/podborka prewiew 5.jpg",
-    "/images/%D0%BC%D0%BE%D0%BA%D0%B0%D0%BF%20%D0%B4%D0%BB%D1%8F%20%D0%BF%D1%80%D0%B5%D0%B2%D1%8C%D1%8E%D1%88%D0%B5%D0%BA.png",
+    "/images/optimized/podborka-preview-1.jpg",
+    "/images/optimized/podborka-preview-2.jpg",
+    "/images/optimized/podborka-preview-3.jpg",
+    "/images/optimized/podborka-preview-4.jpg",
+    "/images/optimized/podborka-preview-5.jpg",
+    "/images/optimized/preview-mockup.jpg",
   ],
 };
 LOCAL_GALLERY_ASSETS.banners = LOCAL_GALLERY_ASSETS.previews;

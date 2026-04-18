@@ -1,5 +1,10 @@
-﻿import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import SystemIcon from "./SystemIcon";
+
+function getOptimizedSrcSet(src) {
+  if (typeof src !== "string" || !src.startsWith("/images/optimized/") || !src.endsWith(".jpg")) return undefined;
+  return `${src.replace(/\.jpg$/, "-450.jpg")} 450w, ${src} 900w`;
+}
 
 function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
   const g = (typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {};
@@ -347,6 +352,8 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
                   )}
                   <img
                     src={item.img} alt={item.title}
+                    srcSet={getOptimizedSrcSet(item.img)}
+                    sizes="(max-width: 520px) 48vw, 220px"
                     loading={i === 0 ? "eager" : "lazy"}
                     decoding="async"
                     fetchPriority={i === 0 ? "high" : "auto"}
@@ -490,6 +497,8 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
                   )}
                   <img
                     src={item.img} alt={item.title}
+                    srcSet={getOptimizedSrcSet(item.img)}
+                    sizes="72px"
                     loading="lazy"
                     decoding="async"
                     onLoad={() => handleImgLoad(item.id)}

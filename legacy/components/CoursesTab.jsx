@@ -1,8 +1,13 @@
-﻿import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import SystemIcon from "./SystemIcon";
 
 const WATCH_TO_COMPLETE_SECONDS = 8;
+function getOptimizedSrcSet(src) {
+  if (typeof src !== "string" || !src.startsWith("/images/optimized/") || !src.endsWith(".jpg")) return undefined;
+  return `${src.replace(/\.jpg$/, "-450.jpg")} 450w, ${src} 900w`;
+}
+
 function getCopy(lang) {
   const isEn = lang === "en";
 
@@ -339,6 +344,8 @@ function ModuleCard({ th, lang, course, topic, idx, done, progress, onOpen, lock
       <div style={{ position: "relative", height: 160, overflow: "hidden", background: "#06070a", borderBottom: `1px solid rgba(255,255,255,0.05)` }}>
         <img 
           src={course.img} 
+          srcSet={getOptimizedSrcSet(course.img)}
+          sizes="(max-width: 520px) 100vw, 420px"
           alt={topic} 
           loading="lazy"
           decoding="async"
@@ -711,7 +718,7 @@ export default function CoursesTab({ th, t, lang, showToast, addXPfn, onUnlockAc
           <button onClick={() => { setSelCourse(null); SFX.close(); }} style={{ alignSelf: "flex-start", display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 10, border: `1px solid ${th.border}`, background: th.card, color: th.sub, cursor: "pointer", fontSize: 13, fontWeight: 700 }}>в†ђ {copy.backToCourses}</button>
 
           <div style={{ position: "relative", overflow: "hidden", borderRadius: 28, border: `1px solid rgba(255,255,255,0.1)`, background: "#050608", boxShadow: "0 24px 60px rgba(0,0,0,0.35)" }}>
-            <img src={selCourse.img} alt={selCourse.title} loading="eager" decoding="async" fetchPriority="high" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.25, filter: "contrast(1.15) saturate(1.1)" }} />
+            <img src={selCourse.img} srcSet={getOptimizedSrcSet(selCourse.img)} sizes="(max-width: 520px) 100vw, 520px" alt={selCourse.title} loading="eager" decoding="async" fetchPriority="high" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.25, filter: "contrast(1.15) saturate(1.1)" }} />
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(8,8,10,.3) 0%, rgba(8,8,10,.85) 50%, rgba(8,9,20,1) 100%)" }} />
             
             <div style={{ position: "relative", zIndex: 1, padding: "32px 24px 28px", display: "flex", flexDirection: "column", minHeight: 280, justifyContent: "flex-end" }}>
@@ -854,7 +861,7 @@ export default function CoursesTab({ th, t, lang, showToast, addXPfn, onUnlockAc
           return (
             <div key={course.id} onClick={() => { setSelCourse(course); SFX.course(); }} style={{ background: th.card, borderRadius: 22, border: `1px solid ${th.border}`, overflow: "hidden", cursor: "pointer", animation: `cardIn .35s ease ${i * 0.05}s both`, contentVisibility: "auto", containIntrinsicSize: "320px" }}>
               <div style={{ position: "relative" }}>
-                <img src={course.img} alt={course.title} loading="lazy" decoding="async" style={{ width: "100%", height: 145, objectFit: "cover", display: "block" }} />
+                <img src={course.img} srcSet={getOptimizedSrcSet(course.img)} sizes="(max-width: 520px) 100vw, 420px" alt={course.title} loading="lazy" decoding="async" style={{ width: "100%", height: 145, objectFit: "cover", display: "block" }} />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(8,8,10,.12) 0%, rgba(8,8,10,.55) 100%)" }} />
                 <div style={{ position: "absolute", top: 10, left: 10, display: "flex", gap: 6 }}>
                   {course.popular && <span style={{ padding: "3px 8px", borderRadius: 999, background: th.accent, color: th.btnTxt, fontSize: 9, fontWeight: 900, display: "inline-flex", alignItems: "center", gap: 4 }}><SystemIcon name="top" size={9} color={th.btnTxt} animated /> TOP</span>}

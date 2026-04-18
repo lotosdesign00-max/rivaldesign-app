@@ -2,6 +2,11 @@ import React, { useMemo, useState } from "react";
 import TypewriterText from "./TypewriterText";
 import SystemIcon from "./SystemIcon";
 
+function getOptimizedSrcSet(src) {
+  if (typeof src !== "string" || !src.startsWith("/images/optimized/") || !src.endsWith(".jpg")) return undefined;
+  return `${src.replace(/\.jpg$/, "-450.jpg")} 450w, ${src} 900w`;
+}
+
 function homeCopy(lang) {
   return lang === "en"
     ? {
@@ -461,6 +466,8 @@ export default function HomeTab({
                   <div style={{ position: "relative" }}>
                     <img
                       src={item.img}
+                      srcSet={getOptimizedSrcSet(item.img)}
+                      sizes="188px"
                       alt={item.title}
                       loading="lazy"
                       decoding="async"
