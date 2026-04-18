@@ -2,13 +2,17 @@
 import os
 from pathlib import Path
 
-from aiogram.types import WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).with_name(".env"))
 
 WEBAPP_URL = os.getenv("WEBAPP_URL", "https://rivaldesign.app")
+PORTFOLIO_URL = os.getenv("PORTFOLIO_URL", "https://t.me/rivalportfolio")
+PRICES_URL = os.getenv("PRICES_URL", "https://t.me/rivalportfolio/4")
+BLOG_URL = os.getenv("BLOG_URL", os.getenv("SERVICES_URL", "https://t.me/+a7SsFZHmCaJiNDMy"))
+REVIEWS_URL = os.getenv("REVIEWS_URL", "https://t.me/reparival")
 
 
 def main_menu_kb() -> InlineKeyboardMarkup:
@@ -18,12 +22,12 @@ def main_menu_kb() -> InlineKeyboardMarkup:
     builder.row(InlineKeyboardButton(text="Оставить заказ", callback_data="menu_order"))
     builder.row(InlineKeyboardButton(text="Мой профиль", callback_data="menu_profile"))
     builder.row(
-        InlineKeyboardButton(text="Портфолио", url="https://t.me/rivalportfolio")
-        InlineKeyboardButton(text="Цены", url="https://t.me/rivalportfolio/4")
+        InlineKeyboardButton(text="Портфолио", url=PORTFOLIO_URL),
+        InlineKeyboardButton(text="Цены", url=PRICES_URL),
     )
     builder.row(
-        InlineKeyboardButton(text="Блог", url="https://t.me/+a7SsFZHmCaJiNDMy")
-        InlineKeyboardButton(text="Отзывы", url="https://t.me/reparival")
+        InlineKeyboardButton(text="Блог", url=BLOG_URL),
+        InlineKeyboardButton(text="Отзывы", url=REVIEWS_URL),
     )
 
     return builder.as_markup()
