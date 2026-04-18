@@ -1,5 +1,6 @@
-﻿import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import SystemIcon from "./SystemIcon";
+import { cancelIdle, isMobilePerfMode, runAfterTap, scheduleIdle } from "../utils/performance";
 
 function SideDrawer({
   open,
@@ -24,12 +25,27 @@ function SideDrawer({
   const { LANGS = {}, THEMES = {}, ls, isTg = false } = g;
   const safeLs = ls || { set: () => {} };
   const safeStreak = streak || { xp: 0 };
+  const isMobilePerf = isMobilePerfMode();
+  const persistTasksRef = useRef({});
+
+  const persistLater = (key, value, timeout = 550) => {
+    cancelIdle(persistTasksRef.current[key]);
+    persistTasksRef.current[key] = scheduleIdle(() => {
+      safeLs.set(key, value);
+      delete persistTasksRef.current[key];
+    }, timeout);
+  };
 
   useEffect(() => {
     if (open) sfx.drawer?.();
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [open, sfx]);
+
+  useEffect(() => () => {
+    Object.values(persistTasksRef.current).forEach(cancelIdle);
+    persistTasksRef.current = {};
+  }, []);
 
   if (!open) return null;
 
@@ -62,8 +78,8 @@ function SideDrawer({
         style={{
           position: "fixed", inset: 0, zIndex: 300,
           background: "rgba(3,4,8,.80)",
-          backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
-          animation: "fadeIn .25s ease",
+          backdropFilter: isMobilePerf ? "none" : "blur(10px)", WebkitBackdropFilter: isMobilePerf ? "none" : "blur(10px)",
+          animation: isMobilePerf ? "fadeIn .16s ease" : "fadeIn .25s ease",
         }}
       />
 
@@ -84,7 +100,7 @@ function SideDrawer({
           display: "flex", flexDirection: "column",
           animation: "drawerSlide .3s cubic-bezier(.4,0,.2,1) both",
           overflowY: "auto", WebkitOverflowScrolling: "touch",
-          boxShadow: "0 20px 60px rgba(0,0,0,.5), 0 0 40px rgba(99,102,241,.08)",
+          boxShadow: isMobilePerf ? "0 14px 36px rgba(0,0,0,.42)" : "0 20px 60px rgba(0,0,0,.5), 0 0 40px rgba(99,102,241,.08)",
         }}
       >
         {/* Animated star particles */}
@@ -96,7 +112,7 @@ function SideDrawer({
             radial-gradient(circle at 27% 63%, rgba(34,211,238,.12) 0 .85px, transparent 1.7px),
             radial-gradient(circle at 89% 79%, rgba(99,102,241,.14) 0 .95px, transparent 1.8px)
           `,
-          animation: "drawerStarsDrift 36s linear infinite",
+          animation: isMobilePerf ? "none" : "drawerStarsDrift 36s linear infinite",
         }} />
 
         {/* ── PROFILE HEADER ── */}
@@ -111,10 +127,10 @@ function SideDrawer({
             transform: "translateX(-50%)", borderRadius: "50%",
             background: "radial-gradient(circle at 50% 50%, rgba(99,102,241,.20) 0%, rgba(139,92,246,.08) 30%, transparent 65%)",
             pointerEvents: "none",
-            animation: "drawerPortholeFloat 18s ease-in-out infinite alternate",
+            animation: isMobilePerf ? "none" : "drawerPortholeFloat 18s ease-in-out infinite alternate",
           }} />
-          <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "rgba(99,102,241,.08)", filter: "blur(16px)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", bottom: -20, left: -20, width: 80, height: 80, borderRadius: "50%", background: "rgba(139,92,246,.06)", filter: "blur(12px)", pointerEvents: "none" }} />
+          {!isMobilePerf && <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "rgba(99,102,241,.08)", filter: "blur(16px)", pointerEvents: "none" }} />}
+          {!isMobilePerf && <div style={{ position: "absolute", bottom: -20, left: -20, width: 80, height: 80, borderRadius: "50%", background: "rgba(139,92,246,.06)", filter: "blur(12px)", pointerEvents: "none" }} />}
 
           {/* Avatar */}
           <div style={{
@@ -212,7 +228,7 @@ function SideDrawer({
                   cursor: "pointer", transition: "all .2s ease",
                   boxShadow: soundOn ? "0 4px 14px rgba(99,102,241,.25)" : "none",
                 }}
-                onClick={() => { const next = !soundOn; setSoundOn(next); safeLs.set("rs_sound4", next); sfx.toggle?.(); }}
+                onClick={() => runAfterTap(() => { const next = !soundOn; setSoundOn(next); persistLater("rs_sound4", next); sfx.toggle?.(); })}
               >
                 <span style={{ fontSize: 13, lineHeight: 1, color: soundOn ? "#c7d2fe" : "rgba(100,116,139,.65)" }}>
                   {soundOn ? "в™Є" : "×"}
@@ -232,7 +248,7 @@ function SideDrawer({
                   return (
                     <button
                       key={code}
-                      onClick={() => { sfx.lang?.(); setLang(code); safeLs.set("rs_lang4", code); }}
+                      onClick={() => { if (lang === code) return; runAfterTap(() => { sfx.lang?.(); setLang(code); persistLater("rs_lang4", code); }); }}
                       style={{
                         minHeight: 48, padding: "6px 4px", borderRadius: 14,
                         border: `1px solid ${active ? "rgba(99,102,241,.55)" : "rgba(99,102,241,.12)"}`,
@@ -265,14 +281,15 @@ function SideDrawer({
                   return (
                     <button
                       key={item.id}
-                      onClick={() => {
+                      onClick={() => runAfterTap(() => {
+                        if (theme.id === item.id) return;
                         const next = THEMES[item.id];
                         if (!next) return;
                         setTheme(next);
-                        safeLs.set("rs_theme4", item.id);
-                        safeLs.set("rs_theme_schema4", "v2");
+                        persistLater("rs_theme4", item.id);
+                        persistLater("rs_theme_schema4", "v2");
                         sfx.theme?.();
-                      }}
+                      })}
                       style={{
                         minHeight: 64,
                         padding: "10px 10px 11px",
@@ -318,7 +335,7 @@ function SideDrawer({
               </div>
               <input
                 type="range" min={0} max={1} step={0.05} value={volume}
-                onChange={(e) => { const v = +e.target.value; setVolume(v); safeLs.set("rs_volume4", v); }}
+                onChange={(e) => { const v = +e.target.value; setVolume(v); persistLater("rs_volume4", v, 700); }}
                 style={{ width: "100%", accentColor: "#6366f1" }}
               />
             </div>
@@ -357,6 +374,4 @@ function SideDrawer({
   );
 }
 
-export default SideDrawer;
-
-
+export default React.memo(SideDrawer);

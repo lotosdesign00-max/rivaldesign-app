@@ -1,4 +1,5 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+﻿import React, { useEffect, useMemo, useRef, useState } from "react";
+import { cancelIdle, scheduleIdle } from "../utils/performance";
 
 function buildFallbackReply(text, lang) {
   const clean = text.toLowerCase();
@@ -462,13 +463,27 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
   const [imageModel, setImageModel] = useState(() => normalizeImageModel(safeLs.get("rs_ai_image_model4", defaultImageModel)));
   const [imageAspect, setImageAspect] = useState(() => safeLs.get("rs_ai_image_aspect4", "1:1"));
   const [renderMenuOpen, setRenderMenuOpen] = useState(false);
+  const persistTasksRef = useRef({});
+
+  const persistLater = (key, value, timeout = 650) => {
+    cancelIdle(persistTasksRef.current[key]);
+    persistTasksRef.current[key] = scheduleIdle(() => {
+      safeLs.set(key, value);
+      delete persistTasksRef.current[key];
+    }, timeout);
+  };
+
+  useEffect(() => () => {
+    Object.values(persistTasksRef.current).forEach(cancelIdle);
+    persistTasksRef.current = {};
+  }, []);
 
   useEffect(() => {
     const targetModel = imagePreset === "quality" ? qualityImageModel : fastImageModel;
     const normalized = normalizeImageModel(imageModel || targetModel);
     const syncedModel = normalized === targetModel ? normalized : targetModel;
-    safeLs.set("rs_ai_image_preset4", imagePreset);
-    safeLs.set("rs_ai_image_model4", syncedModel);
+    persistLater("rs_ai_image_preset4", imagePreset);
+    persistLater("rs_ai_image_model4", syncedModel);
     if (syncedModel !== imageModel) {
       setImageModel(syncedModel);
     }
@@ -494,8 +509,8 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
     if (normalized !== textModel) {
       setTextModel(normalized);
     }
-    safeLs.set("rs_ai_text_preset4", textPreset);
-    safeLs.set("rs_ai_text_model4", normalized);
+    persistLater("rs_ai_text_preset4", textPreset);
+    persistLater("rs_ai_text_model4", normalized);
   }, [fastTextModel, qualityTextModel, safeLs, textModel, textPreset]);
 
   const persistTextPreset = (next) => {
@@ -503,8 +518,8 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
     const nextModel = normalizedPreset === "fast" ? fastTextModel : qualityTextModel;
     setTextPreset(normalizedPreset);
     setTextModel(nextModel);
-    safeLs.set("rs_ai_text_preset4", normalizedPreset);
-    safeLs.set("rs_ai_text_model4", nextModel);
+    persistLater("rs_ai_text_preset4", normalizedPreset);
+    persistLater("rs_ai_text_model4", nextModel);
   };
 
   const persistImagePreset = (next) => {
@@ -512,18 +527,18 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
     const nextModel = normalizedPreset === "quality" ? qualityImageModel : fastImageModel;
     setImagePreset(normalizedPreset);
     setImageModel(nextModel);
-    safeLs.set("rs_ai_image_preset4", normalizedPreset);
-    safeLs.set("rs_ai_image_model4", nextModel);
+    persistLater("rs_ai_image_preset4", normalizedPreset);
+    persistLater("rs_ai_image_model4", nextModel);
   };
 
   const persistMessages = (next) => {
     setMessages(next);
-    safeLs.set("rs_ai_chat4", next);
+    persistLater("rs_ai_chat4", next, 900);
   };
 
   const persistMode = (next) => {
     setMode(next);
-    safeLs.set("rs_ai_mode4", next);
+    persistLater("rs_ai_mode4", next);
     if (next !== "image") {
       setRenderMenuOpen(false);
     }
@@ -531,18 +546,18 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
 
   const persistTextModel = (next) => {
     setTextModel(next);
-    safeLs.set("rs_ai_text_model4", next);
+    persistLater("rs_ai_text_model4", next);
   };
 
   const persistImageModel = (next) => {
     const normalized = normalizeImageModel(next);
     setImageModel(normalized);
-    safeLs.set("rs_ai_image_model4", normalized);
+    persistLater("rs_ai_image_model4", normalized);
   };
 
   const persistImageAspect = (next) => {
     setImageAspect(next);
-    safeLs.set("rs_ai_image_aspect4", next);
+    persistLater("rs_ai_image_aspect4", next);
   };
 
   const activeTextModelName = getModelDisplayName(textPreset === "fast" ? fastTextModel : qualityTextModel);
@@ -1118,5 +1133,4 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
     </div>
   );
 }
-
 

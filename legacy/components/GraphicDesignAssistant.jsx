@@ -1,5 +1,6 @@
 ﻿import React, { useMemo, useState } from "react";
 import SystemIcon from "./SystemIcon";
+import { runAfterTap, scheduleIdle } from "../utils/performance";
 
 const PROJECT_TYPES = [
   { id: "avatar",   label: "Аватарка" },
@@ -48,7 +49,7 @@ function ChipRow({ label, items, value, onChange }) {
           return (
             <button
               key={item.id}
-              onClick={() => onChange(item.id)}
+              onClick={() => { if (value === item.id) return; runAfterTap(() => onChange(item.id)); }}
               style={{
                 padding: "6px 13px", borderRadius: 999, fontSize: 11.5, fontWeight: 700, cursor: "pointer",
                 border: `1px solid ${active ? "rgba(99,102,241,.55)" : "rgba(99,102,241,.12)"}`,
@@ -109,7 +110,7 @@ export default function GraphicDesignAssistant({ th, lang, onCopy, onOrder, safe
     setResult(entry.result);
     setActiveMeta(entry);
     setHistory(nextHistory);
-    storage.set("rs_ai_brief_history4", nextHistory);
+    scheduleIdle(() => storage.set("rs_ai_brief_history4", nextHistory), 700);
     showToast?.(labels.saved, "success");
   };
 
@@ -306,5 +307,4 @@ export default function GraphicDesignAssistant({ th, lang, onCopy, onOrder, safe
     </div>
   );
 }
-
 

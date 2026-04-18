@@ -1,5 +1,6 @@
 ﻿import React, { useState, useMemo, useCallback } from "react";
 import SystemIcon from "./SystemIcon";
+import { isMobilePerfMode, runAfterTap } from "../utils/performance";
 
 const DS = {
   card: "rgba(13,15,26,.82)",
@@ -15,6 +16,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
   const g = (typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {};
   const { SFX, openTg, ls, FAQ_DATA, REVIEWS } = g;
   const safeLs = ls || { get: (_k, d) => d, set: () => {} };
+  const isMobilePerf = isMobilePerfMode();
   const [section, setSection] = useState("about");
   const [expandedFaq, setExpandedFaq] = useState(0);
   const [likes, setLikes] = useState(() => safeLs.get("rs_likes4", {}));
@@ -101,6 +103,16 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
         .review-search-input:focus { border-color: rgba(99,102,241,.45) !important; background: rgba(18,20,36,.9) !important; }
         .more-rating-pill { transition: all .18s ease !important; }
         .more-rating-pill:active { transform: scale(0.94) !important; }
+        html[data-rs-mobile="true"] .more-cta-btn:hover,
+        html[data-rs-mobile="true"] .more-tool-card:hover,
+        html[data-rs-mobile="true"] .more-dir-row:hover,
+        html[data-rs-mobile="true"] .more-review-card:hover,
+        html[data-rs-mobile="true"] .more-like-btn:hover,
+        html[data-rs-mobile="true"] .more-tg-btn:hover,
+        html[data-rs-mobile="true"] .more-faq-tile:hover {
+          transform: none !important;
+          box-shadow: inherit !important;
+        }
       `}</style>
 
       {/* ── SECTION TABS ── */}
@@ -111,7 +123,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
             <button
               key={id}
               className="more-sec-btn"
-              onClick={() => { setSection(id); SFX?.tab?.(); }}
+              onClick={() => { if (section === id) return; runAfterTap(() => { setSection(id); SFX?.tab?.(); }); }}
               style={{
                 display: "flex", flexDirection: "column", alignItems: "center", gap: 5,
                 padding: "12px 6px", borderRadius: 18,
@@ -415,8 +427,8 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
             const isHov = hovered === review.id;
             return (
               <div key={review.id} className="more-review-card"
-                onMouseEnter={() => setHovered(review.id)}
-                onMouseLeave={() => setHovered(null)}
+                onMouseEnter={() => !isMobilePerf && setHovered(review.id)}
+                onMouseLeave={() => !isMobilePerf && setHovered(null)}
                 style={{
                   background: DS.card, borderRadius: 22,
                   border: `1px solid ${isHov ? "rgba(99,102,241,.22)" : "rgba(99,102,241,.12)"}`,

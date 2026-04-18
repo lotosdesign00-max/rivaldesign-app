@@ -29,6 +29,7 @@ import {
   openExternalLink,
   openInvoice as openTelegramInvoice,
 } from "./utils/tma";
+import { cancelIdle, makeLazyPreloader, markInteraction, runAfterTap, scheduleIdle } from "./utils/performance";
 
 const loadGalleryTab = () => import("./components/GalleryTab");
 const loadAITab = () => import("./components/AITab");
@@ -50,28 +51,23 @@ const CoursesTab = React.lazy(loadCoursesTab);
 const PricingTab = React.lazy(loadPricingTab);
 const MoreTab = React.lazy(loadMoreTab);
 const ProfileTab = React.lazy(loadProfileTab);
+const preloadLazyTab = makeLazyPreloader(TAB_LOADERS);
 const preloadLazyTabs = () => {
-  const queue = [loadGalleryTab, loadAITab, loadCoursesTab, loadPricingTab, loadMoreTab, loadProfileTab];
+  const queue = Object.keys(TAB_LOADERS);
   let index = 0;
   const loadNext = () => {
-    const load = queue[index];
+    const tabId = queue[index];
     index += 1;
-    if (!load) return;
-    load().catch(() => {}).finally(() => {
+    if (!tabId) return;
+    preloadLazyTab(tabId)?.catch(() => {}).finally(() => {
       if (index >= queue.length) return;
-      if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-        window.requestIdleCallback(loadNext, { timeout: 1200 });
-        return;
-      }
-      window.setTimeout(loadNext, 180);
+      scheduleIdle(loadNext, 1200);
     });
   };
   loadNext();
 };
 const preloadTabById = (tabId) => {
-  const load = TAB_LOADERS[tabId];
-  if (!load) return;
-  load().catch(() => {});
+  preloadLazyTab(tabId)?.catch(() => {});
 };
 const makeEntityId = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 const roundMoney = (value) => Math.round(Number(value || 0) * 100) / 100;
@@ -1266,6 +1262,14 @@ export default function App() {
   const liveFaq = managedContent?.faq || FAQ_DATA;
   const liveHome = managedContent?.home || {};
 
+  const changeTab = useCallback((nextTab) => {
+    if (!nextTab) return;
+    preloadTabById(nextTab);
+    runAfterTap(() => {
+      setTab((current) => (current === nextTab ? current : nextTab));
+    });
+  }, []);
+
   const createSparkles = (x, y) => {
     const sparkId = Date.now();
     setSparkles({ id: sparkId, x, y });
@@ -1387,10 +1391,10 @@ export default function App() {
         SFX.close();
         return;
       }
-      setTab("home");
+      changeTab("home");
       SFX.tab();
     });
-  }, [tab, selImage, drawerOpen]);
+  }, [tab, selImage, drawerOpen, changeTab]);
 
   useLayoutEffect(() => {
     if (!mainRef.current) return;
@@ -1418,11 +1422,26 @@ export default function App() {
     if (s.count > 1) setTimeout(() => { SFX.streak(); showToast(`🔥 ${s.count} ${t.streakTitle}!`, "success"); }, 1500);
   }, []);
 
-  useEffect(() => { ls.set("rs_cart4", cart); }, [cart]);
-  useEffect(() => { ls.set("rs_wl4", wishlist); }, [wishlist]);
-  useEffect(() => { ls.set("rs_wallet_balance4", walletBalance); }, [walletBalance]);
-  useEffect(() => { ls.set("rs_payment_history4", paymentHistory); }, [paymentHistory]);
-  useEffect(() => { ls.set("rs_orders4", orders); }, [orders]);
+  useEffect(() => {
+    const task = scheduleIdle(() => ls.set("rs_cart4", cart), 500);
+    return () => cancelIdle(task);
+  }, [cart]);
+  useEffect(() => {
+    const task = scheduleIdle(() => ls.set("rs_wl4", wishlist), 500);
+    return () => cancelIdle(task);
+  }, [wishlist]);
+  useEffect(() => {
+    const task = scheduleIdle(() => ls.set("rs_wallet_balance4", walletBalance), 500);
+    return () => cancelIdle(task);
+  }, [walletBalance]);
+  useEffect(() => {
+    const task = scheduleIdle(() => ls.set("rs_payment_history4", paymentHistory), 700);
+    return () => cancelIdle(task);
+  }, [paymentHistory]);
+  useEffect(() => {
+    const task = scheduleIdle(() => ls.set("rs_orders4", orders), 700);
+    return () => cancelIdle(task);
+  }, [orders]);
 
   useEffect(() => {
     setPaymentHistory(prev => prev.map((payment) => {
@@ -2599,6 +2618,7 @@ export default function App() {
 
   return (
     <div
+      onPointerDownCapture={() => markInteraction()}
       style={{
         height: "var(--tg-app-height, 100dvh)",
         minHeight: "var(--tg-app-height, 100dvh)",
@@ -2651,6 +2671,12 @@ export default function App() {
         html[data-rs-mobile="true"] header > div,html[data-rs-mobile="true"] .rs-bottom-nav{backdrop-filter:blur(9px)!important;-webkit-backdrop-filter:blur(9px)!important;box-shadow:0 12px 28px rgba(3,4,8,.36),inset 0 1px 0 rgba(255,255,255,.05)!important;}
         html[data-rs-mobile="true"] .rs-nav-icon-cycle{animation-duration:6.4s!important;}
         html[data-rs-mobile="true"] .rs-content > div{animation-duration:.2s!important;animation-timing-function:cubic-bezier(.2,.8,.2,1)!important;}
+        html[data-rs-mobile="true"][data-rs-interacting="true"] .rs-nav-icon-cycle,
+        html[data-rs-mobile="true"][data-rs-interacting="true"] .rs-mesh-stars-near,
+        html[data-rs-mobile="true"][data-rs-interacting="true"] .rs-icon-shell,
+        html[data-rs-mobile="true"][data-rs-interacting="true"] .rs-icon-wrap,
+        html[data-rs-mobile="true"][data-rs-interacting="true"] .rs-icon-svg{animation-play-state:paused!important;transition-duration:.08s!important;}
+        html[data-rs-mobile="true"][data-rs-interacting="true"] .rs-content{pointer-events:auto;scroll-behavior:auto!important;}
         .rs-shell{width:100%;max-width:100%;overflow-x:hidden;}
         .rs-content{width:100%;max-width:100%;overflow-x:hidden;}
         .rs-content *{min-width:0;}
@@ -2809,7 +2835,7 @@ export default function App() {
       {sparkles && <Sparkles x={sparkles.x} y={sparkles.y} th={th} />}
       {pendingAchieve && <AchievementPopup achievement={pendingAchieve} th={th} onClose={() => setPendingAchieve(null)} sfx={SFX} />}
       {showLevelUp && <LevelUpNotification />}
-      <SideDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} th={th} t={t} theme={theme} setTheme={setTheme} lang={lang} setLang={setLang} soundOn={soundOn} setSoundOn={setSoundOn} volume={volume} setVolume={setVolume} streak={streak} sfx={SFX} getLevel={getLevel} getLevelProgress={getLevelProgress} tgUser={tgUser} />
+      <SideDrawer open={drawerOpen} onClose={() => runAfterTap(() => setDrawerOpen(false))} th={th} t={t} theme={theme} setTheme={setTheme} lang={lang} setLang={setLang} soundOn={soundOn} setSoundOn={setSoundOn} volume={volume} setVolume={setVolume} streak={streak} sfx={SFX} getLevel={getLevel} getLevelProgress={getLevelProgress} tgUser={tgUser} />
 
       <div className="rs-shell" style={{ width: "var(--tg-shell-width, 480px)", maxWidth: "var(--tg-shell-width, 480px)", display: "flex", flexDirection: "column", height: "calc(var(--tg-app-height, 100dvh) / var(--tg-shell-scale, 1))", position: "relative", zIndex: 1, overflowX: "hidden", transform: "scale(var(--tg-shell-scale, 1))", transformOrigin: "top center", flexShrink: 0 }}>
         {/* Header */}
@@ -2821,7 +2847,7 @@ export default function App() {
               <button onClick={(e) => {
                 createSparkles(e.clientX, e.clientY);
                 SFX.drawer();
-                setDrawerOpen(true);
+                runAfterTap(() => setDrawerOpen(true));
               }} style={{ display: "flex", flexDirection: "column", gap: 5, width: 38, height: 38, justifyContent: "center", alignItems: "center", background: "rgba(255,255,255,.03)", border: `1px solid ${th.border}`, borderRadius: 14, cursor: "pointer", padding: 0, boxShadow: "inset 0 1px 0 rgba(255,255,255,.04)" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 5, alignItems: "flex-end", justifyContent: "center", height: "100%", width: "100%", paddingRight: 4 }}>
                   {[0, 1, 2].map((i) => (
@@ -2862,7 +2888,7 @@ export default function App() {
               <button onClick={(e) => {
                 createSparkles(e.clientX, e.clientY);
                 SFX.tap();
-                setTab("pricing");
+                changeTab("pricing");
                 setTimeout(() => {
                   if (mainRef.current) {
                     mainRef.current.scrollTo({ top: mainRef.current.scrollHeight, behavior: 'smooth' });
@@ -2882,7 +2908,7 @@ export default function App() {
                 onClick={(e) => {
                   createSparkles(e.clientX, e.clientY);
                   SFX.tap();
-                  setTab("profile");
+                  changeTab("profile");
                 }}
                 style={{
                   height: 38,
@@ -2934,19 +2960,19 @@ export default function App() {
             }}
           >
             <React.Suspense fallback={<div style={{ minHeight: 280, borderRadius: 28, border: `1px solid ${th.border}`, background: th.card, opacity: 0.7 }} />}>
-              {tab === "home" && <HomeTab th={th} t={t} lang={lang} onGoGallery={() => setTab("gallery")} onGoCourses={() => setTab("courses")} onGoPricing={() => setTab("pricing")} onGoMore={() => setTab("more")} cartCount={cartCount} streak={streak} onUnlockAchieve={unlockAchievement} />}
+              {tab === "home" && <HomeTab th={th} t={t} lang={lang} onGoGallery={() => changeTab("gallery")} onGoCourses={() => changeTab("courses")} onGoPricing={() => changeTab("pricing")} onGoMore={() => changeTab("more")} cartCount={cartCount} streak={streak} onUnlockAchieve={unlockAchievement} />}
               {tab === "gallery" && <GalleryTab th={th} t={t} lang={lang} wishlist={wishlist} toggleWishlist={toggleWishlist} onOpenImage={item => setSelImage(item)} />}
               {tab === "ai" && <AITab th={th} t={t} lang={lang} showToast={showToast} />}
               {tab === "courses" && <CoursesTab th={th} t={t} lang={lang} showToast={showToast} addXPfn={addXPfn} onUnlockAchieve={unlockAchievement} streak={streak} setStreak={setStreak} />}
-              {tab === "pricing" && <PricingTab th={th} t={t} lang={lang} cart={cart} addToCart={addToCart} removeFromCart={removeFromCart} updateQty={updateQty} clearCart={clearCart} showToast={showToast} onUnlockAchieve={unlockAchievement} setTab={setTab} walletBalance={walletBalance} createCheckoutOrder={createCheckoutOrder} openCryptoBot={openCryptoBot} openStarsInvoice={openStarsInvoice} openOrderTelegram={openOrderTelegram} />}
+              {tab === "pricing" && <PricingTab th={th} t={t} lang={lang} cart={cart} addToCart={addToCart} removeFromCart={removeFromCart} updateQty={updateQty} clearCart={clearCart} showToast={showToast} onUnlockAchieve={unlockAchievement} setTab={changeTab} walletBalance={walletBalance} createCheckoutOrder={createCheckoutOrder} openCryptoBot={openCryptoBot} openStarsInvoice={openStarsInvoice} openOrderTelegram={openOrderTelegram} />}
 
               {tab === "more" && <MoreTab th={th} t={t} lang={lang} showToast={showToast} streak={streak} onUnlockAchieve={unlockAchievement} addXPfn={addXPfn} />}
-              {tab === "profile" && <ProfileTab th={th} t={t} lang={lang} streak={streak} achievements={achievements} showToast={showToast} setTab={setTab} setSelectedAchievement={setSelectedAchievement} walletBalance={walletBalance} paymentHistory={paymentHistory} orders={orders} onRequestTopUp={requestTopUp} onMarkPaymentSubmitted={markPaymentSubmitted} onRefreshInvoiceStatus={refreshInvoiceStatus} onAddOrderMessage={addOrderMessage} onOpenCryptoBot={openCryptoBot} onOpenStarsInvoice={openStarsInvoice} onOpenTelegram={openOrderTelegram} onRequestPaymentDetails={requestPaymentDetails} />}
+              {tab === "profile" && <ProfileTab th={th} t={t} lang={lang} streak={streak} achievements={achievements} showToast={showToast} setTab={changeTab} setSelectedAchievement={setSelectedAchievement} walletBalance={walletBalance} paymentHistory={paymentHistory} orders={orders} onRequestTopUp={requestTopUp} onMarkPaymentSubmitted={markPaymentSubmitted} onRefreshInvoiceStatus={refreshInvoiceStatus} onAddOrderMessage={addOrderMessage} onOpenCryptoBot={openCryptoBot} onOpenStarsInvoice={openStarsInvoice} onOpenTelegram={openOrderTelegram} onRequestPaymentDetails={requestPaymentDetails} />}
             </React.Suspense>
           </div>
         </main>
 
-        <BottomNav active={tab} onChange={setTab} onPreloadTab={preloadTabById} th={th} t={t} cartCount={cartCount} ordersCount={activeOrdersCount} walletBalance={walletBalance} sfx={SFX} />
+        <BottomNav active={tab} onChange={changeTab} onPreloadTab={preloadTabById} th={th} t={t} cartCount={cartCount} ordersCount={activeOrdersCount} walletBalance={walletBalance} sfx={SFX} />
       </div>
 
       {selImage && <ImageModal item={selImage} th={th} t={t} onClose={() => { setSelImage(null); SFX.close(); }} wishlist={wishlist} toggleWishlist={toggleWishlist} showToast={showToast} sfx={SFX} openTg={openTg} />}

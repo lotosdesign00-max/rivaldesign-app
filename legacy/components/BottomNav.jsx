@@ -149,12 +149,17 @@ function PriceMark({ active, th }) {
 }
 
 function BottomNav({ active, onChange, onPreloadTab, th, t, cartCount, ordersCount = 0, walletBalance = 0, sfx }) {
+  const preloadedTabsRef = React.useRef(new Set());
+
   const handleTabClick = (id) => {
+    if (id === active) return;
     sfx.tab?.();
     onChange(id);
   };
 
   const handleTabIntent = (id) => {
+    if (id === active || preloadedTabsRef.current.has(id)) return;
+    preloadedTabsRef.current.add(id);
     onPreloadTab?.(id);
   };
 

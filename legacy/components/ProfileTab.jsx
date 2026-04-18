@@ -1,8 +1,13 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
-import FreePackTab from "./FreePackTab";
-import ClientHub from "./ClientHub";
-import PaymentDetailsModal from "./PaymentDetailsModal";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
+
+
+
 import SystemIcon from "./SystemIcon";
+import { cancelIdle, runAfterTap, scheduleIdle } from "../utils/performance";
+
+const FreePackTab = React.lazy(() => import("./FreePackTab"));
+const ClientHub = React.lazy(() => import("./ClientHub"));
+const PaymentDetailsModal = React.lazy(() => import("./PaymentDetailsModal"));
 
 function moneyUsd(value) {
   return `$${Number(value || 0).toFixed(2)}`;
@@ -93,9 +98,12 @@ function ProfileTab({
   const achievementsPercent = Math.round((unlockedCount / totalAchievements) * 100);
 
   useEffect(() => {
-    if (!isPackUnlocked) {
-      showToast?.(lang === "en" ? "Claim your free pack in profile" : "Забери бесплатный пак в профиле", "info");
-    }
+    const task = scheduleIdle(() => {
+      if (!isPackUnlocked) {
+        showToast?.(lang === "en" ? "Claim your free pack in profile" : "Забери бесплатный пак в профиле", "info");
+      }
+    }, 1200);
+    return () => cancelIdle(task);
   }, []);
 
   useEffect(() => {
@@ -207,7 +215,7 @@ function ProfileTab({
               fontFamily: "var(--font-number)", letterSpacing: ".05em"
             }}>
               <span style={{ color: th.sub }}>LVL</span> {level}
-              <span style={{ margin: "0 2px", opacity: 0.3 }}>|</span> 
+              <span style={{ margin: "0 2px", opacity: 0.3 }}>|</span>
               {safeStreak.xp.toLocaleString()} <span style={{ color: th.sub }}>XP</span>
             </div>
           </div>
@@ -307,10 +315,10 @@ function ProfileTab({
 
       {/* ─── ORDERS DESK (expandable) ─── */}
       <button
-        onClick={() => {
+        onClick={() => runAfterTap(() => {
           setShowOrdersSection((prev) => !prev);
           SFX.order?.();
-        }}
+        })}
         style={{
           width: "100%",
           borderRadius: 24,
@@ -414,37 +422,41 @@ function ProfileTab({
 
       {showOrdersSection && (
         <div style={{ animation: "cardIn .3s ease both" }}>
-          <ClientHub
-            th={th}
-            lang={lang}
-            walletBalance={walletBalance}
-            paymentHistory={paymentHistory}
-            orders={orders}
-            onRequestTopUp={onRequestTopUp}
-            onMarkPaymentSubmitted={onMarkPaymentSubmitted}
-            onRefreshInvoiceStatus={onRefreshInvoiceStatus}
-            onAddOrderMessage={onAddOrderMessage}
-            onOpenCryptoBot={onOpenCryptoBot}
-            onOpenStarsInvoice={onOpenStarsInvoice}
-            onOpenTelegram={onOpenTelegram}
-            onOpenPaymentDetails={() => setPaymentDetailsOpen(true)}
-          />
+          <Suspense fallback={<div style={{ minHeight: 220, borderRadius: 24, border: `1px solid ${th.border}`, background: th.card, opacity: 0.75 }} />}>
+            <ClientHub
+              th={th}
+              lang={lang}
+              walletBalance={walletBalance}
+              paymentHistory={paymentHistory}
+              orders={orders}
+              onRequestTopUp={onRequestTopUp}
+              onMarkPaymentSubmitted={onMarkPaymentSubmitted}
+              onRefreshInvoiceStatus={onRefreshInvoiceStatus}
+              onAddOrderMessage={onAddOrderMessage}
+              onOpenCryptoBot={onOpenCryptoBot}
+              onOpenStarsInvoice={onOpenStarsInvoice}
+              onOpenTelegram={onOpenTelegram}
+              onOpenPaymentDetails={() => setPaymentDetailsOpen(true)}
+            />
+          </Suspense>
         </div>
       )}
 
       {paymentDetailsOpen && (
-        <PaymentDetailsModal
-          onClose={() => setPaymentDetailsOpen(false)}
-          onRequestDetails={(country) => onRequestPaymentDetails?.(country)}
-          lang={lang}
-        />
+        <Suspense fallback={null}>
+          <PaymentDetailsModal
+            onClose={() => setPaymentDetailsOpen(false)}
+            onRequestDetails={(country) => onRequestPaymentDetails?.(country)}
+            lang={lang}
+          />
+        </Suspense>
       )}
 
       {/* ─── STATS GRID ─── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 14 }}>
         {stats.map((stat) => (
-          <div 
-            key={stat.label} 
+          <div
+            key={stat.label}
             className="profile-hover-card"
             style={{
               background: "linear-gradient(180deg, rgba(13,15,26,.85) 0%, rgba(8,9,20,.90) 100%)",
@@ -461,7 +473,7 @@ function ProfileTab({
             <div style={{ position: "absolute", top: -20, left: -20, width: 80, height: 80, borderRadius: "50%", background: `radial-gradient(circle, ${stat.color}10 0%, transparent 70%)`, pointerEvents: "none" }} />
             <div style={{
               width: 54, height: 54, borderRadius: 18,
-              background: `linear-gradient(135deg, ${stat.color}20, ${stat.color}05)`, 
+              background: `linear-gradient(135deg, ${stat.color}20, ${stat.color}05)`,
               border: `1px solid ${stat.color}35`,
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 26, flexShrink: 0,
@@ -481,7 +493,7 @@ function ProfileTab({
       </div>
 
       <button
-        onClick={() => { setShowPackSection((prev) => !prev); SFX.tap?.(); }}
+        onClick={() => runAfterTap(() => { setShowPackSection((prev) => !prev); SFX.tap?.(); })}
         style={{
           width: "100%",
           border: `1px solid ${showPackSection ? "rgba(99,102,241,.5)" : "rgba(99,102,241,.18)"}`,
@@ -576,15 +588,17 @@ function ProfileTab({
 
       {showPackSection && (
         <div style={{ animation: "cardIn .3s ease both" }}>
-          <FreePackTab th={th} t={t} lang={lang} />
+          <Suspense fallback={<div style={{ minHeight: 220, borderRadius: 24, border: `1px solid ${th.border}`, background: th.card, opacity: 0.75 }} />}>
+            <FreePackTab th={th} t={t} lang={lang} />
+          </Suspense>
         </div>
       )}
 
       <button
-        onClick={() => {
+        onClick={() => runAfterTap(() => {
           setShowAchievementsList((prev) => !prev);
           SFX.tap?.();
-        }}
+        })}
         style={{
           width: "100%",
           border: `1px solid ${showAchievementsList ? th.accent : th.border}`,
@@ -770,11 +784,4 @@ function ProfileTab({
   );
 }
 
-export default ProfileTab;
-
-
-
-
-
-
-
+export default React.memo(ProfileTab);
