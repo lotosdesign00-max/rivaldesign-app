@@ -3,6 +3,7 @@ import os
 import asyncio
 import logging
 from decimal import Decimal, InvalidOperation
+from functools import wraps
 from html import escape
 from pathlib import Path
 
@@ -188,9 +189,26 @@ async def ack_callback(callback):
 
 def instant_ack(handler):
     """Decorator for callback handlers that must acknowledge taps immediately."""
+    @wraps(handler)
     async def wrapper(callback, *args, **kwargs):
         await ack_callback(callback)
-        return await handler(callback, *args, **kwargs)
+        logger.info(
+            "Callback received: data=%s user_id=%s",
+            getattr(callback, "data", None),
+            getattr(getattr(callback, "from_user", None), "id", None),
+        )
+        try:
+            return await handler(callback, *args, **kwargs)
+        except Exception:
+            logger.exception("Callback handler failed: data=%s", getattr(callback, "data", None))
+            try:
+                if callback.message:
+                    await callback.message.answer(
+                        "Не смог обработать нажатие. Уже записал ошибку в лог, нажми /start и попробуй ещё раз."
+                    )
+            except Exception:
+                logger.exception("Could not send callback fallback message")
+            return None
 
     return wrapper
 
@@ -771,6 +789,22 @@ async def callback_back_to_menu(callback):
     await ack_callback(callback)
 
 
+@router.callback_query()
+@instant_ack
+async def callback_unknown(callback):
+    """Handle stale inline buttons from older bot messages."""
+    logger.warning(
+        "Unknown callback data: data=%s user_id=%s",
+        getattr(callback, "data", None),
+        getattr(getattr(callback, "from_user", None), "id", None),
+    )
+    if callback.message:
+        await callback.message.answer(
+            "Эта кнопка уже устарела. Нажми /start, я отправлю свежее меню."
+        )
+    await ack_callback(callback)
+
+
 @router.message()
 async def handle_text_state(message: Message):
     """Handle free-text states for manual deposit and order wizard."""
@@ -823,7 +857,9 @@ async def main():
 
     await bot.delete_webhook(drop_pending_updates=True)
     logger.info("Rival Design Bot started")
-    await dp.start_polling(bot)
+    allowed_updates = dp.resolve_used_update_types()
+    logger.info("Polling allowed updates: %s", allowed_updates)
+    await dp.start_polling(bot, allowed_updates=allowed_updates)
 
 
 if __name__ == "__main__":
