@@ -36,6 +36,14 @@ const loadCoursesTab = () => import("./components/CoursesTab");
 const loadPricingTab = () => import("./components/PricingTab");
 const loadMoreTab = () => import("./components/MoreTab");
 const loadProfileTab = () => import("./components/ProfileTab");
+const TAB_LOADERS = {
+  gallery: loadGalleryTab,
+  ai: loadAITab,
+  courses: loadCoursesTab,
+  pricing: loadPricingTab,
+  more: loadMoreTab,
+  profile: loadProfileTab,
+};
 const GalleryTab = React.lazy(loadGalleryTab);
 const AITab = React.lazy(loadAITab);
 const CoursesTab = React.lazy(loadCoursesTab);
@@ -59,6 +67,11 @@ const preloadLazyTabs = () => {
     });
   };
   loadNext();
+};
+const preloadTabById = (tabId) => {
+  const load = TAB_LOADERS[tabId];
+  if (!load) return;
+  load().catch(() => {});
 };
 const makeEntityId = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 const roundMoney = (value) => Math.round(Number(value || 0) * 100) / 100;
@@ -1231,6 +1244,9 @@ export default function App() {
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
+    const isMobilePerf = document.documentElement.dataset.rsMobile === "true";
+    if (isMobilePerf) return undefined;
+
     const runPreload = () => preloadLazyTabs();
     if ("requestIdleCallback" in window) {
       const idleId = window.requestIdleCallback(runPreload, { timeout: 1800 });
@@ -2626,7 +2642,7 @@ export default function App() {
         html[data-rs-mobile="true"]{scroll-behavior:auto;overscroll-behavior:none;}
         html[data-rs-mobile="true"] body,html[data-rs-mobile="true"] #root{overscroll-behavior:none;}
         html[data-rs-mobile="true"] .rs-shell,html[data-rs-mobile="true"] .rs-content{contain:layout style;transform:translateZ(0);}
-        html[data-rs-mobile="true"] .rs-content{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scroll-behavior:auto!important;will-change:scroll-position;}
+        html[data-rs-mobile="true"] .rs-content{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scroll-behavior:auto!important;will-change:auto;}
         html[data-rs-mobile="true"] .rs-content > div{contain:layout style;}
         html[data-rs-mobile="true"] .rs-content img,html[data-rs-mobile="true"] .rs-content svg{backface-visibility:hidden;}
         html[data-rs-mobile="true"] .rs-mesh-nebula{animation:none!important;filter:none!important;opacity:.34!important;transform:translate3d(0,0,0)!important;}
@@ -2930,7 +2946,7 @@ export default function App() {
           </div>
         </main>
 
-        <BottomNav active={tab} onChange={setTab} th={th} t={t} cartCount={cartCount} ordersCount={activeOrdersCount} walletBalance={walletBalance} sfx={SFX} />
+        <BottomNav active={tab} onChange={setTab} onPreloadTab={preloadTabById} th={th} t={t} cartCount={cartCount} ordersCount={activeOrdersCount} walletBalance={walletBalance} sfx={SFX} />
       </div>
 
       {selImage && <ImageModal item={selImage} th={th} t={t} onClose={() => { setSelImage(null); SFX.close(); }} wishlist={wishlist} toggleWishlist={toggleWishlist} showToast={showToast} sfx={SFX} openTg={openTg} />}

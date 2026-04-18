@@ -1,6 +1,4 @@
-﻿import React, { useMemo, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
+import React, { useMemo, useState } from "react";
 import TypewriterText from "./TypewriterText";
 import SystemIcon from "./SystemIcon";
 
@@ -82,9 +80,10 @@ function homeCopy(lang) {
       };
 }
 
-function Panel({ children, style }) {
+function Panel({ children, style, className = "" }) {
   return (
     <section
+      className={`home-panel ${className}`.trim()}
       style={{
         position: "relative",
         overflow: "hidden",
@@ -236,6 +235,36 @@ export default function HomeTab({
         .home-lift:active {
           transform: scale(.98);
         }
+        .home-works-strip {
+          display: flex;
+          gap: 12px;
+          overflow-x: auto;
+          overflow-y: hidden;
+          padding: 0 16px 2px;
+          scroll-snap-type: x proximity;
+          scrollbar-width: none;
+          -webkit-overflow-scrolling: touch;
+        }
+        .home-works-strip::-webkit-scrollbar {
+          display: none;
+        }
+        .home-work-slide {
+          width: 188px;
+          flex: 0 0 188px;
+          scroll-snap-align: start;
+        }
+        html[data-rs-mobile="true"] .home-panel {
+          -webkit-backdrop-filter: blur(10px) !important;
+          backdrop-filter: blur(10px) !important;
+          contain: layout paint style;
+        }
+        html[data-rs-mobile="true"] .home-hero-glow {
+          animation: none !important;
+          filter: blur(14px) !important;
+        }
+        html[data-rs-mobile="true"] .home-lift:hover {
+          transform: none !important;
+        }
       `}</style>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -259,6 +288,7 @@ export default function HomeTab({
               filter: "blur(26px)",
               animation: "homeGlow 6s ease-in-out infinite",
             }}
+            className="home-hero-glow"
           />
           <div
             style={{
@@ -411,9 +441,9 @@ export default function HomeTab({
             </button>
           </div>
 
-          <Swiper spaceBetween={12} slidesPerView="auto" style={{ padding: "0 16px" }}>
+          <div className="home-works-strip" aria-label={copy.featuredTitle}>
             {items.map((item) => (
-              <SwiperSlide key={item.id} style={{ width: 188 }}>
+              <div key={item.id} className="home-work-slide">
                 <button
                   className="home-lift"
                   onClick={onGoGallery}
@@ -462,9 +492,9 @@ export default function HomeTab({
                     </div>
                   </div>
                 </button>
-              </SwiperSlide>
+              </div>
             ))}
-          </Swiper>
+          </div>
         </Panel>
 
         <Panel

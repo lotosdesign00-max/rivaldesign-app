@@ -148,10 +148,14 @@ function PriceMark({ active, th }) {
   );
 }
 
-function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, walletBalance = 0, sfx }) {
+function BottomNav({ active, onChange, onPreloadTab, th, t, cartCount, ordersCount = 0, walletBalance = 0, sfx }) {
   const handleTabClick = (id) => {
     sfx.tab?.();
     onChange(id);
+  };
+
+  const handleTabIntent = (id) => {
+    onPreloadTab?.(id);
   };
 
   return (
@@ -338,6 +342,9 @@ function BottomNav({ active, onChange, th, t, cartCount, ordersCount = 0, wallet
           return (
             <button
               key={n.id}
+              onPointerDown={() => handleTabIntent(n.id)}
+              onPointerEnter={() => handleTabIntent(n.id)}
+              onFocus={() => handleTabIntent(n.id)}
               onClick={() => handleTabClick(n.id)}
               style={{
                 display: "flex",
