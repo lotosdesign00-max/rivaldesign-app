@@ -78,6 +78,36 @@ async function proxyCloudflareAi(req, res, env) {
   res.end(responseBody);
 }
 
+async function proxyOpenRouter(req, res, env) {
+  if (req.method !== "POST") {
+    sendJson(res, 405, { ok: false, error: "Method not allowed" });
+    return;
+  }
+
+  const token = env.OPENROUTER_API_KEY || env.VITE_OPENROUTER_API_KEY || "";
+  if (!token) {
+    sendJson(res, 500, { ok: false, error: "Missing OPENROUTER_API_KEY in server env" });
+    return;
+  }
+
+  const body = await readRawBody(req);
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": req.headers["content-type"] || "application/json",
+      Authorization: `Bearer ${token}`,
+      "HTTP-Referer": req.headers["x-rival-referer"] || req.headers.referer || "http://localhost:5173",
+      "X-Title": req.headers["x-rival-title"] || "RivalDesign AI Chat",
+    },
+    body,
+  });
+
+  const responseBody = Buffer.from(await response.arrayBuffer());
+  res.statusCode = response.status;
+  res.setHeader("Content-Type", response.headers.get("content-type") || "application/json; charset=utf-8");
+  res.end(responseBody);
+}
+
 function getPathname(url = "") {
   return String(url || "").split("?")[0];
 }
@@ -237,6 +267,11 @@ function cryptoPayPlugin(env) {
 
       if (pathname.startsWith("/api/cloudflare-ai/")) {
         await proxyCloudflareAi(req, res, env);
+        return;
+      }
+
+      if (pathname === "/api/openrouter/chat/completions") {
+        await proxyOpenRouter(req, res, env);
         return;
       }
 
