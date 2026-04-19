@@ -114,11 +114,32 @@ function ServiceCard({ svc, qty, onAdd, onSub, onExamples, lang, th, isFullPack 
           {lang === "en" ? "Examples" : "Примеры"}
         </button>
 
-        <div className="pricing-service-stepper" style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <button onClick={onSub} disabled={qty === 0} style={{ width: 34, height: 34, borderRadius: 10, border: qty === 0 ? `1px solid ${ui.accent}18` : `1px solid ${ui.accent}55`, background: qty === 0 ? `${ui.accent}0f` : `${ui.accent}18`, color: qty === 0 ? ui.sub : ui.text, fontSize: 18, fontWeight: 900, cursor: qty === 0 ? "not-allowed" : "pointer" }}>−</button>
-          <div style={{ width: 32, textAlign: "center", fontSize: 16, fontWeight: 900, fontFamily: "var(--font-number)", color: isSelected ? ui.text : ui.sub, background: isSelected ? `${ui.accent}18` : `${ui.accent}0f`, borderRadius: 10, padding: "7px 0", border: isSelected ? `1px solid ${ui.accent}44` : `1px solid ${ui.accent}18` }}>{qty}</div>
-          <button onClick={onAdd} style={{ width: 34, height: 34, borderRadius: 10, background: isFullPack ? "linear-gradient(135deg, #f59e0b, #d97706)" : `linear-gradient(135deg, ${ui.accent}, ${ui.accentB})`, color: th?.btnTxt || "#fff", border: "1px solid rgba(255,255,255,0.15)", fontSize: 18, fontWeight: 900, cursor: "pointer" }}>+</button>
-        </div>
+        {isFullPack ? (
+          <button
+            onClick={isSelected ? onSub : onAdd}
+            style={{
+              minWidth: 112,
+              padding: "10px 14px",
+              borderRadius: 12,
+              background: isSelected
+                ? "rgba(245,158,11,0.14)"
+                : "linear-gradient(135deg, #f59e0b, #d97706)",
+              color: isSelected ? "#fcd34d" : "#111111",
+              border: isSelected ? "1px solid rgba(245,158,11,0.35)" : "1px solid rgba(255,255,255,0.15)",
+              fontSize: 10.5,
+              fontWeight: 900,
+              cursor: "pointer",
+            }}
+          >
+            {isSelected ? (lang === "en" ? "Selected" : "Выбрано") : (lang === "en" ? "Buy" : "Купить")}
+          </button>
+        ) : (
+          <div className="pricing-service-stepper" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <button onClick={onSub} disabled={qty === 0} style={{ width: 34, height: 34, borderRadius: 10, border: qty === 0 ? `1px solid ${ui.accent}18` : `1px solid ${ui.accent}55`, background: qty === 0 ? `${ui.accent}0f` : `${ui.accent}18`, color: qty === 0 ? ui.sub : ui.text, fontSize: 18, fontWeight: 900, cursor: qty === 0 ? "not-allowed" : "pointer" }}>−</button>
+            <div style={{ width: 32, textAlign: "center", fontSize: 16, fontWeight: 900, fontFamily: "var(--font-number)", color: isSelected ? ui.text : ui.sub, background: isSelected ? `${ui.accent}18` : `${ui.accent}0f`, borderRadius: 10, padding: "7px 0", border: isSelected ? `1px solid ${ui.accent}44` : `1px solid ${ui.accent}18` }}>{qty}</div>
+            <button onClick={onAdd} style={{ width: 34, height: 34, borderRadius: 10, background: `linear-gradient(135deg, ${ui.accent}, ${ui.accentB})`, color: th?.btnTxt || "#fff", border: "1px solid rgba(255,255,255,0.15)", fontSize: 18, fontWeight: 900, cursor: "pointer" }}>+</button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -205,10 +226,10 @@ export default function PricingTab({
     paymentCryptoDesc: "Create a payment draft and finish in CryptoBot",
     paymentManual: "Manual",
     paymentManualDesc: "Ask for details in Telegram",
-    promoTitle: "Course access code",
-    promoHint: "Enter a code to unlock a premium course.",
+    promoTitle: "Promo codes",
+    promoHint: "Enter a promo code to unlock bonuses, courses or special access.",
     promoAlready: "Already activated",
-    promoSaved: "Course unlocked",
+    promoSaved: "Promo activated",
     promoSuccessTitle: "Premium course unlocked!",
     promoOpenCourse: "Open course",
     orderCreated: "Order created in profile",
@@ -249,10 +270,10 @@ export default function PricingTab({
     paymentCryptoDesc: "Создать черновик оплаты и завершить в CryptoBot",
     paymentManual: "Вручную",
     paymentManualDesc: "Запросить реквизиты в Telegram",
-    promoTitle: "Код доступа к курсу",
-    promoHint: "Введи код, чтобы открыть платный курс.",
+    promoTitle: "Промокоды",
+    promoHint: "Введи промокод, чтобы открыть бонусы, курсы или специальный доступ.",
     promoAlready: "Уже активирован",
-    promoSaved: "Курс открыт",
+    promoSaved: "Промокод активирован",
     promoSuccessTitle: "Премиум-курс открыт!",
     promoOpenCourse: "Открыть курс",
     orderCreated: "Заказ создан в профиле",
@@ -287,15 +308,22 @@ export default function PricingTab({
   const getQty = (key) => quantities[key] || 0;
   const getSvcName = (svc) => svc?.[lang] || svc?.en || svc?.ru || "";
   const selectedServices = useMemo(() => SERVICES.filter((svc) => getQty(svc.key) > 0), [SERVICES, quantities]);
+  const isPackOnly = selectedServices.length === 1 && selectedServices[0]?.key === "pack";
 
   const getTariffPrice = () => (calcComplexity === "plus" ? 10 : calcComplexity === "advanced" ? 15 : 7);
   const urgencyMult = calcUrgent === "normal" ? 1 : calcUrgent === "fast" ? 1.5 : 2;
-  const getDelivery = () => (calcUrgent === "fast" ? copy.etaFast : calcUrgent === "urgent" ? copy.etaRush : copy.etaNormal);
+  const getDelivery = () => {
+    if (isPackOnly && packService) return lang === "en" ? packService.timeEn : packService.timeRu;
+    return calcUrgent === "fast" ? copy.etaFast : calcUrgent === "urgent" ? copy.etaRush : copy.etaNormal;
+  };
 
   const summary = useMemo(() => {
+    if (isPackOnly && packService) {
+      return { subtotalUsd: roundToPrice(packService.priceUSD || 0) };
+    }
     const subtotalUsd = roundToPrice(getTariffPrice() * urgencyMult * totalItems);
     return { subtotalUsd };
-  }, [calcComplexity, urgencyMult, totalItems]);
+  }, [calcComplexity, isPackOnly, packService, totalItems, urgencyMult]);
 
   useEffect(() => {
     if (paymentMethod === "balance" && walletBalance < summary.subtotalUsd) {
@@ -308,8 +336,12 @@ export default function PricingTab({
   const updateQty = (svc, delta) => {
     SFX.tap?.();
     setQuantities((prev) => {
+      if (svc.key === "pack") {
+        return (prev.pack || 0) > 0 && delta < 0 ? {} : { pack: 1 };
+      }
       const next = Math.max(0, (prev[svc.key] || 0) + delta);
-      const updated = { ...prev, [svc.key]: next };
+      const updated = { ...prev, pack: 0, [svc.key]: next };
+      delete updated.pack;
       if (next === 0) delete updated[svc.key];
       return updated;
     });
@@ -396,8 +428,8 @@ export default function PricingTab({
       totalUSD: summary.subtotalUsd,
       paymentMethod,
       brief,
-      complexity: calcComplexity,
-      urgency: calcUrgent,
+      complexity: isPackOnly ? "pack" : calcComplexity,
+      urgency: isPackOnly ? "normal" : calcUrgent,
       deliveryLabel: getDelivery(),
       bonusCourses: appliedPromos.map((promo) => promo.courseId),
     });
@@ -510,6 +542,7 @@ export default function PricingTab({
 
       {totalItems > 0 && (
         <>
+          {!isPackOnly && (
           <div style={{ background: `linear-gradient(180deg, ${ui.card} 0%, ${ui.surface} 100%)`, borderRadius: 24, border: `1px solid ${ui.border}`, padding: 20, boxShadow: "0 10px 30px rgba(3,4,8,0.22)" }}>
             <div style={{ fontSize: 14, fontWeight: 900, color: ui.text, marginBottom: 4 }}>{copy.tariffTitle}</div>
             <div style={{ fontSize: 11, color: ui.sub, marginBottom: 14, fontWeight: 600 }}>{copy.tariffHint}</div>
@@ -533,7 +566,9 @@ export default function PricingTab({
               ))}
             </div>
           </div>
+          )}
 
+          {!isPackOnly && (
           <div style={{ background: `linear-gradient(180deg, ${ui.card} 0%, ${ui.surface} 100%)`, borderRadius: 24, border: `1px solid ${ui.border}`, padding: 20, boxShadow: "0 10px 30px rgba(3,4,8,0.22)" }}>
             <div style={{ fontSize: 14, fontWeight: 900, color: ui.text, marginBottom: 4 }}>{copy.urgencyTitle}</div>
             <div style={{ fontSize: 11, color: ui.sub, marginBottom: 14, fontWeight: 600 }}>{copy.urgencyHint}</div>
@@ -557,6 +592,7 @@ export default function PricingTab({
               ))}
             </div>
           </div>
+          )}
 
           <div style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(139,92,246,0.08) 100%)", borderRadius: 20, border: "1px solid rgba(99,102,241,0.3)", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
             <div>

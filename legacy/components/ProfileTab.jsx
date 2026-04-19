@@ -42,6 +42,7 @@ function ProfileTab({
     tgUser,
     SFX = {},
     ACHIEVEMENTS = [],
+    estimateStarsFromUsd = (value) => Math.max(1, Math.ceil(Number(value || 0) * 48)),
   } = g;
 
   const safeLs = ls || { get: (_k, d) => d };
@@ -58,10 +59,14 @@ function ProfileTab({
   const [showPackSection, setShowPackSection] = useState(false);
   const [showOrdersSection, setShowOrdersSection] = useState(false);
   const [paymentDetailsOpen, setPaymentDetailsOpen] = useState(false);
+  const [topupOpen, setTopupOpen] = useState(false);
+  const [topupAmount, setTopupAmount] = useState("10");
+  const [topupMethod, setTopupMethod] = useState("stars");
   const [paintReady, setPaintReady] = useState(false);
   const isMobilePerf = typeof document !== "undefined" && document.documentElement.dataset.rsMobile === "true";
   const activeOrdersCount = orders.filter((o) => ["waiting_payment", "payment_review", "queued", "in_progress", "preview_sent", "revision"].includes(o.status)).length;
   const isPackUnlocked = safeLs.get("freepack_subscribed", false);
+  const topupStars = useMemo(() => estimateStarsFromUsd(Number(topupAmount || 0)), [estimateStarsFromUsd, topupAmount]);
 
   const stats = [
     { icon: "calendar", label: lang === "en" ? "Days in app" : "Дней в приложении", value: daysInApp, color: "#3b82f6" },
@@ -123,6 +128,17 @@ function ProfileTab({
       window.cancelAnimationFrame(rafB);
     };
   }, [isMobilePerf]);
+
+  const submitTopUp = async () => {
+    const payment = await onRequestTopUp?.(topupAmount, topupMethod);
+    if (!payment) return;
+    setTopupOpen(false);
+    if (topupMethod === "stars") {
+      onOpenStarsInvoice?.(payment);
+      return;
+    }
+    onOpenCryptoBot?.(payment);
+  };
 
   return (
     <div
@@ -311,6 +327,48 @@ function ProfileTab({
             </div>
           </div>
         </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 18, position: "relative", zIndex: 1 }}>
+          <button
+            onClick={() => runAfterTap(() => {
+              setTopupOpen(true);
+              SFX.tap?.();
+            })}
+            style={{
+              minHeight: 46,
+              borderRadius: 16,
+              border: "1px solid rgba(255,255,255,.12)",
+              background: th.id === "graphite"
+                ? "linear-gradient(135deg, #f4f4f5 0%, #d4d4d8 100%)"
+                : `linear-gradient(135deg, ${th.accent} 0%, ${th.accentB} 100%)`,
+              color: th.id === "graphite" ? "#101014" : th.btnTxt,
+              fontSize: 12,
+              fontWeight: 900,
+              cursor: "pointer",
+              boxShadow: "0 10px 24px rgba(0,0,0,.22)",
+            }}
+          >
+            {lang === "en" ? "Top up" : "Пополнить"}
+          </button>
+          <button
+            onClick={() => runAfterTap(() => {
+              setPaymentDetailsOpen(true);
+              SFX.tap?.();
+            })}
+            style={{
+              minHeight: 46,
+              borderRadius: 16,
+              border: `1px solid ${th.border}`,
+              background: "rgba(255,255,255,.05)",
+              color: th.text,
+              fontSize: 12,
+              fontWeight: 850,
+              cursor: "pointer",
+            }}
+          >
+            {lang === "en" ? "Payment details" : "Реквизиты"}
+          </button>
+        </div>
       </div>
 
       {/* ─── ORDERS DESK (expandable) ─── */}
@@ -437,6 +495,7 @@ function ProfileTab({
               onOpenStarsInvoice={onOpenStarsInvoice}
               onOpenTelegram={onOpenTelegram}
               onOpenPaymentDetails={() => setPaymentDetailsOpen(true)}
+              ordersOnly
             />
           </Suspense>
         </div>
@@ -450,6 +509,161 @@ function ProfileTab({
             lang={lang}
           />
         </Suspense>
+      )}
+
+      {topupOpen && (
+        <div
+          onClick={() => setTopupOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9800,
+            background: "rgba(2,3,7,0.86)",
+            backdropFilter: "blur(14px)",
+            WebkitBackdropFilter: "blur(14px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 18,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "min(430px, calc(100vw - 28px))",
+              borderRadius: 28,
+              border: `1px solid ${th.border}`,
+              background: `linear-gradient(180deg, ${th.card} 0%, ${th.surface} 100%)`,
+              boxShadow: "0 24px 80px rgba(0,0,0,0.52), inset 0 1px 0 rgba(255,255,255,0.05)",
+              padding: 24,
+            }}
+          >
+            <div className="type-display" style={{ fontSize: 22, color: th.text }}>
+              {lang === "en" ? "Top up balance" : "Пополнение баланса"}
+            </div>
+            <div style={{ fontSize: 12.5, color: th.sub, lineHeight: 1.6, marginTop: 8 }}>
+              {topupMethod === "stars"
+                ? (lang === "en"
+                  ? "Choose an amount and open native Telegram Stars checkout."
+                  : "Выбери сумму, и откроется нативная оплата Telegram Stars.")
+                : (lang === "en"
+                  ? "Choose an amount in USDT and create an exact CryptoBot invoice."
+                  : "Выбери сумму в USDT, и создастся точный счет CryptoBot.")}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 16 }}>
+              {[
+                { id: "stars", label: "Telegram Stars" },
+                { id: "cryptobot", label: "CryptoBot" },
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setTopupMethod(item.id)}
+                  style={{
+                    minHeight: 42,
+                    borderRadius: 14,
+                    border: `1px solid ${topupMethod === item.id ? th.accent : th.border}`,
+                    background: topupMethod === item.id ? `${th.accent}16` : "rgba(255,255,255,.04)",
+                    color: topupMethod === item.id ? th.accent : th.text,
+                    fontSize: 12,
+                    fontWeight: 900,
+                    cursor: "pointer",
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginTop: 14 }}>
+              {["5", "10", "25", "50"].map((amount) => (
+                <button
+                  key={amount}
+                  onClick={() => setTopupAmount(amount)}
+                  style={{
+                    height: 38,
+                    borderRadius: 12,
+                    border: `1px solid ${topupAmount === amount ? th.accent : th.border}`,
+                    background: topupAmount === amount ? `${th.accent}16` : "rgba(255,255,255,.04)",
+                    color: topupAmount === amount ? th.accent : th.text,
+                    fontSize: 12,
+                    fontWeight: 900,
+                    cursor: "pointer",
+                  }}
+                >
+                  ${amount}
+                </button>
+              ))}
+            </div>
+
+            <div className="type-micro" style={{ color: th.sub, fontSize: 10, marginTop: 16, marginBottom: 8 }}>
+              {topupMethod === "stars"
+                ? (lang === "en" ? "Amount (USD base)" : "Сумма (USD база)")
+                : (lang === "en" ? "Amount (USDT)" : "Сумма (USDT)")}
+            </div>
+            <input
+              value={topupAmount}
+              onChange={(e) => setTopupAmount(e.target.value.replace(/[^\d.]/g, ""))}
+              inputMode="decimal"
+              style={{
+                width: "100%",
+                height: 48,
+                borderRadius: 16,
+                border: `1px solid ${th.border}`,
+                background: "rgba(255,255,255,.05)",
+                color: th.text,
+                padding: "0 16px",
+                fontSize: 18,
+                fontWeight: 900,
+                outline: "none",
+              }}
+            />
+            {topupMethod === "stars" && (
+              <div style={{ marginTop: 10, fontSize: 12, color: th.sub, lineHeight: 1.6 }}>
+                {lang === "en"
+                  ? `Telegram checkout will open for about ${topupStars} Stars.`
+                  : `Откроется оплата Telegram примерно на ${topupStars} Stars.`}
+              </div>
+            )}
+
+            <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
+              <button
+                onClick={() => setTopupOpen(false)}
+                style={{
+                  flex: 1,
+                  height: 46,
+                  borderRadius: 16,
+                  border: `1px solid ${th.border}`,
+                  background: "rgba(255,255,255,.05)",
+                  color: th.text,
+                  fontSize: 13,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                }}
+              >
+                {lang === "en" ? "Cancel" : "Отмена"}
+              </button>
+              <button
+                onClick={submitTopUp}
+                style={{
+                  flex: 1.45,
+                  height: 46,
+                  borderRadius: 16,
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  background: `linear-gradient(135deg, ${th.accent} 0%, ${th.accentB} 100%)`,
+                  color: th.btnTxt || "#fff",
+                  fontSize: 13,
+                  fontWeight: 900,
+                  cursor: "pointer",
+                }}
+              >
+                {topupMethod === "stars"
+                  ? (lang === "en" ? "Open Stars checkout" : "Открыть Stars")
+                  : (lang === "en" ? "Create invoice" : "Создать счет")}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* ─── STATS GRID ─── */}
@@ -709,10 +923,10 @@ function ProfileTab({
                             isSecretLocked
                               ? lang === "en"
                                 ? "This achievement is still hidden"
-                                : "Р­С‚Рѕ РґРѕСЃС‚РёР¶РµРЅРёРµ РїРѕРєР° СЃРєСЂС‹С‚Рѕ"
+                                : "Это достижение пока скрыто"
                               : lang === "en"
                                 ? "Unlock this achievement in the app"
-                                : "РћС‚РєСЂРѕР№ СЌС‚Рѕ РґРѕСЃС‚РёР¶РµРЅРёРµ РІРЅСѓС‚СЂРё РїСЂРёР»РѕР¶РµРЅРёСЏ",
+                                : "Открой это достижение внутри приложения",
                             "info"
                           );
                         }}

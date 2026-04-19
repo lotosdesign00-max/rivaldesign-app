@@ -13,51 +13,51 @@ function getCopy(lang) {
   const isEn = lang === "en";
 
   return {
-    classroomTitle: isEn ? "Classroom" : "РљР»Р°СЃСЃСЂСѓРј",
-    classroomSub: isEn ? "Structured lessons, visual modules and clean progress." : "РЎС‚СЂСѓРєС‚СѓСЂРЅС‹Рµ СѓСЂРѕРєРё, РІРёР·СѓР°Р»СЊРЅС‹Рµ РјРѕРґСѓР»Рё Рё РїРѕРЅСЏС‚РЅС‹Р№ РїСЂРѕРіСЂРµСЃСЃ.",
-    lessonsTitle: isEn ? "Course modules" : "РњРѕРґСѓР»Рё РєСѓСЂСЃР°",
-    backToCourses: isEn ? "Back to courses" : "Рљ РєСѓСЂСЃР°Рј",
-    videoLesson: isEn ? "Video module" : "Р’РёРґРµРѕ-РјРѕРґСѓР»СЊ",
-    openLesson: isEn ? "Open lesson" : "РћС‚РєСЂС‹С‚СЊ СѓСЂРѕРє",
-    finishLesson: isEn ? "Complete lesson" : "Р—Р°РІРµСЂС€РёС‚СЊ СѓСЂРѕРє",
-    completed: isEn ? "Completed" : "РџСЂРѕР№РґРµРЅРѕ",
-    inProgress: isEn ? "Watch a bit more" : "РџРѕСЃРјРѕС‚СЂРё РµС‰Рµ РЅРµРјРЅРѕРіРѕ",
-    previewLabel: isEn ? "Lesson video" : "Р’РёРґРµРѕ СѓСЂРѕРєР°",
-    lessonHint: isEn ? "XP is granted only once per fully completed lesson." : "XP РЅР°С‡РёСЃР»СЏРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РѕРґРёРЅ СЂР°Р· Р·Р° РїРѕР»РЅРѕСЃС‚СЊСЋ Р·Р°РІРµСЂС€РµРЅРЅС‹Р№ СѓСЂРѕРє.",
-    lessonDoneToast: isEn ? "+15 XP for lesson completion" : "+15 XP Р·Р° Р·Р°РІРµСЂС€РµРЅРёРµ СѓСЂРѕРєР°",
-    alreadyDoneToast: isEn ? "This lesson is already completed" : "Р­С‚РѕС‚ СѓСЂРѕРє СѓР¶Рµ РїСЂРѕР№РґРµРЅ",
-    markAsDone: isEn ? "Mark as completed" : "РћС‚РјРµС‚РёС‚СЊ РїСЂРѕР№РґРµРЅРЅС‹Рј",
-    courseDoneToast: isEn ? "Course completed!" : "РљСѓСЂСЃ РїСЂРѕР№РґРµРЅ!",
-    moduleLabel: isEn ? "Module" : "РњРѕРґСѓР»СЊ",
-    moduleStatusReady: isEn ? "Ready" : "Р“РѕС‚РѕРІ",
-    moduleStatusDone: isEn ? "Done" : "Р“РѕС‚РѕРІРѕ",
-    moduleStatusNew: isEn ? "New lesson" : "РќРѕРІС‹Р№ СѓСЂРѕРє",
-    progressShort: isEn ? "progress" : "РїСЂРѕРіСЂРµСЃСЃ",
-    students: isEn ? "students" : "СѓС‡РµРЅРёРєРѕРІ",
-    orderFullAccess: isEn ? "Order full access" : "Р—Р°РєР°Р·Р°С‚СЊ РїРѕР»РЅС‹Р№ РґРѕСЃС‚СѓРї",
-    resultTitle: isEn ? "Result" : "Р РµР·СѓР»СЊС‚Р°С‚",
-    resultGreat: isEn ? "Excellent!" : "РћС‚Р»РёС‡РЅРѕ!",
-    resultGood: isEn ? "Good job!" : "РҐРѕСЂРѕС€Рѕ!",
-    resultLearn: isEn ? "Keep learning!" : "РЈС‡РёСЃСЊ РґР°Р»СЊС€Рµ!",
-    doneBtn: isEn ? "Done" : "Р“РѕС‚РѕРІРѕ",
-    questionLabel: isEn ? "Question" : "Р’РѕРїСЂРѕСЃ",
-    resumeLesson: isEn ? "Continue lesson" : "РџСЂРѕРґРѕР»Р¶РёС‚СЊ СѓСЂРѕРє",
-    quizDoneTitle: isEn ? "Quiz completed" : "Р’РёРєС‚РѕСЂРёРЅР° РїСЂРѕР№РґРµРЅР°",
-    quizReturnTomorrow: isEn ? "Come back tomorrow" : "Р’РѕР·РІСЂР°С‰Р°Р№СЃСЏ Р·Р°РІС‚СЂР°",
-    quizDailyHint: isEn ? "questions В· XP for every answer" : "РІРѕРїСЂРѕСЃРѕРІ В· XP Р·Р° РєР°Р¶РґС‹Р№ РѕС‚РІРµС‚",
-    dailyQuizDone: isEn ? "Quiz already completed" : "Р’РёРєС‚РѕСЂРёРЅР° СѓР¶Рµ РїСЂРѕР№РґРµРЅР°",
-    quizDoneSub: isEn ? "Come back tomorrow for the next round." : "Р’РѕР·РІСЂР°С‰Р°Р№СЃСЏ Р·Р°РІС‚СЂР° Р·Р° СЃР»РµРґСѓСЋС‰РёРј Р·Р°С…РѕРґРѕРј.",
-    videoMissingTitle: isEn ? "Video not added yet" : "Р’РёРґРµРѕ РµС‰Рµ РЅРµ РґРѕР±Р°РІР»РµРЅРѕ",
-    videoMissingText: isEn ? "Add your own lesson file to the local course folder and it will appear here." : "Р”РѕР±Р°РІСЊ СЃРІРѕР№ С„Р°Р№Р» СѓСЂРѕРєР° РІ Р»РѕРєР°Р»СЊРЅСѓСЋ РїР°РїРєСѓ РєСѓСЂСЃР°, Рё РѕРЅ СЃСЂР°Р·Сѓ РїРѕСЏРІРёС‚СЃСЏ Р·РґРµСЃСЊ.",
-    lessonProgress: isEn ? "Lesson progress" : "РџСЂРѕРіСЂРµСЃСЃ СѓСЂРѕРєР°",
-    premiumLockedTitle: isEn ? "Premium access required" : "РќСѓР¶РµРЅ РїСЂРµРјРёСѓРј-РґРѕСЃС‚СѓРї",
-    premiumLockedText: isEn ? "This course preview is open, but lessons unlock only after purchase." : "РџСЂРµРІСЊСЋ РєСѓСЂСЃР° РѕС‚РєСЂС‹С‚Рѕ, РЅРѕ СѓСЂРѕРєРё СЃС‚Р°РЅРѕРІСЏС‚СЃСЏ РґРѕСЃС‚СѓРїРЅС‹ С‚РѕР»СЊРєРѕ РїРѕСЃР»Рµ РїРѕРєСѓРїРєРё.",
-    premiumModulesText: isEn ? "Modules are locked until full access is unlocked." : "РњРѕРґСѓР»Рё Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅС‹, РїРѕРєР° РЅРµ РѕС‚РєСЂС‹С‚ РїРѕР»РЅС‹Р№ РґРѕСЃС‚СѓРї.",
-    premiumOrderHint: isEn ? "After payment, this classroom can be unlocked for your account." : "РџРѕСЃР»Рµ РѕРїР»Р°С‚С‹ СЌС‚РѕС‚ classroom РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ РґР»СЏ С‚РІРѕРµРіРѕ Р°РєРєР°СѓРЅС‚Р°.",
-    orderCourse: isEn ? "Order this course" : "Р—Р°РєР°Р·Р°С‚СЊ СЌС‚РѕС‚ РєСѓСЂСЃ",
-    lockedCourse: isEn ? "Locked course" : "Р—Р°РєСЂС‹С‚С‹Р№ РєСѓСЂСЃ",
-    freeCourse: isEn ? "Free course" : "Р‘РµСЃРїР»Р°С‚РЅС‹Р№ РєСѓСЂСЃ",
-    openPreview: isEn ? "Open preview" : "РћС‚РєСЂС‹С‚СЊ РїСЂРµРІСЊСЋ",
+    classroomTitle: isEn ? "Classroom" : "Классрум",
+    classroomSub: isEn ? "Structured lessons, visual modules and clean progress." : "Структурные уроки, визуальные модули и понятный прогресс.",
+    lessonsTitle: isEn ? "Course modules" : "Модули курса",
+    backToCourses: isEn ? "Back to courses" : "К курсам",
+    videoLesson: isEn ? "Video module" : "Видео-модуль",
+    openLesson: isEn ? "Open lesson" : "Открыть урок",
+    finishLesson: isEn ? "Complete lesson" : "Завершить урок",
+    completed: isEn ? "Completed" : "Пройдено",
+    inProgress: isEn ? "Watch a bit more" : "Посмотри еще немного",
+    previewLabel: isEn ? "Lesson video" : "Видео урока",
+    lessonHint: isEn ? "XP is granted only once per fully completed lesson." : "XP начисляется только один раз за полностью завершенный урок.",
+    lessonDoneToast: isEn ? "+15 XP for lesson completion" : "+15 XP за завершение урока",
+    alreadyDoneToast: isEn ? "This lesson is already completed" : "Этот урок уже пройден",
+    markAsDone: isEn ? "Mark as completed" : "Отметить пройденным",
+    courseDoneToast: isEn ? "Course completed!" : "Курс пройден!",
+    moduleLabel: isEn ? "Module" : "Модуль",
+    moduleStatusReady: isEn ? "Ready" : "Готов",
+    moduleStatusDone: isEn ? "Done" : "Готово",
+    moduleStatusNew: isEn ? "New lesson" : "Новый урок",
+    progressShort: isEn ? "progress" : "прогресс",
+    students: isEn ? "students" : "учеников",
+    orderFullAccess: isEn ? "Order full access" : "Заказать полный доступ",
+    resultTitle: isEn ? "Result" : "Результат",
+    resultGreat: isEn ? "Excellent!" : "Отлично!",
+    resultGood: isEn ? "Good job!" : "Хорошо!",
+    resultLearn: isEn ? "Keep learning!" : "Учись дальше!",
+    doneBtn: isEn ? "Done" : "Готово",
+    questionLabel: isEn ? "Question" : "Вопрос",
+    resumeLesson: isEn ? "Continue lesson" : "Продолжить урок",
+    quizDoneTitle: isEn ? "Quiz completed" : "Викторина пройдена",
+    quizReturnTomorrow: isEn ? "Come back tomorrow" : "Возвращайся завтра",
+    quizDailyHint: isEn ? "questions · XP for every answer" : "вопросов · XP за каждый ответ",
+    dailyQuizDone: isEn ? "Quiz already completed" : "Викторина уже пройдена",
+    quizDoneSub: isEn ? "Come back tomorrow for the next round." : "Возвращайся завтра за следующим заходом.",
+    videoMissingTitle: isEn ? "Video not added yet" : "Видео еще не добавлено",
+    videoMissingText: isEn ? "Add your own lesson file to the local course folder and it will appear here." : "Добавь свой файл урока в локальную папку курса, и он сразу появится здесь.",
+    lessonProgress: isEn ? "Lesson progress" : "Прогресс урока",
+    premiumLockedTitle: isEn ? "Premium access required" : "Нужен премиум-доступ",
+    premiumLockedText: isEn ? "This course preview is open, but lessons unlock only after purchase." : "Превью курса открыто, но уроки становятся доступны только после покупки.",
+    premiumModulesText: isEn ? "Modules are locked until full access is unlocked." : "Модули заблокированы, пока не открыт полный доступ.",
+    premiumOrderHint: isEn ? "After payment, this classroom can be unlocked for your account." : "После оплаты этот classroom можно открыть для твоего аккаунта.",
+    orderCourse: isEn ? "Order this course" : "Заказать этот курс",
+    lockedCourse: isEn ? "Locked course" : "Закрытый курс",
+    freeCourse: isEn ? "Free course" : "Бесплатный курс",
+    openPreview: isEn ? "Open preview" : "Открыть превью",
   };
 }
 
@@ -181,7 +181,7 @@ function LessonModal({ th, lang, activeLesson, canComplete, onClose, onStart, on
             </div>
             <div style={{ fontSize: 21, fontWeight: 900, color: th.text, lineHeight: 1.22, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{topic}</div>
           </div>
-          <button onClick={handleClose} style={{ width: 40, height: 40, borderRadius: 14, border: `1px solid ${th.border}`, background: th.card, color: th.sub, cursor: "pointer", fontSize: 18, flexShrink: 0 }}>Г—</button>
+          <button onClick={handleClose} style={{ width: 40, height: 40, borderRadius: 14, border: `1px solid ${th.border}`, background: th.card, color: th.sub, cursor: "pointer", fontSize: 18, flexShrink: 0 }}>×</button>
         </div>
 
         <div style={{ padding: "0 18px 18px" }}>
@@ -233,7 +233,7 @@ function LessonModal({ th, lang, activeLesson, canComplete, onClose, onStart, on
                 </div>
 
                 <div style={{ display: "flex", alignItems: "center", gap: 10, padding: 14, borderTop: "1px solid rgba(255,255,255,.08)", background: "linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01))", flexWrap: "wrap" }}>
-                  <button onClick={togglePlayback} aria-label={isPlaying ? "РџР°СѓР·Р°" : "РџСѓСЃРє"} style={{ minWidth: 92, height: 42, borderRadius: 14, border: `1px solid ${th.border}`, background: th.card, color: th.text, fontSize: 18, fontWeight: 800, cursor: "pointer" }}>
+                  <button onClick={togglePlayback} aria-label={isPlaying ? "Пауза" : "Пуск"} style={{ minWidth: 92, height: 42, borderRadius: 14, border: `1px solid ${th.border}`, background: th.card, color: th.text, fontSize: 18, fontWeight: 800, cursor: "pointer" }}>
                     <SystemIcon name={isPlaying ? "pause" : "play"} size={16} color={th.text} animated />
                   </button>
 
@@ -273,7 +273,7 @@ function LessonModal({ th, lang, activeLesson, canComplete, onClose, onStart, on
                   </select>
 
                   <button onClick={toggleExpanded} style={{ height: 42, borderRadius: 14, border: `1px solid ${th.border}`, background: th.card, color: th.text, padding: "0 14px", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>
-                    {isExpanded ? "РЎРІРµСЂРЅСѓС‚СЊ" : "Р Р°Р·РІРµСЂРЅСѓС‚СЊ"}
+                    {isExpanded ? "Свернуть" : "Развернуть"}
                   </button>
                 </div>
               </>
@@ -305,7 +305,7 @@ function LessonModal({ th, lang, activeLesson, canComplete, onClose, onStart, on
                 boxShadow: canComplete && !isDone ? th.shadow : "none",
               }}
             >
-              {isDone ? (<span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}><SystemIcon name="check" size={14} color={th.sub} animated /> {copy.completed}</span>) : canComplete ? `+15 XP В· ${copy.finishLesson}` : copy.markAsDone}
+              {isDone ? (<span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}><SystemIcon name="check" size={14} color={th.sub} animated /> {copy.completed}</span>) : canComplete ? `+15 XP · ${copy.finishLesson}` : copy.markAsDone}
             </button>
           </div>
         </div>
@@ -590,7 +590,7 @@ export default function CoursesTab({ th, t, lang, showToast, addXPfn, onUnlockAc
         safeLs.set("rs_streak4", { ...safeStreak, totalQuizCorrect: safeStreak.totalQuizCorrect + finalScore, lastQuizDate: today });
         SFX.levelUp();
         addXPfn(50);
-        showToast(`${finalScore}/${safeQuizData.length} В· +50 XP`, "success");
+        showToast(`${finalScore}/${safeQuizData.length} · +50 XP`, "success");
         if (finalScore >= 5) onUnlockAchieve("quiz_master");
         if (quizStart && Date.now() - quizStart < 120000) onUnlockAchieve("speed_quiz");
       }
@@ -600,7 +600,7 @@ export default function CoursesTab({ th, t, lang, showToast, addXPfn, onUnlockAc
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 14, animation: "cardIn .35s ease both" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button onClick={() => { setQuizMode(false); setQuizIdx(0); setQuizScore(0); setQuizAnswer(null); setQuizDone(false); SFX.close(); }} style={{ width: 38, height: 38, borderRadius: 12, border: `1px solid ${th.border}`, background: th.card, color: th.sub, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>РІвЂ С’</button>
+          <button onClick={() => { setQuizMode(false); setQuizIdx(0); setQuizScore(0); setQuizAnswer(null); setQuizDone(false); SFX.close(); }} style={{ width: 38, height: 38, borderRadius: 12, border: `1px solid ${th.border}`, background: th.card, color: th.sub, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>←</button>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 17, fontWeight: 900, color: th.text }}>{t.quizTitle}</div>
           </div>
@@ -719,7 +719,7 @@ export default function CoursesTab({ th, t, lang, showToast, addXPfn, onUnlockAc
     return (
       <>
         <div style={{ display: "flex", flexDirection: "column", gap: 14, animation: "cardIn .35s ease both" }}>
-          <button onClick={() => { setSelCourse(null); SFX.close(); }} style={{ alignSelf: "flex-start", display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 10, border: `1px solid ${th.border}`, background: th.card, color: th.sub, cursor: "pointer", fontSize: 13, fontWeight: 700 }}>РІвЂ С’ {copy.backToCourses}</button>
+          <button onClick={() => { setSelCourse(null); SFX.close(); }} style={{ alignSelf: "flex-start", display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 10, border: `1px solid ${th.border}`, background: th.card, color: th.sub, cursor: "pointer", fontSize: 13, fontWeight: 700 }}>← {copy.backToCourses}</button>
 
           <div style={{ position: "relative", overflow: "hidden", borderRadius: 28, border: `1px solid rgba(255,255,255,0.1)`, background: "#050608", boxShadow: "0 24px 60px rgba(0,0,0,0.35)" }}>
             <img src={selCourse.img} srcSet={getOptimizedSrcSet(selCourse.img)} sizes="(max-width: 520px) 100vw, 520px" alt={selCourse.title} loading="eager" decoding="async" fetchPriority="high" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.25, filter: "contrast(1.15) saturate(1.1)" }} />
@@ -783,7 +783,7 @@ export default function CoursesTab({ th, t, lang, showToast, addXPfn, onUnlockAc
                 <button
                   onClick={() => {
                     SFX.order();
-                    openTg("Rivaldsg", `${lang === "en" ? "Hi! I want access to the course:" : "РџСЂРёРІРµС‚! РҐРѕС‡Сѓ РґРѕСЃС‚СѓРї Рє РєСѓСЂСЃСѓ:"} ${selCourse.title}`);
+                    openTg("Rivaldsg", `${lang === "en" ? "Hi! I want access to the course:" : "Привет! Хочу доступ к курсу:"} ${selCourse.title}`);
                   }}
                   style={{ background: th.grad, color: th.btnTxt, border: "none", borderRadius: 16, padding: "14px 16px", fontSize: 14, fontWeight: 900, cursor: "pointer", boxShadow: th.shadow }}
                 >
@@ -795,7 +795,7 @@ export default function CoursesTab({ th, t, lang, showToast, addXPfn, onUnlockAc
 
           <div>
             <div style={{ fontSize: 18, fontWeight: 900, color: th.text }}>{copy.lessonsTitle}</div>
-            <div style={{ fontSize: 12, color: th.sub, marginTop: 4 }}>{selCourse.topics.length} {lang === "en" ? "modules in this flow" : "РјРѕРґСѓР»РµР№ РІ СЌС‚РѕРј РїРѕС‚РѕРєРµ"}</div>
+            <div style={{ fontSize: 12, color: th.sub, marginTop: 4 }}>{selCourse.topics.length} {lang === "en" ? "modules in this flow" : "модулей в этом потоке"}</div>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
@@ -847,7 +847,7 @@ export default function CoursesTab({ th, t, lang, showToast, addXPfn, onUnlockAc
           <div style={{ fontSize: 15, fontWeight: 900, color: th.btnTxt }}>{safeStreak.lastQuizDate === today ? (<span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><SystemIcon name="check" size={13} color={th.btnTxt} animated /> {copy.quizDoneTitle}</span>) : t.quizTitle}</div>
           <div style={{ fontSize: 12, color: th.btnTxt + "bb", marginTop: 2 }}>{safeStreak.lastQuizDate === today ? copy.quizReturnTomorrow : `${safeQuizData.length} ${copy.quizDailyHint}`}</div>
         </div>
-        <span style={{ fontSize: 22, color: th.btnTxt }}>РІвЂ вЂ™</span>
+        <span style={{ fontSize: 22, color: th.btnTxt }}>→</span>
       </div>
 
       <div style={{ display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
@@ -898,4 +898,3 @@ export default function CoursesTab({ th, t, lang, showToast, addXPfn, onUnlockAc
     </div>
   );
 }
-

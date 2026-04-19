@@ -231,7 +231,7 @@ function SideDrawer({
                 onClick={() => runAfterTap(() => { const next = !soundOn; setSoundOn(next); persistLater("rs_sound4", next); sfx.toggle?.(); })}
               >
                 <span style={{ fontSize: 13, lineHeight: 1, color: soundOn ? "#c7d2fe" : "rgba(100,116,139,.65)" }}>
-                  {soundOn ? "в™Є" : "×"}
+                  {soundOn ? "♪" : "×"}
                 </span>
                 <span style={{ fontSize: 11, fontWeight: 800, color: soundOn ? "#c7d2fe" : "rgba(100,116,139,.65)" }}>
                   {soundOn ? (lang === "en" ? "Sound" : "Звук") : (lang === "en" ? "Muted" : "Тихо")}

@@ -468,8 +468,9 @@ export default function ClientHub({
   onOpenStarsInvoice,
   onOpenTelegram,
   onOpenPaymentDetails,
+  ordersOnly = false,
 }) {
-  const [section, setSection] = useState("balance");
+  const [section, setSection] = useState(ordersOnly ? "orders" : "balance");
   const [topupOpen, setTopupOpen] = useState(false);
   const [topupAmount, setTopupAmount] = useState("50");
   const [topupMethod, setTopupMethod] = useState("stars");
@@ -552,6 +553,7 @@ export default function ClientHub({
         backfaceVisibility: "hidden",
       }}
     >
+      {!ordersOnly && (
       <div
         style={{
           borderRadius: 28,
@@ -600,7 +602,9 @@ export default function ClientHub({
           ))}
         </div>
       </div>
+      )}
 
+      {!ordersOnly && (
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
         {[
           { id: "balance", label: lang === "en" ? "Balance" : "Баланс" },
@@ -625,8 +629,9 @@ export default function ClientHub({
           </button>
         ))}
       </div>
+      )}
 
-      {section === "balance" && (
+      {!ordersOnly && section === "balance" && (
         <>
           <div
             style={{
