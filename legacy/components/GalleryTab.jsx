@@ -68,6 +68,10 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
           from { opacity: 0; transform: translateY(8px); }
           to   { opacity: 1; transform: none; }
         }
+        @keyframes galGroupIn {
+          from { opacity: .72; transform: translateY(10px) scale(.985); }
+          to   { opacity: 1; transform: none; }
+        }
         .gal-card {
           transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease;
           cursor: pointer;
@@ -75,6 +79,26 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
         }
         .gal-card:hover { transform: translateY(-3px) scale(1.015); }
         .gal-card:active { transform: scale(0.96) !important; }
+        .gal-open-layer {
+          opacity: 0;
+          transition: opacity .22s ease;
+        }
+        .gal-card:hover .gal-open-layer,
+        .gal-card:focus-within .gal-open-layer {
+          opacity: 1;
+        }
+        .gal-open-chip {
+          transform: translateY(7px) scale(.96);
+          transition: transform .22s cubic-bezier(.34,1.56,.64,1), opacity .22s ease;
+        }
+        .gal-card:hover .gal-open-chip,
+        .gal-card:focus-within .gal-open-chip {
+          transform: translateY(0) scale(1);
+        }
+        .gal-grid-wrap,
+        .gal-list-wrap {
+          animation: galGroupIn .24s ease both;
+        }
         .gal-wl-btn {
           transition: all .18s cubic-bezier(.34,1.56,.64,1);
         }
@@ -120,8 +144,8 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
         .search-clear-btn:hover { background: rgba(99,102,241,.25) !important; }
         html[data-rs-mobile="true"] .gal-card,
         html[data-rs-mobile="true"] .gal-list-row {
-          animation: none !important;
-          transition: transform .14s ease, border-color .14s ease, background .14s ease !important;
+          animation-duration: .22s !important;
+          transition: transform .14s ease, border-color .14s ease, background .14s ease, box-shadow .14s ease !important;
           -webkit-backdrop-filter: none !important;
           backdrop-filter: none !important;
           will-change: auto !important;
@@ -129,6 +153,17 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
         html[data-rs-mobile="true"] .gal-card:hover,
         html[data-rs-mobile="true"] .gal-list-row:hover {
           transform: none !important;
+        }
+        html[data-rs-mobile="true"] .gal-open-layer {
+          opacity: 1 !important;
+          background: linear-gradient(180deg, transparent 10%, rgba(3,4,8,.24) 100%) !important;
+        }
+        html[data-rs-mobile="true"] .gal-open-chip {
+          transform: translateY(0) scale(.94) !important;
+        }
+        html[data-rs-mobile="true"] .gal-grid-wrap,
+        html[data-rs-mobile="true"] .gal-list-wrap {
+          animation-duration: .18s !important;
         }
         html[data-rs-mobile="true"] .gal-img-shimmer {
           animation-duration: 2.4s !important;
@@ -314,17 +349,23 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
 
       ) : view === "grid" ? (
         /* ── GRID VIEW ── */
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <div
+          key={`grid-${cat}-${sort}-${search}`}
+          className="gal-grid-wrap"
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}
+        >
           {filtered.map((item, i) => {
             const wl = wishlist.includes(item.id);
-            const isHov = !isMobilePerf && hovered === item.id;
+            const isHov = hovered === item.id;
             const loaded = imgLoaded[item.id];
             return (
               <div
                 key={item.id}
                 className="gal-card"
-                onMouseEnter={() => !isMobilePerf && setHovered(item.id)}
-                onMouseLeave={() => !isMobilePerf && setHovered(null)}
+                onMouseEnter={() => setHovered(item.id)}
+                onMouseLeave={() => setHovered(null)}
+                onTouchStart={() => setHovered(item.id)}
+                onTouchEnd={() => window.setTimeout(() => setHovered(null), 180)}
                 style={{
                   borderRadius: 20, overflow: "hidden",
                   background: "rgba(13,15,26,.85)",
@@ -363,7 +404,7 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
                       display: "block",
                       opacity: loaded ? 1 : 0,
                       transition: "opacity .4s ease, transform .3s ease",
-                      transform: isHov ? "scale(1.04)" : "scale(1)",
+                      transform: isHov ? "scale(1.045)" : "scale(1)",
                     }}
                   />
 
@@ -376,20 +417,21 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
                   }} />
 
                   {/* Hover reveal: action hint */}
-                  <div style={{
+                  <div
+                    className="gal-open-layer"
+                    style={{
                     position: "absolute", inset: 0,
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    opacity: isHov ? 1 : 0, transition: "opacity .25s ease",
                     background: "rgba(13,15,26,.25)",
                   }}>
-                    <div style={{
+                    <div
+                      className="gal-open-chip"
+                      style={{
                       padding: "8px 16px", borderRadius: 12,
                       background: "rgba(13,15,26,.85)", border: "1px solid rgba(165,180,252,.25)",
                       backdropFilter: "blur(16px)",
                       color: "rgba(224,231,255,.9)", fontSize: 11, fontWeight: 700,
                       display: "flex", alignItems: "center", gap: 6,
-                      transform: isHov ? "translateY(0)" : "translateY(6px)",
-                      transition: "transform .25s ease",
                     }}>
                     <SystemIcon name="search" size={13} color="rgba(224,231,255,.9)" animated />
                     {lang === "en" ? "View" : "Открыть"}
@@ -471,7 +513,11 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
 
       ) : (
         /* ── LIST VIEW ── */
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div
+          key={`list-${cat}-${sort}-${search}`}
+          className="gal-list-wrap"
+          style={{ display: "flex", flexDirection: "column", gap: 8 }}
+        >
           {filtered.map((item, i) => {
             const wl = wishlist.includes(item.id);
             const loaded = imgLoaded[item.id];

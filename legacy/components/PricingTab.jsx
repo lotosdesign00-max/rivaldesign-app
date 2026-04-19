@@ -76,12 +76,6 @@ function ServiceCard({ svc, qty, onAdd, onSub, onExamples, lang, th, isFullPack 
         <div style={{ position: "absolute", top: 0, left: "15%", right: "15%", height: 1.5, background: "linear-gradient(90deg, transparent, rgba(245,158,11,0.8), rgba(139,92,246,0.6), transparent)" }} />
       )}
 
-      {isFullPack && (
-        <div style={{ position: "absolute", top: -12, right: 18, padding: "4px 12px", borderRadius: 999, background: "linear-gradient(135deg, #f59e0b, #d97706)", color: "#fff", fontSize: 9, fontWeight: 900, letterSpacing: ".12em", fontFamily: "var(--font-micro)", boxShadow: "0 6px 16px rgba(245,158,11,0.5)" }}>
-          BEST DEAL
-        </div>
-      )}
-
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: isFullPack ? 14 : 10 }}>
         <div style={{ width: isFullPack ? 48 : 42, height: isFullPack ? 48 : 42, borderRadius: isFullPack ? 16 : 14, background: isFullPack ? "linear-gradient(135deg, rgba(245,158,11,0.25), rgba(139,92,246,0.20))" : isSelected ? `linear-gradient(135deg, ${ui.accent}30, ${ui.accentB}20)` : `${ui.accent}14`, border: isFullPack ? "1px solid rgba(245,158,11,0.35)" : `1px solid ${isSelected ? `${ui.accent}66` : ui.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: isFullPack ? 22 : 18, flexShrink: 0 }}>
           {svc.icon}
@@ -107,26 +101,31 @@ function ServiceCard({ svc, qty, onAdd, onSub, onExamples, lang, th, isFullPack 
         ))}
       </div>
 
-      <div style={{ fontSize: 10, color: ui.sub, marginBottom: 12 }}>{lang === "en" ? svc.timeEn : svc.timeRu}</div>
+      {!isFullPack && (
+        <div style={{ fontSize: 10, color: ui.sub, marginBottom: 12 }}>{lang === "en" ? svc.timeEn : svc.timeRu}</div>
+      )}
 
       <div className="pricing-service-actions" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <button onClick={onExamples} style={{ padding: "10px 14px", borderRadius: 12, background: effectiveHovered ? `${ui.accent}16` : `${ui.accent}10`, border: `1px solid ${effectiveHovered ? `${ui.accent}55` : `${ui.accent}22`}`, color: ui.text, fontSize: 10.5, fontWeight: 800, cursor: "pointer", flex: 1 }}>
-          {lang === "en" ? "Examples" : "Примеры"}
-        </button>
+        {!isFullPack && (
+          <button onClick={onExamples} style={{ padding: "10px 14px", borderRadius: 12, background: effectiveHovered ? `${ui.accent}16` : `${ui.accent}10`, border: `1px solid ${effectiveHovered ? `${ui.accent}55` : `${ui.accent}22`}`, color: ui.text, fontSize: 10.5, fontWeight: 800, cursor: "pointer", flex: 1 }}>
+            {lang === "en" ? "Examples" : "Примеры"}
+          </button>
+        )}
 
         {isFullPack ? (
           <button
             onClick={isSelected ? onSub : onAdd}
             style={{
-              minWidth: 112,
-              padding: "10px 14px",
-              borderRadius: 12,
+              width: "100%",
+              minHeight: 46,
+              padding: "12px 16px",
+              borderRadius: 16,
               background: isSelected
                 ? "rgba(245,158,11,0.14)"
                 : "linear-gradient(135deg, #f59e0b, #d97706)",
               color: isSelected ? "#fcd34d" : "#111111",
               border: isSelected ? "1px solid rgba(245,158,11,0.35)" : "1px solid rgba(255,255,255,0.15)",
-              fontSize: 10.5,
+              fontSize: 12,
               fontWeight: 900,
               cursor: "pointer",
             }}
