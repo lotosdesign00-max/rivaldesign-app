@@ -345,18 +345,22 @@ function buildOpenRouterImagePayload(prompt, aspect, model) {
 }
 
 async function requestOpenRouterImage(prompt, aspect, model, apiKey, siteUrl, siteName) {
-  if (!apiKey) {
-    throw new Error("OPENROUTER_KEY_MISSING");
+  const endpoint = apiKey ? "https://openrouter.ai/api/v1/chat/completions" : "/api/openrouter/chat/completions";
+  const headers = {
+    "Content-Type": "application/json",
+    "HTTP-Referer": siteUrl,
+    "X-Title": siteName,
+    "X-Rival-Referer": siteUrl,
+    "X-Rival-Title": siteName,
+  };
+
+  if (apiKey) {
+    headers.Authorization = `Bearer ${apiKey}`;
   }
 
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  const response = await fetch(endpoint, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-      "HTTP-Referer": siteUrl,
-      "X-Title": siteName,
-    },
+    headers,
     body: JSON.stringify(buildOpenRouterImagePayload(prompt, aspect, model)),
   });
 
@@ -380,10 +384,6 @@ async function requestOpenRouterImage(prompt, aspect, model, apiKey, siteUrl, si
 }
 
 async function requestCloudflareImage(prompt, aspect, model, accountId) {
-  if (!accountId) {
-    throw new Error("CLOUDFLARE_AI_CONFIG_MISSING");
-  }
-
   const normalizedModel = normalizeImageModel(model);
   const payload = buildCloudflareImagePayload(prompt, aspect);
   const usesMultipart = normalizedModel.includes("flux-2-");
@@ -402,7 +402,11 @@ async function requestCloudflareImage(prompt, aspect, model, accountId) {
     body = JSON.stringify(payload);
   }
 
-  const response = await fetch(`/api/cloudflare-ai/accounts/${accountId}/ai/run/${normalizedModel}`, {
+  const cloudflarePath = accountId
+    ? `accounts/${accountId}/ai/run/${normalizedModel}`
+    : `run/${normalizedModel}`;
+
+  const response = await fetch(`/api/cloudflare-ai/${cloudflarePath}`, {
     method: "POST",
     headers,
     body,
@@ -648,10 +652,6 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
         sfx.aiDone?.();
         showToast?.(lang === "en" ? "Image generated" : "Изображение готово", "success");
       } else {
-        if (!openRouterKey) {
-          throw new Error("OPENROUTER_KEY_MISSING");
-        }
-
         const textSystem =
           lang === "en"
             ? "You are a senior graphic design assistant for branding, banners, thumbnails, avatars, layouts, and visual identity. Give sharp, practical, taste-driven advice with strong composition, typography, color, hierarchy, and production suggestions. Be concise, concrete, and design-oriented."
@@ -667,16 +667,23 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
         let data = null;
         let resolvedTextModel = activeModel;
         let lastError = null;
+        const openRouterEndpoint = openRouterKey ? "https://openrouter.ai/api/v1/chat/completions" : "/api/openrouter/chat/completions";
+        const openRouterHeaders = {
+          "Content-Type": "application/json",
+          "HTTP-Referer": siteUrl,
+          "X-Title": siteName,
+          "X-Rival-Referer": siteUrl,
+          "X-Rival-Title": siteName,
+        };
+
+        if (openRouterKey) {
+          openRouterHeaders.Authorization = `Bearer ${openRouterKey}`;
+        }
 
         for (const candidateModel of textModelsToTry) {
-          const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          const response = await fetch(openRouterEndpoint, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${openRouterKey}`,
-              "HTTP-Referer": siteUrl,
-              "X-Title": siteName,
-            },
+            headers: openRouterHeaders,
             body: JSON.stringify({
               model: candidateModel,
               temperature: 0.7,

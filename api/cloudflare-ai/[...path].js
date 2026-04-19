@@ -34,7 +34,16 @@ function getTargetUrl(req) {
     if (value !== undefined) query.set(key, value);
   });
 
-  const path = pathParts.map((part) => encodeURIComponent(part)).join("/");
+  let resolvedPathParts = pathParts;
+  if (pathParts[0] === "run") {
+    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || process.env.VITE_CLOUDFLARE_ACCOUNT_ID || "";
+    if (!accountId) {
+      throw new Error("Missing CLOUDFLARE_ACCOUNT_ID in server env");
+    }
+    resolvedPathParts = ["accounts", accountId, "ai", ...pathParts];
+  }
+
+  const path = resolvedPathParts.map((part) => encodeURIComponent(part)).join("/");
   const suffix = query.toString() ? `?${query.toString()}` : "";
   return `https://api.cloudflare.com/client/v4/${path}${suffix}`;
 }
@@ -58,7 +67,8 @@ module.exports = async (req, res) => {
       headers["Content-Type"] = contentType;
     }
 
-    const cfResponse = await fetch(getTargetUrl(req), {
+    const targetUrl = getTargetUrl(req);
+    const cfResponse = await fetch(targetUrl, {
       method: req.method,
       headers,
       body,
