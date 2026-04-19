@@ -29,42 +29,6 @@ function getReadableError(error, lang, model, mode) {
   const lowMessage = message.toLowerCase();
   const target = mode === "image" ? (isEn ? "image model" : "модель изображений") : (isEn ? "text model" : "текстовая модель");
 
-  if (message === "CLOUDFLARE_AI_CONFIG_MISSING") {
-    return isEn
-      ? "Cloudflare Workers AI is not configured yet. Add VITE_CLOUDFLARE_ACCOUNT_ID and server-only CLOUDFLARE_API_TOKEN to .env."
-      : "Cloudflare Workers AI еще не настроен. Добавь VITE_CLOUDFLARE_ACCOUNT_ID и серверный CLOUDFLARE_API_TOKEN в .env.";
-  }
-
-  if (message === "CLOUDFLARE_AI_IMAGE_FAILED") {
-    return isEn
-      ? "Cloudflare Workers AI did not return a valid image. Retry with a shorter prompt or try again later."
-      : "Cloudflare Workers AI не вернул корректное изображение. Попробуй короче промпт или повтори позже.";
-  }
-
-  if (message.startsWith("CLOUDFLARE_AI_400")) {
-    return isEn
-      ? `Cloudflare Workers AI rejected the request format for ${model}. I updated the model routing, so retry once more after refresh.`
-      : `Cloudflare Workers AI отклонил формат запроса для ${model}. Я уже поправил роутинг модели, обнови страницу и попробуй еще раз.`;
-  }
-
-  if (message.startsWith("CLOUDFLARE_AI_401") || message.startsWith("CLOUDFLARE_AI_403")) {
-    return isEn
-      ? "Cloudflare Workers AI rejected the request with 401/403. Check that the API token is active, has Workers AI permissions, and belongs to this account id."
-      : "Cloudflare Workers AI отклонил запрос с 401/403. Проверь, что API token активен, имеет права Workers AI и относится к этому account id.";
-  }
-
-  if (message.startsWith("CLOUDFLARE_AI_429")) {
-    return isEn
-      ? "Cloudflare Workers AI is temporarily rate-limited. Retry in a moment."
-      : "Cloudflare Workers AI временно уперся в rate limit. Попробуй чуть позже.";
-  }
-
-  if (message.startsWith("CLOUDFLARE_AI_3030")) {
-    return isEn
-      ? "Cloudflare Workers AI flagged this prompt. Try a cleaner or simpler image description."
-      : "Cloudflare Workers AI пометил этот промпт. Попробуй более чистое или простое описание изображения.";
-  }
-
   if (message === "IMAGEROUTER_KEY_MISSING") {
     return isEn
       ? "ImageRouter API key is missing. Add VITE_IMAGEROUTER_API_KEY to .env and restart the dev server."
@@ -276,42 +240,6 @@ function getModelDisplayName(model) {
     ?.replace(/\b\w/g, (char) => char.toUpperCase()) || "Model";
 }
 
-function shouldFallbackImageModel(error) {
-  const message = String(error?.message || "");
-  return (
-    message.startsWith("CLOUDFLARE_AI_400") ||
-    message.startsWith("CLOUDFLARE_AI_401") ||
-    message.startsWith("CLOUDFLARE_AI_403") ||
-    message.startsWith("CLOUDFLARE_AI_429") ||
-    message.startsWith("CLOUDFLARE_AI_500") ||
-    message.startsWith("CLOUDFLARE_AI_3030") ||
-    message === "CLOUDFLARE_AI_IMAGE_FAILED"
-  );
-}
-
-function shouldFallbackToPollinations(error) {
-  const message = String(error?.message || "");
-  return (
-    message === "CLOUDFLARE_AI_CONFIG_MISSING" ||
-    message === "CLOUDFLARE_AI_IMAGE_FAILED" ||
-    message.startsWith("CLOUDFLARE_AI_") ||
-    message === "OPENROUTER_IMAGE_FAILED" ||
-    message.startsWith("OPENROUTER_")
-  );
-}
-
-function isImageOnlyModel(model) {
-  return (
-    String(model || "").startsWith("black-forest-labs/") ||
-    String(model || "").startsWith("sourceful/") ||
-    String(model || "").startsWith("@cf/")
-  );
-}
-
-function isCloudflareImageModel(model) {
-  return String(model || "").startsWith("@cf/");
-}
-
 function getAspectSize(aspect) {
   switch (aspect) {
     case "16:9":
@@ -327,70 +255,16 @@ function getAspectSize(aspect) {
   }
 }
 
-function normalizeImageModel(model) {
-  const normalized = String(model || "")
-    .trim()
-    .toLowerCase()
-    .replace(/_/g, "-");
-  const allowed = [
-    "@cf/black-forest-labs/flux-2-klein-4b",
-    "@cf/black-forest-labs/flux-2-dev",
-    "@cf/black-forest-labs/flux-1-schnell",
-  ];
+const IMAGE_ASPECT_OPTIONS = [
+  { id: "1:1", label: "Square", ru: "Квадрат", size: "1024 x 1024" },
+  { id: "16:9", label: "Wide", ru: "Широкий", size: "1280 x 720" },
+  { id: "9:16", label: "Story", ru: "Сторис", size: "720 x 1280" },
+  { id: "4:5", label: "Post", ru: "Пост", size: "960 x 1200" },
+  { id: "3:4", label: "Poster", ru: "Постер", size: "900 x 1200" },
+];
 
-  const canonical = {
-    flux: "@cf/black-forest-labs/flux-2-klein-4b",
-    "flux-free": "@cf/black-forest-labs/flux-2-klein-4b",
-    "fast": "@cf/black-forest-labs/flux-2-klein-4b",
-    "quality": "@cf/black-forest-labs/flux-2-dev",
-    "black-forest-labs/flux.2-klein-4b": "@cf/black-forest-labs/flux-2-klein-4b",
-    "black-forest-labs/flux.2-klein-4b:free": "@cf/black-forest-labs/flux-2-klein-4b",
-    "black-forest-labs/flux-2-klein-4b": "@cf/black-forest-labs/flux-2-klein-4b",
-    "@cf/black-forest-labs/flux-2-klein-4b": "@cf/black-forest-labs/flux-2-klein-4b",
-    "black-forest-labs/flux.2-dev": "@cf/black-forest-labs/flux-2-dev",
-    "black-forest-labs/flux-2-dev": "@cf/black-forest-labs/flux-2-dev",
-    "@cf/black-forest-labs/flux-2-dev": "@cf/black-forest-labs/flux-2-dev",
-    "black-forest-labs/flux.1-schnell-free": "@cf/black-forest-labs/flux-1-schnell",
-    "black-forest-labs/flux.1-schnell": "@cf/black-forest-labs/flux-1-schnell",
-    "black-forest-labs/flux-1-schnell": "@cf/black-forest-labs/flux-1-schnell",
-    "black-forest-labs/flux-1-schnell:free": "@cf/black-forest-labs/flux-1-schnell",
-    "@cf/black-forest-labs/flux-1-schnell": "@cf/black-forest-labs/flux-1-schnell",
-    "google/nano-banana-2": "@cf/black-forest-labs/flux-2-klein-4b",
-    "google/nano-banana-2:free": "@cf/black-forest-labs/flux-2-klein-4b",
-    "gemini-2.5-flash-image": "@cf/black-forest-labs/flux-2-klein-4b",
-    "google/gemini-3.1-flash-image-preview": "@cf/black-forest-labs/flux-2-klein-4b",
-    "black-forest-labs/flux.2-pro": "@cf/black-forest-labs/flux-2-dev",
-    "cloudflare/flux-1-schnell": "@cf/black-forest-labs/flux-1-schnell",
-    "cloudflare flux": "@cf/black-forest-labs/flux-2-klein-4b",
-  };
-
-  const finalModel = canonical[normalized] || normalized;
-
-  return allowed.includes(finalModel) ? finalModel : "@cf/black-forest-labs/flux-2-klein-4b";
-}
-
-function buildCloudflareImagePayload(prompt, aspect) {
-  const { width, height } = getAspectSize(aspect);
-  return {
-    prompt,
-    width,
-    height,
-    steps: 4,
-  };
-}
-
-function buildOpenRouterImagePayload(prompt, aspect, model) {
-  const normalizedModel = normalizeImageModel(model);
-  const imageOnly = isImageOnlyModel(normalizedModel);
-
-  return {
-    model: normalizedModel,
-    messages: [{ role: "user", content: prompt }],
-    modalities: imageOnly ? ["image"] : ["image", "text"],
-    image_config: {
-      aspect_ratio: aspect,
-    },
-  };
+function getImageAspectOption(aspect) {
+  return IMAGE_ASPECT_OPTIONS.find((option) => option.id === aspect) || IMAGE_ASPECT_OPTIONS[0];
 }
 
 function buildPollinationsImageUrl(prompt, aspect) {
@@ -424,96 +298,6 @@ async function requestPollinationsImage(prompt, aspect) {
   return imageUrl;
 }
 
-async function requestOpenRouterImage(prompt, aspect, model, apiKey, siteUrl, siteName) {
-  const endpoint = apiKey ? "https://openrouter.ai/api/v1/chat/completions" : "/api/openrouter/chat/completions";
-  const headers = {
-    "Content-Type": "application/json",
-    "HTTP-Referer": siteUrl,
-    "X-Title": siteName,
-    "X-Rival-Referer": siteUrl,
-    "X-Rival-Title": siteName,
-  };
-
-  if (apiKey) {
-    headers.Authorization = `Bearer ${apiKey}`;
-  }
-
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(buildOpenRouterImagePayload(prompt, aspect, model)),
-  });
-
-  if (!response.ok) {
-    const errorText = await readApiError(response);
-    throw new Error(`OPENROUTER_${response.status}${errorText ? `:${errorText}` : ""}`);
-  }
-
-  const data = await response.json();
-  const message = data?.choices?.[0]?.message;
-  const imageUrl =
-    message?.images?.[0]?.image_url?.url ||
-    message?.images?.[0]?.imageUrl?.url ||
-    message?.images?.[0]?.url;
-
-  if (!imageUrl) {
-    throw new Error("OPENROUTER_IMAGE_FAILED");
-  }
-
-  return imageUrl;
-}
-
-async function requestCloudflareImage(prompt, aspect, model, accountId) {
-  const normalizedModel = normalizeImageModel(model);
-  const payload = buildCloudflareImagePayload(prompt, aspect);
-  const usesMultipart = normalizedModel.includes("flux-2-");
-  let body;
-  let headers = {};
-
-  if (usesMultipart) {
-    const form = new FormData();
-    form.append("prompt", payload.prompt);
-    form.append("width", String(payload.width));
-    form.append("height", String(payload.height));
-    form.append("steps", String(payload.steps));
-    body = form;
-  } else {
-    headers["Content-Type"] = "application/json";
-    body = JSON.stringify(payload);
-  }
-
-  const cloudflarePath = accountId
-    ? `accounts/${accountId}/ai/run/${normalizedModel}`
-    : `run/${normalizedModel}`;
-
-  const response = await fetch(`/api/cloudflare-ai/${cloudflarePath}`, {
-    method: "POST",
-    headers,
-    body,
-  });
-
-  if (!response.ok) {
-    const errorText = await readApiError(response);
-    throw new Error(`CLOUDFLARE_AI_${response.status}${errorText ? `:${errorText}` : ""}`);
-  }
-
-  const data = await response.json();
-  if (data?.success === false) {
-    const cloudflareCode = data?.errors?.[0]?.code;
-    if (cloudflareCode) {
-      const cloudflareMessage = data?.errors?.[0]?.message || "";
-      throw new Error(`CLOUDFLARE_AI_${cloudflareCode}${cloudflareMessage ? `:${cloudflareMessage}` : ""}`);
-    }
-  }
-  const imageBase64 = data?.result?.image;
-
-  if (!imageBase64) {
-    throw new Error("CLOUDFLARE_AI_IMAGE_FAILED");
-  }
-
-  return `data:image/jpeg;base64,${imageBase64}`;
-}
-
 export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) {
   const fastTextModel = normalizeTextModel(import.meta.env.VITE_OPEN_MODEL_TEXT_FAST, DEFAULT_FAST_TEXT_MODEL);
   const qualityTextModel = normalizeTextModel(
@@ -522,13 +306,7 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
   );
   const defaultTextPreset = safeLs.get("rs_ai_text_preset4", "quality") === "fast" ? "fast" : "quality";
   const defaultTextModel = defaultTextPreset === "fast" ? fastTextModel : qualityTextModel;
-  const configuredImageModel = normalizeImageModel(import.meta.env.VITE_OPEN_MODEL_IMAGE || "");
-  const fastImageModel = normalizeImageModel(import.meta.env.VITE_OPEN_MODEL_IMAGE_FAST || configuredImageModel || "@cf/black-forest-labs/flux-2-klein-4b");
-  const qualityImageModel = normalizeImageModel(import.meta.env.VITE_OPEN_MODEL_IMAGE_QUALITY || "@cf/black-forest-labs/flux-2-dev");
-  const defaultImagePreset = safeLs.get("rs_ai_image_preset4", "fast") === "quality" ? "quality" : "fast";
-  const defaultImageModel = defaultImagePreset === "quality" ? qualityImageModel : fastImageModel;
   const openRouterKey = import.meta.env.VITE_OPENROUTER_API_KEY;
-  const cloudflareAccountId = import.meta.env.VITE_CLOUDFLARE_ACCOUNT_ID;
   const siteUrl = import.meta.env.VITE_APP_URL || (typeof window !== "undefined" ? window.location.origin : "http://localhost");
   const siteName = import.meta.env.VITE_APP_NAME || "RivalDesign AI Chat";
 
@@ -546,8 +324,6 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
   const [mode, setMode] = useState(() => safeLs.get("rs_ai_mode4", "text"));
   const [textModel, setTextModel] = useState(() => safeLs.get("rs_ai_text_model4", defaultTextModel));
   const [textPreset, setTextPreset] = useState(defaultTextPreset);
-  const [imagePreset, setImagePreset] = useState(defaultImagePreset);
-  const [imageModel, setImageModel] = useState(() => normalizeImageModel(safeLs.get("rs_ai_image_model4", defaultImageModel)));
   const [imageAspect, setImageAspect] = useState(() => safeLs.get("rs_ai_image_aspect4", "1:1"));
   const [renderMenuOpen, setRenderMenuOpen] = useState(false);
   const persistTasksRef = useRef({});
@@ -564,17 +340,6 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
     Object.values(persistTasksRef.current).forEach(cancelIdle);
     persistTasksRef.current = {};
   }, []);
-
-  useEffect(() => {
-    const targetModel = imagePreset === "quality" ? qualityImageModel : fastImageModel;
-    const normalized = normalizeImageModel(imageModel || targetModel);
-    const syncedModel = normalized === targetModel ? normalized : targetModel;
-    persistLater("rs_ai_image_preset4", imagePreset);
-    persistLater("rs_ai_image_model4", syncedModel);
-    if (syncedModel !== imageModel) {
-      setImageModel(syncedModel);
-    }
-  }, [fastImageModel, imageModel, imagePreset, qualityImageModel, safeLs]);
 
   useEffect(() => {
     const current = String(textModel || "").trim();
@@ -597,15 +362,6 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
     persistLater("rs_ai_text_model4", nextModel);
   };
 
-  const persistImagePreset = (next) => {
-    const normalizedPreset = next === "quality" ? "quality" : "fast";
-    const nextModel = normalizedPreset === "quality" ? qualityImageModel : fastImageModel;
-    setImagePreset(normalizedPreset);
-    setImageModel(nextModel);
-    persistLater("rs_ai_image_preset4", normalizedPreset);
-    persistLater("rs_ai_image_model4", nextModel);
-  };
-
   const persistMessages = (next) => {
     setMessages(next);
     persistLater("rs_ai_chat4", next, 900);
@@ -614,20 +370,12 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
   const persistMode = (next) => {
     setMode(next);
     persistLater("rs_ai_mode4", next);
-    if (next !== "image") {
-      setRenderMenuOpen(false);
-    }
+    setRenderMenuOpen(false);
   };
 
   const persistTextModel = (next) => {
     setTextModel(next);
     persistLater("rs_ai_text_model4", next);
-  };
-
-  const persistImageModel = (next) => {
-    const normalized = normalizeImageModel(next);
-    setImageModel(normalized);
-    persistLater("rs_ai_image_model4", normalized);
   };
 
   const persistImageAspect = (next) => {
@@ -636,7 +384,7 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
   };
 
   const activeTextModelName = getModelDisplayName(textPreset === "fast" ? fastTextModel : qualityTextModel);
-  const activeImageModelName = getModelDisplayName(imagePreset === "fast" ? fastImageModel : qualityImageModel);
+  const activeImageAspect = getImageAspectOption(imageAspect);
 
   const chipBaseStyle = {
     display: "inline-flex",
@@ -668,7 +416,7 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
 
     const activeModel =
       mode === "image"
-        ? normalizeImageModel(imagePreset === "quality" ? qualityImageModel : fastImageModel)
+        ? "pollinations/flux"
         : normalizeTextModel(textModel, textPreset === "fast" ? fastTextModel : qualityTextModel);
     const userMsg = { id: Date.now(), role: "user", kind: "text", text };
     const nextWithUser = [...messages, userMsg];
@@ -681,56 +429,13 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
     try {
       if (mode === "image") {
         let resolvedImageModel = activeModel;
-        let imageUrl;
-
-        try {
-          imageUrl = isCloudflareImageModel(activeModel)
-            ? await requestCloudflareImage(text, imageAspect, activeModel, cloudflareAccountId)
-            : await requestOpenRouterImage(text, imageAspect, activeModel, openRouterKey, siteUrl, siteName);
-        } catch (imageError) {
-          const fallbackImageModel = normalizeImageModel(fastImageModel);
-          const canFallback =
-            activeModel !== fallbackImageModel &&
-            isCloudflareImageModel(activeModel) &&
-            shouldFallbackImageModel(imageError);
-
-          if (canFallback) {
-            try {
-              imageUrl = await requestCloudflareImage(text, imageAspect, fallbackImageModel, cloudflareAccountId);
-              resolvedImageModel = fallbackImageModel;
-              showToast?.(
-                lang === "en" ? "Quality render was unstable. Switched to Fast." : "Качественный рендер был нестабилен. Переключил на Быстро.",
-                "info"
-              );
-            } catch (fallbackError) {
-              if (!shouldFallbackToPollinations(fallbackError)) {
-                throw fallbackError;
-              }
-              imageUrl = await requestPollinationsImage(text, imageAspect);
-              resolvedImageModel = "pollinations/flux";
-              showToast?.(
-                lang === "en" ? "Workers AI is unavailable. Switched to free Pollinations." : "Workers AI недоступен. Переключил на бесплатный Pollinations.",
-                "info"
-              );
-            }
-          } else {
-            if (!shouldFallbackToPollinations(imageError)) {
-              throw imageError;
-            }
-            imageUrl = await requestPollinationsImage(text, imageAspect);
-            resolvedImageModel = "pollinations/flux";
-            showToast?.(
-              lang === "en" ? "Image provider is unavailable. Switched to free Pollinations." : "Провайдер изображений недоступен. Переключил на бесплатный Pollinations.",
-              "info"
-            );
-          }
-        }
+        const imageUrl = await requestPollinationsImage(text, imageAspect);
 
         const caption =
           resolvedImageModel === "pollinations/flux"
             ? lang === "en"
-              ? "Image generated with free Pollinations fallback."
-              : "Изображение сгенерировано через бесплатный Pollinations."
+              ? `Image generated with Pollinations FLUX · ${activeImageAspect.id} · ${activeImageAspect.size}.`
+              : `Изображение сгенерировано через Pollinations FLUX · ${activeImageAspect.id} · ${activeImageAspect.size}.`
             : lang === "en"
               ? "Image generated successfully."
               : "Изображение успешно сгенерировано.";
@@ -900,7 +605,7 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
             >
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
                 <div style={{ fontSize: 10, color: th.sub }}>AI</div>
-                <div style={{ fontSize: 9, color: th.sub }}>{imagePreset === "quality" ? (lang === "en" ? "Quality render" : "Качественный рендер") : (lang === "en" ? "Fast render" : "Быстрый рендер")}</div>
+                <div style={{ fontSize: 9, color: th.sub }}>Pollinations FLUX · {activeImageAspect.id}</div>
               </div>
               <div
                 style={{
@@ -941,13 +646,9 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
                     {lang === "en" ? "Generating concept" : "Создаю концепт"}
                   </div>
                   <div style={{ fontSize: 11, color: th.sub, lineHeight: 1.5 }}>
-                    {imagePreset === "quality"
-                      ? lang === "en"
-                        ? "Building a cleaner final render with more detail."
-                        : "Собираю более чистый финальный рендер с деталями."
-                      : lang === "en"
-                        ? "Building a quick preview to test the idea."
-                        : "Собираю быстрый превью-рендер для проверки идеи."}
+                    {lang === "en"
+                      ? `Rendering ${activeImageAspect.label.toLowerCase()} format at ${activeImageAspect.size}.`
+                      : `Рендерю формат ${activeImageAspect.ru.toLowerCase()} в ${activeImageAspect.size}.`}
                   </div>
                 </div>
               </div>
@@ -1031,8 +732,10 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
                 }}
               >
                 <span>
-                  {imagePreset === "quality" ? (lang === "en" ? "Quality" : "Качество") : (lang === "en" ? "Fast" : "Быстро")}
-                  <span style={{ opacity: 0.68 }}> · {activeImageModelName}</span>
+                  {activeImageAspect.id}
+                  <span style={{ opacity: 0.68 }}>
+                    {" "}· {lang === "en" ? activeImageAspect.label : activeImageAspect.ru} · {activeImageAspect.size}
+                  </span>
                 </span>
                 <span style={{ fontSize: 10, opacity: 0.7 }}>{renderMenuOpen ? "▲" : "▼"}</span>
               </button>
@@ -1055,24 +758,13 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
                     gap: 4,
                   }}
                 >
-                  {[
-                    {
-                      id: "fast",
-                      title: lang === "en" ? "Fast" : "Быстро",
-                      desc: `${lang === "en" ? "Quick preview for ideas" : "Быстрый превью-рендер для идеи"} · ${getModelDisplayName(fastImageModel)}`,
-                    },
-                    {
-                      id: "quality",
-                      title: lang === "en" ? "Quality" : "Качество",
-                      desc: `${lang === "en" ? "Cleaner final render" : "Более чистый финальный рендер"} · ${getModelDisplayName(qualityImageModel)}`,
-                    },
-                  ].map((option) => {
-                    const active = imagePreset === option.id;
+                  {IMAGE_ASPECT_OPTIONS.map((option) => {
+                    const active = imageAspect === option.id;
                     return (
                       <button
                         key={option.id}
                         onClick={() => {
-                          persistImagePreset(option.id);
+                          persistImageAspect(option.id);
                           setRenderMenuOpen(false);
                           sfx.tab?.();
                         }}
@@ -1089,8 +781,12 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
                           gap: 2,
                         }}
                       >
-                        <span style={{ fontSize: 12, fontWeight: 800 }}>{option.title}</span>
-                        <span style={{ fontSize: 11, color: active ? `${th.btnTxt}cc` : th.sub, lineHeight: 1.4 }}>{option.desc}</span>
+                        <span style={{ fontSize: 12, fontWeight: 800 }}>
+                          {option.id} · {lang === "en" ? option.label : option.ru}
+                        </span>
+                        <span style={{ fontSize: 11, color: active ? `${th.btnTxt}cc` : th.sub, lineHeight: 1.4 }}>
+                          {option.size} · Pollinations FLUX
+                        </span>
                       </button>
                     );
                   })}
