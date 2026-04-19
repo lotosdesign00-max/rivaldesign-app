@@ -266,6 +266,7 @@ function getModelDisplayName(model) {
   if (normalized === "@cf/black-forest-labs/flux-2-klein-4b") return "FLUX 2 Klein 4B";
   if (normalized === "@cf/black-forest-labs/flux-2-dev") return "FLUX 2 Dev";
   if (normalized === "@cf/black-forest-labs/flux-1-schnell") return "FLUX 1 Schnell";
+  if (normalized === "pollinations/flux") return "Pollinations FLUX";
 
   return String(model || "")
     .split("/")
@@ -279,9 +280,23 @@ function shouldFallbackImageModel(error) {
   const message = String(error?.message || "");
   return (
     message.startsWith("CLOUDFLARE_AI_400") ||
+    message.startsWith("CLOUDFLARE_AI_401") ||
+    message.startsWith("CLOUDFLARE_AI_403") ||
+    message.startsWith("CLOUDFLARE_AI_429") ||
     message.startsWith("CLOUDFLARE_AI_500") ||
     message.startsWith("CLOUDFLARE_AI_3030") ||
     message === "CLOUDFLARE_AI_IMAGE_FAILED"
+  );
+}
+
+function shouldFallbackToPollinations(error) {
+  const message = String(error?.message || "");
+  return (
+    message === "CLOUDFLARE_AI_CONFIG_MISSING" ||
+    message === "CLOUDFLARE_AI_IMAGE_FAILED" ||
+    message.startsWith("CLOUDFLARE_AI_") ||
+    message === "OPENROUTER_IMAGE_FAILED" ||
+    message.startsWith("OPENROUTER_")
   );
 }
 
@@ -376,6 +391,37 @@ function buildOpenRouterImagePayload(prompt, aspect, model) {
       aspect_ratio: aspect,
     },
   };
+}
+
+function buildPollinationsImageUrl(prompt, aspect) {
+  const { width, height } = getAspectSize(aspect);
+  const normalizedPrompt = String(prompt || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 1200);
+  const seed =
+    Math.abs(
+      [...normalizedPrompt].reduce((hash, char) => ((hash << 5) - hash + char.charCodeAt(0)) | 0, Date.now())
+    ) % 1000000000;
+  const params = new URLSearchParams({
+    width: String(width),
+    height: String(height),
+    model: "flux",
+    nologo: "true",
+    private: "true",
+    enhance: "true",
+    seed: String(seed),
+  });
+
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(normalizedPrompt)}?${params.toString()}`;
+}
+
+async function requestPollinationsImage(prompt, aspect) {
+  const imageUrl = buildPollinationsImageUrl(prompt, aspect);
+  if (!imageUrl) {
+    throw new Error("POLLINATIONS_IMAGE_FAILED");
+  }
+  return imageUrl;
 }
 
 async function requestOpenRouterImage(prompt, aspect, model, apiKey, siteUrl, siteName) {
@@ -648,22 +694,46 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
             isCloudflareImageModel(activeModel) &&
             shouldFallbackImageModel(imageError);
 
-          if (!canFallback) {
-            throw imageError;
+          if (canFallback) {
+            try {
+              imageUrl = await requestCloudflareImage(text, imageAspect, fallbackImageModel, cloudflareAccountId);
+              resolvedImageModel = fallbackImageModel;
+              showToast?.(
+                lang === "en" ? "Quality render was unstable. Switched to Fast." : "Качественный рендер был нестабилен. Переключил на Быстро.",
+                "info"
+              );
+            } catch (fallbackError) {
+              if (!shouldFallbackToPollinations(fallbackError)) {
+                throw fallbackError;
+              }
+              imageUrl = await requestPollinationsImage(text, imageAspect);
+              resolvedImageModel = "pollinations/flux";
+              showToast?.(
+                lang === "en" ? "Workers AI is unavailable. Switched to free Pollinations." : "Workers AI недоступен. Переключил на бесплатный Pollinations.",
+                "info"
+              );
+            }
+          } else {
+            if (!shouldFallbackToPollinations(imageError)) {
+              throw imageError;
+            }
+            imageUrl = await requestPollinationsImage(text, imageAspect);
+            resolvedImageModel = "pollinations/flux";
+            showToast?.(
+              lang === "en" ? "Image provider is unavailable. Switched to free Pollinations." : "Провайдер изображений недоступен. Переключил на бесплатный Pollinations.",
+              "info"
+            );
           }
-
-          imageUrl = await requestCloudflareImage(text, imageAspect, fallbackImageModel, cloudflareAccountId);
-          resolvedImageModel = fallbackImageModel;
-          showToast?.(
-            lang === "en" ? "Quality render was unstable. Switched to Fast." : "Качественный рендер был нестабилен. Переключил на Быстро.",
-            "info"
-          );
         }
 
         const caption =
-          lang === "en"
-            ? "Image generated successfully."
-            : "Изображение успешно сгенерировано.";
+          resolvedImageModel === "pollinations/flux"
+            ? lang === "en"
+              ? "Image generated with free Pollinations fallback."
+              : "Изображение сгенерировано через бесплатный Pollinations."
+            : lang === "en"
+              ? "Image generated successfully."
+              : "Изображение успешно сгенерировано.";
 
         const finalList = [
           ...nextWithUser,
