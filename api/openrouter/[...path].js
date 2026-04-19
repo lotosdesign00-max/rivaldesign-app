@@ -18,7 +18,8 @@ async function readRawBody(req) {
 }
 
 function getTargetUrl(req) {
-  const pathParts = Array.isArray(req.query.path) ? req.query.path : [req.query.path].filter(Boolean);
+  const rawPathParts = Array.isArray(req.query.path) ? req.query.path : [req.query.path].filter(Boolean);
+  const pathParts = rawPathParts.flatMap((part) => String(part).split("/").filter(Boolean));
   const path = pathParts.map((part) => encodeURIComponent(part)).join("/") || "chat/completions";
   return `https://openrouter.ai/api/v1/${path}`;
 }
