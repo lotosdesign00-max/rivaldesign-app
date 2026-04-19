@@ -202,6 +202,34 @@ function uniqModels(models) {
   return [...new Set(models.filter(Boolean).map((item) => String(item).trim()).filter(Boolean))];
 }
 
+const DEFAULT_FAST_TEXT_MODEL = "google/gemma-3-4b-it:free";
+const DEFAULT_QUALITY_TEXT_MODEL = "qwen/qwen3-next-80b-a3b-instruct:free";
+const TEXT_MODEL_FALLBACKS = [
+  DEFAULT_FAST_TEXT_MODEL,
+  "google/gemma-3n-e4b-it:free",
+  DEFAULT_QUALITY_TEXT_MODEL,
+  "meta-llama/llama-3.3-70b-instruct:free",
+  "openai/gpt-oss-20b:free",
+  "z-ai/glm-4.5-air:free",
+];
+const RETIRED_TEXT_MODELS = new Set([
+  "openrouter/free",
+  "qwen/qwen3.6-plus:free",
+  "mistralai/mistral-small-3.1-24b-instruct:free",
+  "google/gemma-3n-e2b-it:free",
+  "google/gemma-3-27b-it",
+  "google/gemma-3-27b-it-preview",
+  "google/gemma-3-27b-it-preview:free",
+]);
+
+function normalizeTextModel(model, fallback = DEFAULT_FAST_TEXT_MODEL) {
+  const normalized = String(model || "").trim();
+  if (!normalized || RETIRED_TEXT_MODELS.has(normalized.toLowerCase())) {
+    return fallback;
+  }
+  return normalized;
+}
+
 function buildTextMessagesForModel(model, systemPrompt, conversation) {
   const normalized = String(model || "").toLowerCase();
   const baseConversation = conversation
@@ -227,7 +255,13 @@ function buildTextMessagesForModel(model, systemPrompt, conversation) {
 function getModelDisplayName(model) {
   const normalized = String(model || "").toLowerCase();
 
+  if (normalized === "google/gemma-3-4b-it:free") return "Gemma 3 4B";
+  if (normalized === "google/gemma-3n-e4b-it:free") return "Gemma 3N E4B";
   if (normalized === "google/gemma-3n-e2b-it:free") return "Gemma 3N E2B";
+  if (normalized === "qwen/qwen3-next-80b-a3b-instruct:free") return "Qwen3 Next 80B";
+  if (normalized === "meta-llama/llama-3.3-70b-instruct:free") return "Llama 3.3 70B";
+  if (normalized === "openai/gpt-oss-20b:free") return "GPT OSS 20B";
+  if (normalized === "z-ai/glm-4.5-air:free") return "GLM 4.5 Air";
   if (normalized === "qwen/qwen3.6-plus:free") return "Qwen 3.6 Plus";
   if (normalized === "@cf/black-forest-labs/flux-2-klein-4b") return "FLUX 2 Klein 4B";
   if (normalized === "@cf/black-forest-labs/flux-2-dev") return "FLUX 2 Dev";
@@ -435,8 +469,11 @@ async function requestCloudflareImage(prompt, aspect, model, accountId) {
 }
 
 export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) {
-  const fastTextModel = import.meta.env.VITE_OPEN_MODEL_TEXT_FAST || "google/gemma-3n-e2b-it:free";
-  const qualityTextModel = import.meta.env.VITE_OPEN_MODEL_TEXT_QUALITY || import.meta.env.VITE_OPEN_MODEL_TEXT || import.meta.env.VITE_OPEN_MODEL || "qwen/qwen3.6-plus:free";
+  const fastTextModel = normalizeTextModel(import.meta.env.VITE_OPEN_MODEL_TEXT_FAST, DEFAULT_FAST_TEXT_MODEL);
+  const qualityTextModel = normalizeTextModel(
+    import.meta.env.VITE_OPEN_MODEL_TEXT_QUALITY || import.meta.env.VITE_OPEN_MODEL_TEXT || import.meta.env.VITE_OPEN_MODEL,
+    DEFAULT_QUALITY_TEXT_MODEL
+  );
   const defaultTextPreset = safeLs.get("rs_ai_text_preset4", "quality") === "fast" ? "fast" : "quality";
   const defaultTextModel = defaultTextPreset === "fast" ? fastTextModel : qualityTextModel;
   const configuredImageModel = normalizeImageModel(import.meta.env.VITE_OPEN_MODEL_IMAGE || "");
@@ -496,19 +533,7 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
   useEffect(() => {
     const current = String(textModel || "").trim();
     const targetModel = textPreset === "fast" ? fastTextModel : qualityTextModel;
-    const normalized =
-      !current ||
-      current === "openrouter/free" ||
-      current === "mistralai/mistral-small-3.1-24b-instruct:free" ||
-      current === "meta-llama/llama-3.2-3b-instruct:free" ||
-      current === "google/gemma-3-27b-it" ||
-      current === "google/gemma-3-27b-it:free" ||
-      current === "google/gemma-3-27b-it-preview" ||
-      current === "google/gemma-3-27b-it-preview:free" ||
-      current === "qwen/qwen3.6-plus:free" ||
-      current === "meta-llama/llama-3.2-3b-instruct:free"
-        ? targetModel
-        : current;
+    const normalized = normalizeTextModel(current, targetModel);
 
     if (normalized !== textModel) {
       setTextModel(normalized);
@@ -595,7 +620,10 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
     const text = draft.trim();
     if (!text || loading) return;
 
-    const activeModel = mode === "image" ? normalizeImageModel(imagePreset === "quality" ? qualityImageModel : fastImageModel) : textModel;
+    const activeModel =
+      mode === "image"
+        ? normalizeImageModel(imagePreset === "quality" ? qualityImageModel : fastImageModel)
+        : normalizeTextModel(textModel, textPreset === "fast" ? fastTextModel : qualityTextModel);
     const userMsg = { id: Date.now(), role: "user", kind: "text", text };
     const nextWithUser = [...messages, userMsg];
 
@@ -662,6 +690,7 @@ export default function GraphicDesignChat({ th, lang, sfx, safeLs, showToast }) 
           textPreset === "fast" ? qualityTextModel : fastTextModel,
           qualityTextModel,
           fastTextModel,
+          ...TEXT_MODEL_FALLBACKS,
         ]);
 
         let data = null;
