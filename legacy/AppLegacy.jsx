@@ -1272,6 +1272,7 @@ export default function App() {
   }, []);
 
   const createSparkles = (x, y) => {
+    if (typeof document !== "undefined" && document.documentElement.dataset.rsPower === "eco") return null;
     const sparkId = Date.now();
     setSparkles({ id: sparkId, x, y });
     setTimeout(() => setSparkles(null), 600);
@@ -1305,16 +1306,49 @@ export default function App() {
       const coarse = window.matchMedia?.("(pointer: coarse)")?.matches;
       const narrow = window.matchMedia?.("(max-width: 760px)")?.matches;
       const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+      const saveData = Boolean(navigator.connection?.saveData);
       const lowMemory = Number(navigator.deviceMemory || 8) <= 4;
       const lowCore = Number(navigator.hardwareConcurrency || 8) <= 4;
-      const smooth = Boolean(reduced || isTg || (coarse && narrow) || lowMemory || lowCore);
+      const mobileLike = Boolean(isTg || (coarse && narrow));
+      const smooth = Boolean(reduced || saveData || mobileLike || lowMemory || lowCore);
       document.documentElement.dataset.rsPerformance = smooth ? "smooth" : "full";
+      document.documentElement.dataset.rsPower = smooth ? "eco" : "full";
     };
 
     syncPerformanceMode();
     mediaQueries.forEach((query) => query.addEventListener?.("change", syncPerformanceMode));
     return () => {
       mediaQueries.forEach((query) => query.removeEventListener?.("change", syncPerformanceMode));
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof navigator === "undefined" || typeof document === "undefined" || !navigator.getBattery) return undefined;
+    let battery = null;
+    let disposed = false;
+
+    const syncBatteryMode = () => {
+      if (!battery || disposed) return;
+      const lowBattery = !battery.charging && Number(battery.level || 1) <= 0.36;
+      if (!lowBattery) return;
+      document.documentElement.dataset.rsPower = "eco";
+      document.documentElement.dataset.rsPerformance = "smooth";
+    };
+
+    navigator.getBattery()
+      .then((nextBattery) => {
+        if (disposed) return;
+        battery = nextBattery;
+        syncBatteryMode();
+        battery.addEventListener?.("levelchange", syncBatteryMode);
+        battery.addEventListener?.("chargingchange", syncBatteryMode);
+      })
+      .catch(() => {});
+
+    return () => {
+      disposed = true;
+      battery?.removeEventListener?.("levelchange", syncBatteryMode);
+      battery?.removeEventListener?.("chargingchange", syncBatteryMode);
     };
   }, []);
 
@@ -2644,6 +2678,45 @@ export default function App() {
         body{margin:0;padding:0;overflow:hidden;overflow-x:clip;height:var(--tg-app-height,100dvh);width:100%;max-width:100%;overscroll-behavior-y:none;-webkit-overflow-scrolling:touch;font-family:var(--font-body);background:var(--rs-tg-bg,#030408);color:var(--rs-tg-text,rgba(224,231,255,.95));}
         #root{height:var(--tg-app-height,100dvh);width:100%;max-width:100%;overflow:hidden;overflow-x:clip;}
         html[data-rs-paused] *,html[data-rs-paused] *::before,html[data-rs-paused] *::after{animation-play-state:paused!important;}
+        html[data-rs-power="eco"]{scroll-behavior:auto;}
+        html[data-rs-power="eco"] *{text-rendering:optimizeSpeed;}
+        html[data-rs-power="eco"] .rs-mesh-nebula,
+        html[data-rs-power="eco"] .rs-mesh-stars,
+        html[data-rs-power="eco"] .rs-shooting-star,
+        html[data-rs-power="eco"] .rs-mesh-glow{animation:none!important;transition:none!important;filter:none!important;will-change:auto!important;}
+        html[data-rs-power="eco"] .rs-mesh-nebula-b,
+        html[data-rs-power="eco"] .rs-mesh-nebula-c,
+        html[data-rs-power="eco"] .rs-mesh-stars-far,
+        html[data-rs-power="eco"] .rs-shooting-star{display:none!important;}
+        html[data-rs-power="eco"] .rs-mesh-nebula-a{opacity:.22!important;background:radial-gradient(ellipse at 28% 8%,rgba(99,102,241,.08) 0%,transparent 62%)!important;}
+        html[data-rs-power="eco"] .rs-mesh-stars-near{opacity:.42!important;transform:none!important;}
+        html[data-rs-power="eco"] header > div,
+        html[data-rs-power="eco"] .rs-bottom-nav{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:0 10px 24px rgba(3,4,8,.34),inset 0 1px 0 rgba(255,255,255,.045)!important;}
+        html[data-rs-power="eco"] header button *,
+        html[data-rs-power="eco"] header .type-display,
+        html[data-rs-power="eco"] .rs-nav-icon-cycle,
+        html[data-rs-power="eco"] .rs-nav-icon-wrap,
+        html[data-rs-power="eco"] .rs-icon-shell,
+        html[data-rs-power="eco"] .rs-icon-wrap,
+        html[data-rs-power="eco"] .rs-icon-svg,
+        html[data-rs-power="eco"] .rs-icon-svg > *,
+        html[data-rs-power="eco"] .gal-img-shimmer,
+        html[data-rs-power="eco"] .skeleton{animation:none!important;filter:none!important;will-change:auto!important;}
+        html[data-rs-power="eco"] .rs-icon-svg[data-animated="true"] > *{stroke-dasharray:none!important;stroke-dashoffset:0!important;}
+        html[data-rs-power="eco"] .rs-content,
+        html[data-rs-power="eco"] .rs-content > div{contain:layout style!important;will-change:auto!important;}
+        html[data-rs-power="eco"] .rs-content [style*="blur"],
+        html[data-rs-power="eco"] .rs-content [style*="drop-shadow"]{filter:none!important;}
+        html[data-rs-power="eco"] .rs-content [style*="backdrop-filter"]{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+        html[data-rs-power="eco"] [style*="infinite"]{animation:none!important;}
+        html[data-rs-power="eco"] [style*="blur("]{filter:none!important;}
+        html[data-rs-power="eco"] [style*="backdrop-filter"]{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+        html[data-rs-power="eco"] .rs-bottom-nav button{min-height:58px;contain:layout style paint;}
+        html[data-rs-power="eco"] .rs-bottom-nav [style*="drop-shadow"]{filter:none!important;}
+        html[data-rs-power="eco"] .rs-content img{content-visibility:auto;}
+        @media (prefers-reduced-motion: reduce){
+          *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important;}
+        }
         html[data-rs-performance="smooth"]{scroll-behavior:auto;}
         html[data-rs-performance="smooth"] .rs-mesh-bg{contain:strict;transform:translateZ(0);}
         html[data-rs-performance="smooth"] .rs-mesh-nebula{animation:none!important;transition:none!important;filter:blur(18px)!important;opacity:.52!important;transform:translate3d(0,0,0)!important;}
