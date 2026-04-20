@@ -1235,6 +1235,8 @@ export default function App() {
   const remoteSettingsReadyRef = useRef(false);
   const remoteSettingsQueueRef = useRef({});
   const remoteSettingsTimerRef = useRef(null);
+  const scrollRelaxTimerRef = useRef(null);
+  const scrollFrameRef = useRef(0);
 
   useEffect(() => { _soundEnabled = soundOn; }, [soundOn]);
   useEffect(() => { _volume = volume; }, [volume]);
@@ -1350,6 +1352,59 @@ export default function App() {
       battery?.removeEventListener?.("levelchange", syncBatteryMode);
       battery?.removeEventListener?.("chargingchange", syncBatteryMode);
     };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof document === "undefined") return undefined;
+    const root = document.documentElement;
+    let idleTimer = 0;
+    let lastActivity = 0;
+
+    const settleIdle = () => {
+      if (root.dataset.rsScrolling === "true") return;
+      root.dataset.rsIdle = "true";
+    };
+
+    const markAwake = () => {
+      const now = window.performance?.now?.() || Date.now();
+      if (now - lastActivity < 140) return;
+      lastActivity = now;
+      root.dataset.rsIdle = "false";
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(settleIdle, root.dataset.rsPower === "eco" ? 900 : 1800);
+    };
+
+    markAwake();
+    window.addEventListener("pointerdown", markAwake, { passive: true });
+    window.addEventListener("touchmove", markAwake, { passive: true });
+    window.addEventListener("keydown", markAwake);
+
+    return () => {
+      window.clearTimeout(idleTimer);
+      window.clearTimeout(scrollRelaxTimerRef.current);
+      if (scrollFrameRef.current) window.cancelAnimationFrame(scrollFrameRef.current);
+      window.removeEventListener("pointerdown", markAwake);
+      window.removeEventListener("touchmove", markAwake);
+      window.removeEventListener("keydown", markAwake);
+      delete root.dataset.rsIdle;
+      delete root.dataset.rsScrolling;
+    };
+  }, []);
+
+  const markScrollActivity = useCallback(() => {
+    if (typeof window === "undefined" || typeof document === "undefined") return;
+    if (scrollFrameRef.current) return;
+    scrollFrameRef.current = window.requestAnimationFrame(() => {
+      scrollFrameRef.current = 0;
+      const root = document.documentElement;
+      root.dataset.rsScrolling = "true";
+      root.dataset.rsIdle = "false";
+      window.clearTimeout(scrollRelaxTimerRef.current);
+      scrollRelaxTimerRef.current = window.setTimeout(() => {
+        delete root.dataset.rsScrolling;
+        root.dataset.rsIdle = "true";
+      }, root.dataset.rsPower === "eco" ? 180 : 260);
+    });
   }, []);
 
   useEffect(() => {
@@ -2714,6 +2769,17 @@ export default function App() {
         html[data-rs-power="eco"] .rs-bottom-nav button{min-height:58px;contain:layout style paint;}
         html[data-rs-power="eco"] .rs-bottom-nav [style*="drop-shadow"]{filter:none!important;}
         html[data-rs-power="eco"] .rs-content img{content-visibility:auto;}
+        html[data-rs-power="eco"] .rs-content [style*="box-shadow"]{box-shadow:0 8px 18px rgba(3,4,8,.22),inset 0 1px 0 rgba(255,255,255,.035)!important;}
+        html[data-rs-power="eco"] .rs-content [style*="transition: all"],
+        html[data-rs-power="eco"] .rs-content [style*="transition:all"]{transition-property:transform,opacity,background,border-color,color!important;transition-duration:.14s!important;}
+        html[data-rs-power="eco"][data-rs-idle="true"] .rs-content [style*="animation"]{animation-play-state:paused!important;}
+        html[data-rs-power="eco"][data-rs-scrolling="true"] .rs-content *{scroll-behavior:auto!important;}
+        html[data-rs-power="eco"][data-rs-scrolling="true"] .rs-content [style*="box-shadow"]{box-shadow:inset 0 1px 0 rgba(255,255,255,.028)!important;}
+        html[data-rs-power="eco"][data-rs-scrolling="true"] .rs-content [style*="filter"]{filter:none!important;}
+        html[data-rs-power="eco"][data-rs-scrolling="true"] .rs-content [style*="transition"]{transition:none!important;}
+        html[data-rs-power="eco"][data-rs-scrolling="true"] header > div,
+        html[data-rs-power="eco"][data-rs-scrolling="true"] .rs-bottom-nav{box-shadow:0 8px 18px rgba(3,4,8,.30),inset 0 1px 0 rgba(255,255,255,.04)!important;}
+        html[data-rs-power="eco"][data-rs-scrolling="true"] .rs-mesh-stars-near{opacity:.34!important;}
         @media (prefers-reduced-motion: reduce){
           *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important;}
         }
@@ -3022,7 +3088,7 @@ export default function App() {
           </div>
         )}
 
-        <main className="rs-content" ref={mainRef} style={{ flex: 1, padding: "14px var(--tg-side-gap) calc(128px + var(--tg-safe-bottom, 0px))", overflowY: "auto", overflowX: "hidden", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}>
+        <main className="rs-content" ref={mainRef} onScroll={markScrollActivity} style={{ flex: 1, padding: "14px var(--tg-side-gap) calc(128px + var(--tg-safe-bottom, 0px))", overflowY: "auto", overflowX: "hidden", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}>
           <div
             key={tab}
             style={{
