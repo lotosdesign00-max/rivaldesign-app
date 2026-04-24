@@ -401,8 +401,8 @@ function ModuleCard({ th, lang, course, topic, idx, done, progress, onOpen, lock
     </button>
   );
 }
-export default function CoursesTab({ th, t, lang, showToast, addXPfn, onUnlockAchieve, streak, setStreak }) {
-  const g = (typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {};
+export default function CoursesTab({ th, t, lang, showToast, addXPfn, onUnlockAchieve, streak, setStreak, globals }) {
+  const g = globals || ((typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {});
   const { LANGS, SFX, openTg, ls, COURSES_DATA, QUIZ_DATA } = g;
 
   const copy = getCopy(lang);
@@ -600,7 +600,7 @@ export default function CoursesTab({ th, t, lang, showToast, addXPfn, onUnlockAc
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 14, animation: "cardIn .35s ease both" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button onClick={() => { setQuizMode(false); setQuizIdx(0); setQuizScore(0); setQuizAnswer(null); setQuizDone(false); SFX.close(); }} style={{ width: 38, height: 38, borderRadius: 12, border: `1px solid ${th.border}`, background: th.card, color: th.sub, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>←</button>
+          <button onClick={() => { setQuizMode(false); setQuizIdx(0); setQuizScore(0); setQuizAnswer(null); setQuizDone(false); SFX.close(); }} aria-label="Go back" style={{ minWidth: 44, minHeight: 44, width: 44, height: 44, borderRadius: 12, border: `1px solid ${th.border}`, background: th.card, color: th.sub, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>←</button>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 17, fontWeight: 900, color: th.text }}>{t.quizTitle}</div>
           </div>

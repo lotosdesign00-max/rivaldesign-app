@@ -53,5 +53,63 @@ export function getThemeTokens(th) {
     shadowAccent: isGraphite
       ? "0 10px 30px rgba(255,255,255,.08), inset 0 1px 0 rgba(255,255,255,.08)"
       : "0 10px 30px rgba(99,102,241,.22), inset 0 1px 0 rgba(255,255,255,.08)",
+    // Direct accent colors — consistent brand colors (work across both themes)
+    accent: "#6366f1",
+    accentB: "#8b5cf6",
+    cyan: "#22d3ee",
+    emerald: "#10b981",
+    gold: "#f59e0b",
+    red: "#ef4444",
+    // Aliases for DS compatibility
+    text: th?.text || "rgba(224,231,255,.95)",
+    sub: th?.sub || "rgba(100,116,139,.8)",
+    border: th?.border || "rgba(99,102,241,0.14)",
+    btnTxt: th?.btnTxt || "#ffffff",
+    card: th?.card || "rgba(13,15,26,0.80)",
+    surface: th?.surface || "rgba(8,9,18,0.70)",
+
+    // Typography scale (consistent across app)
+    fontSize: {
+      xs: 10,
+      sm: 12,
+      base: 14,
+      md: 16,
+      lg: 18,
+      xl: 22,
+      "2xl": 26,
+      "3xl": 32,
+    },
+    // Font weights (consistent)
+    fontWeight: {
+      normal: 400,
+      medium: 600,
+      bold: 700,
+      black: 900,
+    },
+    // Spacing (8px rhythm)
+    space: {
+      xs: 4,
+      sm: 8,
+      md: 12,
+      lg: 16,
+      xl: 24,
+      "2xl": 32,
+      "3xl": 48,
+    },
+    // Border radius (consistent)
+    radius: {
+      sm: 8,
+      md: 12,
+      lg: 16,
+      xl: 22,
+      full: 999,
+    },
+    // Shadows (consistent elevation)
+    elevation: {
+      sm: "0 2px 8px rgba(3,4,8,0.2)",
+      md: "0 4px 16px rgba(3,4,8,0.25)",
+      lg: "0 8px 28px rgba(3,4,8,0.3)",
+      xl: "0 12px 40px rgba(3,4,8,0.35)",
+    },
   };
 }

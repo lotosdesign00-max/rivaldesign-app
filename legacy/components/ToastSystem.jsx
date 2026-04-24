@@ -36,7 +36,7 @@ const TYPE_CONFIG = {
   },
 };
 
-function Toast({ msg, type, id, duration = 3000 }) {
+function Toast({ msg, type, id, duration = 3500 }) {
   const cfg = TYPE_CONFIG[type] || TYPE_CONFIG.info;
   const [progress, setProgress] = useState(100);
   const [exiting, setExiting] = useState(false);
@@ -120,15 +120,20 @@ function ToastSystem({ toasts, th, isTg }) {
           to   { opacity: 1; transform: none; }
         }
       `}</style>
-      <div style={{
-        position: "fixed",
-        top: isTg ? 8 : 16,
-        left: "50%", transform: "translateX(-50%)",
-        zIndex: 9998,
-        display: "flex", flexDirection: "column", gap: 8,
-        pointerEvents: "none",
-        width: "min(360px, 90vw)",
-      }}>
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        style={{
+          position: "fixed",
+          top: isTg ? 8 : 16,
+          left: "50%", transform: "translateX(-50%)",
+          zIndex: 9998,
+          display: "flex", flexDirection: "column", gap: 8,
+          pointerEvents: "none",
+          width: "min(360px, 90vw)",
+        }}
+      >
         {toasts.map(t => (
           <Toast key={t.id} msg={t.msg} type={t.type} id={t.id} th={th} />
         ))}

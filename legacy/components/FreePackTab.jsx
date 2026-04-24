@@ -42,8 +42,8 @@ function FormatBadge({ name }) {
   );
 }
 
-function FreePackTab({ th, t, lang }) {
-  const g = (typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {};
+function FreePackTab({ th, t, lang, globals }) {
+  const g = globals || ((typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {});
   const { SFX, openTg, ls, DESIGN_PACK_CONFIG, MOCK_DESIGN_PACK } = g;
   const [isSubscribed, setIsSubscribed] = useState(() => ls?.get("freepack_subscribed", false));
   const [selectedCategory, setSelectedCategory] = useState("all");

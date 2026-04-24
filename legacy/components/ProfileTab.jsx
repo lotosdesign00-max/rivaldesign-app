@@ -33,8 +33,9 @@ function ProfileTab({
   onOpenStarsInvoice,
   onOpenTelegram,
   onRequestPaymentDetails,
+  globals,
 }) {
-  const g = (typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {};
+  const g = globals || ((typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {});
   const {
     ls,
     getLevel = () => 1,
@@ -496,6 +497,7 @@ function ProfileTab({
               onOpenTelegram={onOpenTelegram}
               onOpenPaymentDetails={() => setPaymentDetailsOpen(true)}
               ordersOnly
+              globals={globals}
             />
           </Suspense>
         </div>
@@ -803,7 +805,7 @@ function ProfileTab({
       {showPackSection && (
         <div style={{ animation: "cardIn .3s ease both" }}>
           <Suspense fallback={<div style={{ minHeight: 220, borderRadius: 24, border: `1px solid ${th.border}`, background: th.card, opacity: 0.75 }} />}>
-            <FreePackTab th={th} t={t} lang={lang} />
+            <FreePackTab th={th} t={t} lang={lang} globals={globals} />
           </Suspense>
         </div>
       )}

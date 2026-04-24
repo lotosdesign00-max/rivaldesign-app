@@ -68,12 +68,29 @@ export const tgHaptic = (style = "light") => {
   } catch {}
 };
 
+export const tgHapticImpact = (style = "medium") => {
+  if (!tgSupports("6.1")) return;
+  try {
+    getTg()?.HapticFeedback?.impactOccurred?.(style);
+  } catch {}
+};
+
+export const tgHapticLight = () => tgHapticImpact("light");
+export const tgHapticMedium = () => tgHapticImpact("medium");
+export const tgHapticHeavy = () => tgHapticImpact("heavy");
+export const tgHapticRigid = () => tgHapticImpact("rigid");
+export const tgHapticSoft = () => tgHapticImpact("soft");
+
 export const tgNotif = (type = "success") => {
   if (!tgSupports("6.1")) return;
   try {
     getTg()?.HapticFeedback?.notificationOccurred?.(type);
   } catch {}
 };
+
+export const tgNotifSuccess = () => tgNotif("success");
+export const tgNotifWarning = () => tgNotif("warning");
+export const tgNotifError = () => tgNotif("error");
 
 export const tgSelection = () => {
   if (!tgSupports("6.1")) return;

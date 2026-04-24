@@ -98,6 +98,8 @@ function Panel({ children, style, className = "" }) {
         boxShadow: "0 20px 48px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.05)",
         backdropFilter: "blur(18px)",
         WebkitBackdropFilter: "blur(18px)",
+        contain: "layout style paint",
+        transform: "translateZ(0)",
         ...style,
       }}
     >
@@ -108,6 +110,21 @@ function Panel({ children, style, className = "" }) {
           pointerEvents: "none",
           background:
             "radial-gradient(circle at 14% 16%, rgba(99,102,241,.14) 0%, transparent 26%), radial-gradient(circle at 84% 22%, rgba(34,211,238,.08) 0%, transparent 24%)",
+        }}
+      />
+      {/* Космическая пыль */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: `
+            radial-gradient(circle at 8% 10%, rgba(255,255,255,.2) 0 .5px, transparent 1px),
+            radial-gradient(circle at 22% 78%, rgba(200,210,255,.15) 0 .4px, transparent .8px),
+            radial-gradient(circle at 68% 32%, rgba(255,255,255,.18) 0 .5px, transparent 1px),
+            radial-gradient(circle at 88% 68%, rgba(200,220,255,.14) 0 .4px, transparent .8px)
+          `,
+          opacity: 0.4,
+          pointerEvents: "none",
         }}
       />
       {children}
@@ -147,8 +164,9 @@ export default function HomeTab({
   onGoCourses,
   onGoPricing,
   onGoMore,
+  globals,
 }) {
-  const g = (typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {};
+  const g = globals || ((typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {});
   const { SFX = {}, openTg = () => {}, GALLERY = {}, REVIEWS = [], FAQ_DATA = {}, HOME_CONTENT = {} } = g;
   const copy = homeCopy(lang);
   const items = (GALLERY[lang] || GALLERY.ru || []).filter((item) => item.popular).slice(0, 6);
@@ -368,10 +386,13 @@ export default function HomeTab({
 
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <button
-                className="home-lift"
+                className="home-lift touch-manipulation"
                 onClick={() => {
                   SFX.order?.();
                   openTg("Rivaldsg", lang === "en" ? "Hi, I want to start a project." : "Привет, хочу начать проект.");
+                  if (typeof window !== "undefined" && window.Telegram?.WebApp?.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.impactOccurred("medium");
+                  }
                 }}
                 style={{
                   border: "1px solid rgba(165,180,252,.24)",
@@ -391,8 +412,13 @@ export default function HomeTab({
             </button>
 
               <button
-                className="home-lift"
-                onClick={onGoGallery}
+                className="home-lift touch-manipulation"
+                onClick={() => {
+                  onGoGallery();
+                  if (typeof window !== "undefined" && window.Telegram?.WebApp?.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.impactOccurred("light");
+                  }
+                }}
                 style={{
                   border: "1px solid rgba(255,255,255,.08)",
                   borderRadius: 18,
@@ -740,7 +766,7 @@ export default function HomeTab({
                     <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 14 }}>
                       {faq.map((item, idx) => (
                         <div
-                          key={idx}
+key={`faq-${idx}`}
                           style={{
                             borderRadius: 18,
                             border: "1px solid rgba(255,255,255,.06)",

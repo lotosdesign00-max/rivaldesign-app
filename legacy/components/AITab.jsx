@@ -2,8 +2,8 @@
 import GraphicDesignAssistant from "./GraphicDesignAssistant";
 import GraphicDesignChat from "./GraphicDesignChat";
 
-export default function AITab({ th, t, lang, showToast }) {
-  const g = (typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {};
+export default function AITab({ th, t, lang, showToast, globals }) {
+  const g = globals || ((typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {});
   const { SFX, openTg, ls } = g;
   const safeLs = ls || { get: (_k, d) => d, set: () => {} };
 

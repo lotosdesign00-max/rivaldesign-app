@@ -1,22 +1,14 @@
 ﻿import React, { useState, useMemo, useCallback } from "react";
 import SystemIcon from "./SystemIcon";
 import { isMobilePerfMode, runAfterTap } from "../utils/performance";
+import { getThemeTokens } from "./themeTokens";
 
-const DS = {
-  card: "rgba(13,15,26,.82)",
-  border: "rgba(99,102,241,.14)",
-  accent: "#6366f1",
-  accentB: "#8b5cf6",
-  text: "rgba(224,231,255,.93)",
-  sub: "rgba(100,116,139,.72)",
-  surface: "rgba(8,9,20,.90)",
-};
-
-function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
-  const g = (typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {};
+function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn, globals }) {
+  const g = globals || ((typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {});
   const { SFX, openTg, ls, FAQ_DATA, REVIEWS } = g;
   const safeLs = ls || { get: (_k, d) => d, set: () => {} };
   const isMobilePerf = isMobilePerfMode();
+  const ui = getThemeTokens(th);
   const [section, setSection] = useState("about");
   const [expandedFaq, setExpandedFaq] = useState(0);
   const [likes, setLikes] = useState(() => safeLs.get("rs_likes4", {}));
@@ -113,7 +105,12 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
           transform: none !important;
           box-shadow: inherit !important;
         }
-      `}</style>
+        @media (prefers-reduced-motion: reduce) {
+          .more-sec-btn, .more-cta-btn, .more-tool-card, .more-dir-row,
+          .more-review-card, .more-like-btn, .more-tg-btn, .more-faq-tile,
+          .more-rating-pill { transition: none !important; }
+          @keyframes moreIn, moreSlideIn, likeHeart, reviewCopyFade, achieveFloat { from, to { opacity: 1; transform: none; animation-play-state: paused; } }
+        }`}</style>
 
       {/* ── SECTION TABS ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
@@ -126,7 +123,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
               onClick={() => { if (section === id) return; runAfterTap(() => { setSection(id); SFX?.tab?.(); }); }}
               style={{
                 display: "flex", flexDirection: "column", alignItems: "center", gap: 5,
-                padding: "12px 6px", borderRadius: 18,
+                padding: "12px 6px", minHeight: 44, borderRadius: 18,
                 border: `1px solid ${active ? "rgba(99,102,241,.5)" : "rgba(99,102,241,.12)"}`,
                 background: active
                   ? "linear-gradient(135deg, rgba(99,102,241,.22), rgba(139,92,246,.14))"
@@ -200,7 +197,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
               }}>@Rivaldsg</div>
             </div>
 
-            <div style={{ fontSize: 13.5, color: DS.sub, lineHeight: 1.8, maxWidth: 460, marginBottom: 20, position: "relative", zIndex: 1 }}>
+            <div style={{ fontSize: 13.5, color: ui.mutedText, lineHeight: 1.8, maxWidth: 460, marginBottom: 20, position: "relative", zIndex: 1 }}>
               {lang === "en"
                 ? "Premium visuals for creators, streamers and brands. Clear direction, clean execution and a result that feels expensive without noise."
                 : "Премиальный визуал для креаторов, стримеров и брендов. Чёткое направление, чистая подача и результат, который ощущается дорого без лишнего шума."}
@@ -247,7 +244,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
 
           {/* Tools */}
           <div style={{
-            background: DS.card, borderRadius: 24,
+            background: th.card, borderRadius: 24,
             border: "1px solid rgba(99,102,241,.12)", padding: 16,
             boxShadow: "0 8px 28px rgba(3,4,8,.25), inset 0 1px 0 rgba(255,255,255,.03)",
           }}>
@@ -276,8 +273,8 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
                     boxShadow: `0 4px 14px ${tool.color}22`,
                   }}>{tool.short}</div>
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 900, color: DS.text, marginBottom: 3 }}>{tool.title}</div>
-                    <div style={{ fontSize: 10.5, color: DS.sub, lineHeight: 1.5 }}>{tool.sub}</div>
+                    <div style={{ fontSize: 12, fontWeight: 900, color: ui.bodyText, marginBottom: 3 }}>{tool.title}</div>
+                    <div style={{ fontSize: 10.5, color: ui.mutedText, lineHeight: 1.5 }}>{tool.sub}</div>
                   </div>
                 </div>
               ))}
@@ -286,7 +283,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
 
           {/* Directions */}
           <div style={{
-            background: DS.card, borderRadius: 22,
+            background: th.card, borderRadius: 22,
             border: "1px solid rgba(99,102,241,.12)", padding: 16,
             boxShadow: "0 8px 24px rgba(3,4,8,.22)",
           }}>
@@ -301,19 +298,19 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
               {directions.map((item, i) => (
                 <div key={item.title} className="more-dir-row" style={{
                   display: "flex", alignItems: "flex-start", gap: 12,
-                  padding: "12px 6px",
+                  padding: "12px 6px", minHeight: 44,
                   borderBottom: i < directions.length - 1 ? "1px solid rgba(99,102,241,.07)" : "none",
                   transition: "all .18s ease",
                 }}>
                   <div style={{
-                    width: 34, height: 34, borderRadius: 11, flexShrink: 0,
+                    width: 44, height: 44, minWidth: 44, minHeight: 44, borderRadius: 11, flexShrink: 0,
                     background: "rgba(99,102,241,.10)", border: "1px solid rgba(99,102,241,.18)",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: 15, color: "#818cf8",
                   }}><SystemIcon name={item.icon} size={15} color="#818cf8" animated /></div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 900, color: DS.text, marginBottom: 3 }}>{item.title}</div>
-                    <div style={{ fontSize: 11.5, color: DS.sub, lineHeight: 1.55 }}>{item.sub}</div>
+                    <div style={{ fontSize: 13, fontWeight: 900, color: ui.bodyText, marginBottom: 3 }}>{item.title}</div>
+                    <div style={{ fontSize: 11.5, color: ui.mutedText, lineHeight: 1.55 }}>{item.sub}</div>
                   </div>
                 </div>
               ))}
@@ -337,11 +334,11 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div>
                 <div style={{
-                  fontSize: 22, fontWeight: 900, color: DS.text, marginBottom: 5,
+                  fontSize: 22, fontWeight: 900, color: ui.bodyText, marginBottom: 5,
                   background: "linear-gradient(135deg, #e0e7ff, #a5b4fc)",
                   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
                 }}>{t.reviewsTitle || "Отзывы"}</div>
-                <div style={{ fontSize: 12, color: DS.sub, fontWeight: 600 }}>
+                <div style={{ fontSize: 12, color: ui.mutedText, fontWeight: 600 }}>
                   {totalReviews} {lang === "en" ? "verified reviews" : "проверенных отзывов"}
                 </div>
                 <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
@@ -352,7 +349,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
                       borderRadius: 8, padding: "3px 8px",
                     }}>
                       <span style={{ display: "inline-flex", gap: 2 }}>{Array.from({ length: n }).map((_, idx) => <SystemIcon key={idx} name="star" size={11} color="#fbbf24" animated />)}</span>
-                      <span style={{ fontSize: 10, color: DS.sub, fontWeight: 600 }}>
+                      <span style={{ fontSize: 10, color: ui.mutedText, fontWeight: 600 }}>
                         {(REVIEWS || []).filter(r => r.rating === n).length}
                       </span>
                     </div>
@@ -366,7 +363,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
                   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
                 }}>{avgRating}</div>
                 <div style={{ display: "flex", justifyContent: "center", gap: 3, marginTop: 4 }}>{Array.from({ length: 5 }).map((_, idx) => <SystemIcon key={idx} name="star" size={16} color="#fbbf24" animated />)}</div>
-                <div style={{ fontSize: 9.5, color: DS.sub, marginTop: 3 }}>из 5.0</div>
+                <div style={{ fontSize: 9.5, color: ui.mutedText, marginTop: 3 }}>из 5.0</div>
               </div>
             </div>
           </div>
@@ -382,7 +379,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
               style={{
                 width: "100%", padding: "12px 16px 12px 38px", borderRadius: 14,
                 border: "1px solid rgba(99,102,241,.16)", background: "rgba(13,15,26,.75)",
-                color: DS.text, fontSize: 13, outline: "none", fontFamily: "inherit",
+                color: ui.bodyText, fontSize: 13, outline: "none", fontFamily: "inherit",
                 boxSizing: "border-box", backdropFilter: "blur(10px)",
                 transition: "border-color .2s ease, background .2s ease",
               }}
@@ -396,12 +393,12 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
                 onClick={() => { setRatingFilter(rating); SFX?.filter?.(); }}
                 className="more-rating-pill"
                 style={{
-                  whiteSpace: "nowrap", padding: "7px 14px", borderRadius: 999,
-                  fontSize: 11, fontWeight: 700, cursor: "pointer", flexShrink: 0,
+                  whiteSpace: "nowrap", padding: "10px 16px", borderRadius: 999,
+                  fontSize: 12, fontWeight: 700, cursor: "pointer", flexShrink: 0, minHeight: 44,
                   background: ratingFilter === rating
                     ? "linear-gradient(135deg, rgba(99,102,241,.25), rgba(139,92,246,.2))"
                     : "rgba(13,15,26,.65)",
-                  color: ratingFilter === rating ? "#c7d2fe" : DS.sub,
+                  color: ratingFilter === rating ? "#c7d2fe" : ui.mutedText,
                   border: `1px solid ${ratingFilter === rating ? "rgba(99,102,241,.45)" : "rgba(99,102,241,.12)"}`,
                   boxShadow: ratingFilter === rating ? "0 2px 10px rgba(99,102,241,.2)" : "none",
                 }}
@@ -413,9 +410,9 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
 
           {/* Review cards */}
           {filteredReviews.length === 0 && (
-            <div style={{ textAlign: "center", padding: "40px 20px", color: DS.sub, animation: "moreIn .35s ease" }}>
+            <div style={{ textAlign: "center", padding: "40px 20px", color: ui.mutedText, animation: "moreIn .35s ease" }}>
               <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><SystemIcon name="search" size={30} color="rgba(99,102,241,.7)" animated /></div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: DS.text }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: ui.bodyText }}>
                 {lang === "en" ? "No reviews found" : "Отзывы не найдены"}
               </div>
             </div>
@@ -430,7 +427,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
                 onMouseEnter={() => !isMobilePerf && setHovered(review.id)}
                 onMouseLeave={() => !isMobilePerf && setHovered(null)}
                 style={{
-                  background: DS.card, borderRadius: 22,
+                  background: th.card, borderRadius: 22,
                   border: `1px solid ${isHov ? "rgba(99,102,241,.22)" : "rgba(99,102,241,.12)"}`,
                   padding: "16px", backdropFilter: "blur(12px)",
                   animation: `moreIn .35s ease ${index * .045}s both`,
@@ -454,7 +451,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 14, fontWeight: 900, color: DS.text }}>{review.name}</span>
+                      <span style={{ fontSize: 14, fontWeight: 900, color: ui.bodyText }}>{review.name}</span>
                       {review.verified && (
                         <span style={{
                           fontSize: 8.5, background: "rgba(16,185,129,.14)", color: "#10b981",
@@ -469,14 +466,14 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
 
                   <div style={{ textAlign: "right", flexShrink: 0 }}>
                     <div style={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>{Array.from({ length: review.rating }).map((_, idx) => <SystemIcon key={idx} name="star" size={12} color="#fbbf24" animated />)}</div>
-                    <div style={{ fontSize: 9.5, color: DS.sub, marginTop: 2 }}>{review.time}</div>
+                    <div style={{ fontSize: 9.5, color: ui.mutedText, marginTop: 2 }}>{review.time}</div>
                   </div>
                 </div>
 
                 <p
                   onClick={() => setExpanded(isExpanded ? null : review.id)}
                   style={{
-                    fontSize: 13, color: DS.sub, lineHeight: 1.75, margin: "0 0 12px",
+                    fontSize: 13, color: ui.mutedText, lineHeight: 1.75, margin: "0 0 12px",
                     cursor: "pointer", display: "-webkit-box",
                     WebkitLineClamp: isExpanded ? 100 : 3, WebkitBoxOrient: "vertical", overflow: "hidden",
                     transition: "all .2s ease",
@@ -508,7 +505,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
                     style={{
                       display: "flex", alignItems: "center", gap: 4,
                       fontSize: 11, fontWeight: 700, cursor: "pointer",
-                      color: liked ? "#c7d2fe" : DS.sub,
+                      color: liked ? "#c7d2fe" : ui.mutedText,
                       background: liked ? "rgba(99,102,241,.16)" : "transparent",
                       border: `1px solid ${liked ? "rgba(99,102,241,.35)" : "rgba(99,102,241,.12)"}`,
                       borderRadius: 10, padding: "6px 13px",
@@ -527,7 +524,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
 
           {/* FAQ header */}
           <div style={{
-            background: DS.card, borderRadius: 26, border: "1px solid rgba(99,102,241,.2)", padding: 20,
+            background: th.card, borderRadius: 26, border: "1px solid rgba(99,102,241,.2)", padding: 20,
             boxShadow: "0 16px 36px rgba(3,4,8,.3), inset 0 1px 0 rgba(255,255,255,.04)",
             position: "relative", overflow: "hidden",
           }}>
@@ -541,7 +538,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
                   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
                   marginBottom: 6,
                 }}>{t.faqTitle || "FAQ"}</div>
-                <div style={{ fontSize: 12, color: DS.sub, lineHeight: 1.65 }}>
+                <div style={{ fontSize: 12, color: ui.mutedText, lineHeight: 1.65 }}>
                   {lang === "en" ? "Answers about process, files, edits and payment." : "Ответы про процесс, файлы, правки и оплату."}
                 </div>
               </div>
@@ -580,7 +577,7 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
                       color: isActive ? "#c7d2fe" : "rgba(99,102,241,.6)",
                     }}>0{index + 1}</div>
                     <div style={{
-                      fontSize: 11, color: isActive ? DS.text : "rgba(100,116,139,.75)",
+                      fontSize: 11, color: isActive ? ui.bodyText : "rgba(100,116,139,.75)",
                       fontWeight: 800, lineHeight: 1.45,
                       display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden",
                     }}>{item.q}</div>
@@ -603,11 +600,11 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
             }}>
               <SystemIcon name="faq" size={12} color="#818cf8" animated /> {lang === "en" ? "Answer" : "Ответ"}
             </div>
-            <div style={{ fontSize: 15, fontWeight: 900, color: DS.text, lineHeight: 1.4, marginBottom: 12 }}>
+            <div style={{ fontSize: 15, fontWeight: 900, color: ui.bodyText, lineHeight: 1.4, marginBottom: 12 }}>
               {faq[expandedFaq ?? 0]?.q}
             </div>
             <div style={{
-              fontSize: 13, color: DS.sub, lineHeight: 1.85, whiteSpace: "pre-line",
+              fontSize: 13, color: ui.mutedText, lineHeight: 1.85, whiteSpace: "pre-line",
               padding: "14px 16px", borderRadius: 14,
               background: "rgba(99,102,241,.06)", border: "1px solid rgba(99,102,241,.12)",
             }}>
@@ -635,12 +632,12 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
                         border: `1px solid ${isActive ? "rgba(99,102,241,.45)" : "rgba(99,102,241,.12)"}`,
                         background: isActive
                           ? "linear-gradient(135deg, rgba(99,102,241,.18), rgba(139,92,246,.1))"
-                          : DS.card,
+                          : th.card,
                         borderRadius: 18, padding: 13, cursor: "pointer", textAlign: "left", flexShrink: 0,
                       }}
                     >
                       <div style={{
-                        fontSize: 11, color: isActive ? DS.text : "rgba(100,116,139,.7)",
+                        fontSize: 11, color: isActive ? ui.bodyText : "rgba(100,116,139,.7)",
                         fontWeight: 800, lineHeight: 1.5,
                         display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden",
                       }}>{item.q}</div>
@@ -659,10 +656,10 @@ function MoreTab({ th, t, lang, showToast, streak, onUnlockAchieve, addXPfn }) {
             display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
           }}>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 800, color: DS.text, marginBottom: 3 }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: ui.bodyText, marginBottom: 3 }}>
                 {lang === "en" ? "Still have questions?" : "Остались вопросы?"}
               </div>
-              <div style={{ fontSize: 11.5, color: DS.sub }}>
+              <div style={{ fontSize: 11.5, color: ui.mutedText }}>
                 {lang === "en" ? "Ask directly in Telegram" : "Спроси напрямую в Telegram"}
               </div>
             </div>

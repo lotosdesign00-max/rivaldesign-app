@@ -6,8 +6,8 @@ function getOptimizedSrcSet(src) {
   return `${src.replace(/\.jpg$/, "-450.jpg")} 450w, ${src} 900w`;
 }
 
-function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
-  const g = (typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {};
+function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage, globals }) {
+  const g = globals || ((typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {});
   const { SFX, GALLERY, CAT_ICONS } = g;
   const items = GALLERY?.[lang] || GALLERY?.ru || [];
   const cats = useMemo(() => ["all", ...[...new Set(items.map(i => i.cat))]], [items]);
@@ -76,6 +76,10 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
           transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease;
           cursor: pointer;
           will-change: transform;
+          transform: translateZ(0);
+          backface-visibility: hidden;
+          touch-action: manipulation;
+          -webkit-tap-highlight-color: transparent;
         }
         .gal-card:hover { transform: translateY(-3px) scale(1.015); }
         .gal-card:active { transform: scale(0.96) !important; }
@@ -127,6 +131,29 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
           background-size: 200% 100%;
           animation: shimmerGal 1.5s ease infinite;
         }
+        /* Космический glow эффект для карточек */
+        .gal-card::before {
+          content: '';
+          position: absolute;
+          inset: -1px;
+          background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.08), rgba(34,211,238,0.05));
+          border-radius: inherit;
+          opacity: 0;
+          transition: opacity .3s ease;
+          pointer-events: none;
+          z-index: -1;
+        }
+        .gal-card:hover::before {
+          opacity: 1;
+        }
+        /* Мерцание для избранных элементов */
+        .gal-featured {
+          animation: galFeaturedGlow 3s ease-in-out infinite;
+        }
+        @keyframes galFeaturedGlow {
+          0%, 100% { box-shadow: 0 0 20px rgba(99,102,241,0.1); }
+          50% { box-shadow: 0 0 35px rgba(99,102,241,0.25), 0 0 60px rgba(139,92,246,0.1); }
+        }
         .gal-list-row {
           transition: all .2s ease;
           cursor: pointer;
@@ -176,7 +203,15 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
         html[data-rs-mobile="true"] .search-clear-btn {
           transition-duration: .12s !important;
         }
-      `}</style>
+        @media (prefers-reduced-motion: reduce) {
+          .gal-card, .cat-pill, .gal-sort-btn, .gal-img-shimmer,
+          .gal-list-row, .gal-wl-btn, .gal-action-btn {
+            transition: none !important;
+          }
+          @keyframes galCardIn, shimmerGal, heartPop, fadeUpIn, galGroupIn, ping {
+            from, to { opacity: 1; transform: none; animation-play-state: paused; }
+          }
+        }`}</style>
 
       {/* ── HEADER ── */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
@@ -214,10 +249,10 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
                 onClick={() => { SFX?.filter(); setSort(v); }}
                 className="gal-sort-btn"
                 style={{
-                  padding: "5px 9px", borderRadius: 8, border: "none",
+                  padding: "8px 12px", borderRadius: 8, border: "none",
                   background: sort === v ? "linear-gradient(135deg, rgba(99,102,241,.4), rgba(139,92,246,.35))" : "transparent",
                   color: sort === v ? "#c7d2fe" : "rgba(100,116,139,.65)",
-                  fontSize: 12, fontWeight: 700,
+                  fontSize: 12, fontWeight: 700, minHeight: 36,
                   boxShadow: sort === v ? "0 2px 8px rgba(99,102,241,.2)" : "none",
                 }}
               >{icon ? <SystemIcon name={icon} size={13} color={sort === v ? "#c7d2fe" : "rgba(100,116,139,.68)"} animated={sort === v} /> : "A"}</button>
@@ -228,8 +263,9 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
           <button
             onClick={() => { SFX?.filter(); setView(v => v === "grid" ? "list" : "grid"); }}
             className="view-toggle-btn"
+            aria-label={view === "grid" ? "Switch to list view" : "Switch to grid view"}
             style={{
-              width: 38, height: 38, borderRadius: 12,
+              width: 44, height: 44, borderRadius: 12,
               border: "1px solid rgba(99,102,241,.18)",
               background: "rgba(13,15,26,.8)",
               color: "rgba(165,180,252,.8)", fontSize: 16,
@@ -587,10 +623,11 @@ function GalleryTab({ th, t, lang, wishlist, toggleWishlist, onOpenImage }) {
                 </div>
 
                 <button
-                  className="gal-wl-btn"
+                  className="gal-wl-btn pressable"
                   onClick={e => { e.stopPropagation(); toggleWishlist(item.id); SFX?.wishlist(); }}
+                  aria-label={wl ? "Remove from wishlist" : "Add to wishlist"}
                   style={{
-                    width: 34, height: 34, borderRadius: 11, flexShrink: 0,
+                    width: 44, height: 44, minWidth: 44, minHeight: 44, borderRadius: 11, flexShrink: 0,
                     border: `1px solid ${wl ? "rgba(165,180,252,.4)" : "rgba(99,102,241,.14)"}`,
                     background: wl ? "rgba(99,102,241,.22)" : "transparent",
                     color: wl ? "#c7d2fe" : "rgba(100,116,139,.65)",

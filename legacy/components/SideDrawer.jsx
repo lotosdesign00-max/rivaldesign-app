@@ -20,8 +20,9 @@ function SideDrawer({
   getLevel,
   getLevelProgress,
   tgUser,
+  globals,
 }) {
-  const g = (typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {};
+  const g = globals || ((typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {});
   const { LANGS = {}, THEMES = {}, ls, isTg = false } = g;
   const safeLs = ls || { set: () => {} };
   const safeStreak = streak || { xp: 0 };
@@ -71,15 +72,21 @@ function SideDrawer({
   ];
 
   return (
-    <>
+<>
       {/* Backdrop */}
       <div
+        role="button"
+        aria-label={t?.closeDrawer || (lang === "en" ? "Close drawer" : "Закрыть меню")}
+        tabIndex={0}
         onClick={onClose}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === "Escape") onClose(); }}
         style={{
           position: "fixed", inset: 0, zIndex: 300,
           background: "rgba(3,4,8,.80)",
           backdropFilter: isMobilePerf ? "none" : "blur(10px)", WebkitBackdropFilter: isMobilePerf ? "none" : "blur(10px)",
           animation: isMobilePerf ? "fadeIn .16s ease" : "fadeIn .25s ease",
+          cursor: "pointer",
+          touchAction: "manipulation",
         }}
       />
 
@@ -228,7 +235,15 @@ function SideDrawer({
                   cursor: "pointer", transition: "all .2s ease",
                   boxShadow: soundOn ? "0 4px 14px rgba(99,102,241,.25)" : "none",
                 }}
-                onClick={() => runAfterTap(() => { const next = !soundOn; setSoundOn(next); persistLater("rs_sound4", next); sfx.toggle?.(); })}
+                onClick={() => runAfterTap(() => {
+                        const next = !soundOn;
+                        setSoundOn(next);
+                        persistLater("rs_sound4", next);
+                        sfx.toggle?.();
+                        if (typeof window !== "undefined" && window.Telegram?.WebApp?.HapticFeedback) {
+                          window.Telegram.WebApp.HapticFeedback.impactOccurred("light");
+                        }
+                      })}
               >
                 <span style={{ fontSize: 13, lineHeight: 1, color: soundOn ? "#c7d2fe" : "rgba(100,116,139,.65)" }}>
                   {soundOn ? "♪" : "×"}
@@ -246,9 +261,18 @@ function SideDrawer({
                 {langItems.map(([code]) => {
                   const active = lang === code;
                   return (
-                    <button
+<button
                       key={code}
-                      onClick={() => { if (lang === code) return; runAfterTap(() => { sfx.lang?.(); setLang(code); persistLater("rs_lang4", code); }); }}
+                      onClick={() => { if (lang === code) return; runAfterTap(() => {
+                        sfx.lang?.();
+                        setLang(code);
+                        persistLater("rs_lang4", code);
+                        if (typeof window !== "undefined" && window.Telegram?.WebApp?.HapticFeedback) {
+                          window.Telegram.WebApp.HapticFeedback.impactOccurred("light");
+                        }
+                      }); }}
+                      aria-label={`${langShort[code] || code.toUpperCase()} - ${lang === code ? (lang === "en" ? "Selected" : "Выбрано") : (lang === "en" ? "Select" : "Выбрать")}`}
+                      aria-pressed={lang === code}
                       style={{
                         minHeight: 48, padding: "6px 4px", borderRadius: 14,
                         border: `1px solid ${active ? "rgba(99,102,241,.55)" : "rgba(99,102,241,.12)"}`,
@@ -333,9 +357,18 @@ function SideDrawer({
                 <div className="type-micro" style={{ fontSize: 9, color: "rgba(100,116,139,.7)" }}>{t.settingsVol}</div>
                 <div className="type-micro" style={{ fontSize: 8.5, color: "#818cf8" }}>{Math.round(volume * 100)}%</div>
               </div>
-              <input
+<input
                 type="range" min={0} max={1} step={0.05} value={volume}
                 onChange={(e) => { const v = +e.target.value; setVolume(v); persistLater("rs_volume4", v, 700); }}
+                onMouseDown={() => {
+                  if (typeof window !== "undefined" && window.Telegram?.WebApp?.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.impactOccurred("light");
+                  }
+                }}
+                aria-label={t?.volumeLabel || (lang === "en" ? "Sound volume" : "Громкость звука")}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(volume * 100)}
                 style={{ width: "100%", accentColor: "#6366f1" }}
               />
             </div>

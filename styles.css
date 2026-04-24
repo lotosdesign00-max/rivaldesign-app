@@ -28,6 +28,8 @@ html {
   overflow-x: clip;
   background: var(--rs-tg-bg, var(--color-bg-primary));
   color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -251,5 +253,61 @@ html[data-rs-mobile="true"] .rs-content > div {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GPU COMPOSITING OPTIMIZATION — Все интерактивные элементы
+   ═══════════════════════════════════════════════════════════════ */
+.gpu-layer {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  isolation: isolate;
+  contain: layout style paint;
+}
+
+.gpu-transform {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.gpu-opacity {
+  will-change: opacity;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOUCH ACTION — Устранение 300ms задержки на iOS
+   ═══════════════════════════════════════════════════════════════ */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERFORMANCE MODE: SMOOTH — Слабые устройства
+   ═══════════════════════════════════════��═══════════════════════ */
+html[data-rs-performance="smooth"] .gpu-layer,
+html[data-rs-power="eco"] .gpu-layer {
+  will-change: auto !important;
+  transform: none !important;
+}
+
+html[data-rs-performance="smooth"] .gpu-opacity,
+html[data-rs-power="eco"] .gpu-opacity {
+  will-change: auto !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REDUCED MOTION — Полное отключение анимаций
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .gpu-layer,
+  .gpu-transform,
+  .gpu-opacity {
+    transform: none !important;
+    animation: none !important;
+    will-change: auto !important;
   }
 }

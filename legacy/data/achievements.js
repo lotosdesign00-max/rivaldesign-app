@@ -1,0 +1,43 @@
+/**
+ * ACHIEVEMENTS — Gamification achievement definitions
+ * Emoji icons are content decoration (not system UI chrome).
+ */
+
+export const ACHIEVEMENTS = [
+  { id: "first_visit", icon: "👋", title: "Первый визит", desc: "Добро пожаловать!", xp: 10, secret: false },
+  { id: "explorer", icon: "🗺️", title: "Исследователь", desc: "Посетил все разделы", xp: 25, secret: false },
+  { id: "quiz_master", icon: "🧠", title: "Знаток дизайна", desc: "Ответил правильно 5+ раз", xp: 50, secret: false },
+  { id: "streak_3", icon: "🔥", title: "Стрик 3 дня", desc: "3 дня подряд", xp: 30, secret: false },
+  { id: "streak_7", icon: "⚡", title: "Неделя", desc: "7 дней подряд", xp: 70, secret: true },
+  { id: "streak_14", icon: "💪", title: "Две недели", desc: "14 дней подряд", xp: 120, secret: true },
+  { id: "streak_30", icon: "👑", title: "Легенда", desc: "30 дней подряд", xp: 250, secret: true },
+  { id: "wishlist_5", icon: "💜", title: "Коллекционер", desc: "5+ работ в вишлисте", xp: 20, secret: false },
+  { id: "wishlist_10", icon: "💎", title: "Эстет", desc: "10+ работ в вишлисте", xp: 40, secret: false },
+  { id: "wishlist_20", icon: "🎨", title: "Ценитель", desc: "20+ работ в вишлисте", xp: 80, secret: true },
+  { id: "level_5", icon: "🏆", title: "Уровень 5", desc: "Достиг 5 уровня", xp: 100, secret: false },
+  { id: "level_10", icon: "🌟", title: "Уровень 10", desc: "Достиг 10 уровня", xp: 200, secret: false },
+  { id: "level_15", icon: "💫", title: "Уровень 15", desc: "Достиг 15 уровня", xp: 350, secret: true },
+  { id: "ai_gen_5", icon: "🤖", title: "AI Адепт", desc: "5 идей от AI", xp: 30, secret: false },
+  { id: "ai_gen_10", icon: "🧬", title: "AI Мастер", desc: "10 идей от AI", xp: 60, secret: false },
+  { id: "ai_gen_25", icon: "🚀", title: "AI Гуру", desc: "25 идей от AI", xp: 150, secret: true },
+  { id: "course_complete", icon: "🎓", title: "Студент", desc: "Прошёл курс на 100%", xp: 80, secret: false },
+  { id: "course_complete_3", icon: "📚", title: "Отличник", desc: "Завершил 3 курса", xp: 150, secret: false },
+  { id: "course_complete_all", icon: "🎖️", title: "Магистр", desc: "Прошёл все курсы", xp: 300, secret: true },
+  { id: "cart_order", icon: "🛒", title: "Первый заказ", desc: "Добавил товар в корзину", xp: 15, secret: false },
+  { id: "cart_full", icon: "🛍️", title: "Шопоголик", desc: "5+ товаров в корзине", xp: 25, secret: false },
+  { id: "promo_hunter", icon: "🎫", title: "Охотник за скидками", desc: "Применил промокод", xp: 20, secret: false },
+  { id: "night_owl", icon: "🦉", title: "Ночная сова", desc: "Зашёл после 23:00", xp: 15, secret: true },
+  { id: "early_bird", icon: "🌅", title: "Жаворонок", desc: "Зашёл до 6:00", xp: 15, secret: true },
+  { id: "speed_quiz", icon: "⚡", title: "Спидраннер", desc: "Викторина за <2 мин", xp: 40, secret: true },
+  { id: "quiz_perfect", icon: "💯", title: "Перфекционист", desc: "Все ответы верны", xp: 60, secret: false },
+  { id: "theme_switcher", icon: "🎨", title: "Хамелеон", desc: "Сменил тему 5 раз", xp: 20, secret: false },
+  { id: "lang_polyglot", icon: "🌐", title: "Полиглот", desc: "Переключил язык 3 раза", xp: 25, secret: true },
+  { id: "gallery_explorer", icon: "🖼️", title: "Арт-критик", desc: "Просмотрел 20+ работ", xp: 30, secret: false },
+  { id: "faq_reader", icon: "📖", title: "Любознательный", desc: "Прочитал все FAQ", xp: 15, secret: false },
+  { id: "social_butterfly", icon: "🦋", title: "Социальный", desc: "Открыл все соцсети", xp: 10, secret: false },
+  { id: "scroll_master", icon: "📜", title: "Скроллер", desc: "Проскроллил 10000px", xp: 20, secret: true },
+  { id: "click_master", icon: "👆", title: "Кликер", desc: "100+ кликов", xp: 25, secret: true },
+  { id: "loyal_user", icon: "💝", title: "Верный клиент", desc: "5+ визитов", xp: 50, secret: false },
+  { id: "mega_fan", icon: "⭐", title: "Мега-фан", desc: "10+ визитов", xp: 100, secret: false },
+  { id: "legend", icon: "🔱", title: "Легенда Rival", desc: "Собрал 1000+ XP", xp: 500, secret: true },
+];

@@ -469,6 +469,7 @@ export default function ClientHub({
   onOpenTelegram,
   onOpenPaymentDetails,
   ordersOnly = false,
+  globals,
 }) {
   const [section, setSection] = useState(ordersOnly ? "orders" : "balance");
   const [topupOpen, setTopupOpen] = useState(false);
@@ -476,7 +477,7 @@ export default function ClientHub({
   const [topupMethod, setTopupMethod] = useState("stars");
   const [drafts, setDrafts] = useState({});
   const [paintReady, setPaintReady] = useState(false);
-  const g = (typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {};
+  const g = globals || ((typeof window !== "undefined" && window.__RIVAL_GLOBALS) || {});
   const { estimateStarsFromUsd = (value) => Math.max(1, Math.ceil(Number(value || 0) * 48)) } = g;
   const topupStars = useMemo(() => estimateStarsFromUsd(Number(topupAmount || 0)), [estimateStarsFromUsd, topupAmount]);
 

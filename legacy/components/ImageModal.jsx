@@ -104,6 +104,12 @@ function ImageModal({ item, th, t, onClose, wishlist, toggleWishlist, showToast,
         .img-share-btn { transition: all .18s ease !important; }
         .img-share-btn:hover { background: rgba(99,102,241,.18) !important; border-color: rgba(99,102,241,.35) !important; }
         .img-share-btn:active { transform: scale(0.95) !important; }
+        @media (prefers-reduced-motion: reduce) {
+          .img-close-btn, .img-order-btn, .img-share-btn { transition: none !important; }
+          @keyframes wlHeartPop { from, to { transform: scale(1); } }
+          @keyframes imgModalBgIn { from, to { opacity: 1; } }
+          @keyframes imgModalCardIn { from, to { opacity: 1; transform: none; } }
+        }
       `}</style>
 
       <div
@@ -201,13 +207,14 @@ function ImageModal({ item, th, t, onClose, wishlist, toggleWishlist, showToast,
           <button
             className="img-close-btn"
             onClick={onClose}
+            aria-label="Close"
             style={{
               position: "absolute", top: 10, right: 10,
-              width: 34, height: 34, borderRadius: "50%",
+              width: 44, height: 44, borderRadius: "50%",
               background: "rgba(3,4,8,.78)", backdropFilter: "blur(10px)",
               border: "1px solid rgba(255,255,255,.14)",
               color: "rgba(200,210,255,.8)", cursor: "pointer",
-              fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center",
+              display: "flex", alignItems: "center", justifyContent: "center",
             }}
           ><SystemIcon name="close" size={13} color="rgba(200,210,255,.8)" /></button>
         </div>
@@ -287,10 +294,10 @@ function ImageModal({ item, th, t, onClose, wishlist, toggleWishlist, showToast,
               style={{
                 width: 48, height: 48, borderRadius: 16, flexShrink: 0,
                 background: "rgba(99,102,241,.08)", border: "1px solid rgba(99,102,241,.20)",
-                color: "rgba(165,180,252,.8)", cursor: "pointer", fontSize: 18,
+                color: "rgba(165,180,252,.8)", cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}
-            >вЊ—</button>
+            ><SystemIcon name="share" size={16} color="rgba(165,180,252,.8)" /></button>
           </div>
         </div>
       </div>

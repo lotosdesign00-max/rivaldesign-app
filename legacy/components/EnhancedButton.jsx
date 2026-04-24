@@ -73,10 +73,14 @@ export default function EnhancedButton({
     setMousePos({ x: 0, y: 0 });
   };
 
-  const handleClick = (e) => {
+const handleClick = (e) => {
     if (disabled || loading) return;
     createRipple(e);
     sfx?.tap?.();
+    // Haptic feedback
+    if (typeof window !== "undefined" && window.Telegram?.WebApp?.HapticFeedback) {
+      window.Telegram.WebApp.HapticFeedback.impactOccurred("medium");
+    }
     onClick?.(e);
   };
 
@@ -124,7 +128,7 @@ export default function EnhancedButton({
 
   return (
     <>
-      <style>{`
+<style>{`
         @keyframes shimmerMove {
           0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
           100% { transform: translateX(200%) translateY(200%) rotate(45deg); }
@@ -152,6 +156,10 @@ export default function EnhancedButton({
           user-select: none;
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
+          touch-action: manipulation;
+          transform: translateZ(0);
+          will-change: transform;
+          backface-visibility: hidden;
         }
         .enhanced-btn:disabled {
           opacity: 0.5;
@@ -160,6 +168,28 @@ export default function EnhancedButton({
         }
         .enhanced-btn:active:not(:disabled) {
           transform: scale(0.96) translate(${mousePos.x}px, ${mousePos.y}px);
+        }
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          .enhanced-btn,
+          .enhanced-btn:active:not(:disabled) {
+            transition: none;
+            transform: none;
+          }
+          .shimmer-overlay,
+          .ripple {
+            animation: none;
+          }
+        }
+        /* Eco mode */
+        html[data-rs-performance="smooth"] .enhanced-btn,
+        html[data-rs-power="eco"] .enhanced-btn {
+          transition: none;
+          will-change: auto;
+        }
+        html[data-rs-performance="smooth"] .shimmer-overlay,
+        html[data-rs-power="eco"] .shimmer-overlay {
+          display: none;
         }
         .enhanced-btn-loading {
           pointer-events: none;
@@ -211,7 +241,7 @@ export default function EnhancedButton({
         }
       `}</style>
 
-      <button
+<button
         ref={buttonRef}
         className={`enhanced-btn ${loading ? "enhanced-btn-loading" : ""}`}
         onClick={handleClick}
@@ -219,6 +249,9 @@ export default function EnhancedButton({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={handleMouseLeave}
         disabled={disabled}
+        aria-disabled={disabled}
+        aria-busy={loading}
+        type={props.type || "button"}
         style={{
           ...variantStyle,
           ...sizeStyle,

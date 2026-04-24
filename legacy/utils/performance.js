@@ -3,6 +3,21 @@ export function isMobilePerfMode() {
   return document.documentElement.dataset.rsMobile === "true";
 }
 
+export function isEcoMode() {
+  if (typeof document === "undefined") return false;
+  return document.documentElement.dataset.rsPower === "eco";
+}
+
+export function isSmoothMode() {
+  if (typeof document === "undefined") return false;
+  return document.documentElement.dataset.rsPerformance === "smooth";
+}
+
+export function supportsReducedMotion() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+}
+
 export function scheduleIdle(fn, timeout = 900) {
   if (typeof window === "undefined") {
     fn();
@@ -94,6 +109,17 @@ export function throttle(fn, limit = 100) {
   };
 }
 
+export function throttleRAF(fn) {
+  let rafId = null;
+  return (...args) => {
+    if (rafId !== null) return;
+    rafId = requestAnimationFrame(() => {
+      fn(...args);
+      rafId = null;
+    });
+  };
+}
+
 export function lazyLoadImage(img) {
   if (!img || typeof window === "undefined") return;
   if (!("IntersectionObserver" in window)) {
@@ -128,4 +154,19 @@ export function isInViewport(element) {
     rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
     rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   );
+}
+
+// Космический hook для перформанса
+export function useCosmicMotion(duration = 300) {
+  if (isEcoMode() || isSmoothMode()) {
+    return { duration: 0, easing: "linear" };
+  }
+  return { duration, easing: "cubic-bezier(0.4, 0, 0.2, 1)" };
+}
+
+// Адаптивный интервал для разных режимов
+export function getAdaptiveInterval(base = 16) {
+  if (isEcoMode()) return base * 4;
+  if (isSmoothMode()) return base * 2;
+  return base;
 }

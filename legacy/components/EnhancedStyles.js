@@ -36,24 +36,36 @@ export const EnhancedStyles = `
 
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(3,4,8,0.2);
-  --shadow-md: 0 4px 16px rgba(3,4,8,0.3);
-  --shadow-lg: 0 8px 32px rgba(3,4,8,0.4);
-  --shadow-xl: 0 16px 48px rgba(3,4,8,0.5);
+  --shadow-md: 0 4px 16px rgba(3,4,8,0.25);
+  --shadow-lg: 0 8px 28px rgba(3,4,8,0.3);
+  --shadow-xl: 0 12px 40px rgba(3,4,8,0.35);
   --shadow-glow: 0 0 40px rgba(99,102,241,0.3);
 
-  /* Spacing */
+  /* Spacing (8px rhythm) */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 12px;
   --space-lg: 16px;
   --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 48px;
 
   /* Border Radius */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-xl: 22px;
   --radius-full: 999px;
+
+  /* Typography Scale */
+  --font-xs: 10px;
+  --font-sm: 12px;
+  --font-base: 14px;
+  --font-md: 16px;
+  --font-lg: 18px;
+  --font-xl: 22px;
+  --font-2xl: 26px;
+  --font-3xl: 32px;
 
   /* Transitions */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -181,6 +193,34 @@ export const EnhancedStyles = `
 
 .btn-primary:active {
   transform: scale(0.96);
+}
+
+/* Phase C: Shared Interaction Patterns */
+.pressable {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.15s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.pressable:active {
+  transform: scale(0.94);
+}
+
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pressable,
+  .pressable:active,
+  .btn-primary,
+  .btn-primary:active {
+    transition: none !important;
+    transform: none !important;
+    animation: none !important;
+  }
 }
 
 .btn-secondary {
@@ -382,7 +422,55 @@ body {
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
 }
-`;
+
+/* Phase D: Visual Upgrade - Consistent Design Tokens */
+.visually-consistent {
+  font-size: var(--font-base);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+.heading-xl { font-size: var(--font-3xl); font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; }
+.heading-lg { font-size: var(--font-2xl); font-weight: 900; letter-spacing: -0.02em; line-height: 1.15; }
+.heading-md { font-size: var(--font-xl); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+.heading-sm { font-size: var(--font-lg); font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; }
+
+.body-lg { font-size: var(--font-md); font-weight: 400; line-height: 1.6; }
+.body-md { font-size: var(--font-base); font-weight: 400; line-height: 1.5; }
+.body-sm { font-size: var(--font-sm); font-weight: 400; line-height: 1.5; }
+.body-xs { font-size: var(--font-xs); font-weight: 500; line-height: 1.4; letter-spacing: 0.02em; }
+
+.text-primary { color: var(--color-text); }
+.text-secondary { color: var(--color-text-sub); }
+.text-muted { color: var(--color-text-muted); }
+
+.bg-surface { background: var(--color-surface); }
+.bg-card { background: var(--color-card); }
+
+/* Consistent spacing with 8px rhythm */
+.p-v-xs { padding-top: var(--space-xs); padding-bottom: var(--space-xs); }
+.p-v-sm { padding-top: var(--space-sm); padding-bottom: var(--space-sm); }
+.p-v-md { padding-top: var(--space-md); padding-bottom: var(--space-md); }
+.p-v-lg { padding-top: var(--space-lg); padding-bottom: var(--space-lg); }
+.p-v-xl { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
+
+.g-v-xs { gap: var(--space-xs); }
+.g-v-sm { gap: var(--space-sm); }
+.g-v-md { gap: var(--space-md); }
+.g-v-lg { gap: var(--space-lg); }
+.g-v-xl { gap: var(--space-xl); }
+
+/* Consistent border radius */
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+
+/* Consistent shadows */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
 
 export default EnhancedStyles;
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { tgHapticLight } from "../utils/tma";
 
 const NAV_ITEMS = [
   { id: "gallery", icon: "palette-mark", label: "navGallery" },
@@ -150,12 +151,41 @@ function PriceMark({ active, th }) {
 
 function BottomNav({ active, onChange, onPreloadTab, th, t, cartCount, ordersCount = 0, walletBalance = 0, sfx }) {
   const preloadedTabsRef = React.useRef(new Set());
+  const navRef = React.useRef(null);
+  const prevActiveRef = React.useRef(active);
 
-  const handleTabClick = (id) => {
+  const handleTabClick = (id, label) => {
     if (id === active) return;
     sfx.tab?.();
     onChange(id);
+    tgHapticLight();
   };
+
+  const handleTabKeyDown = (e, id) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleTabClick(id);
+    }
+    // Arrow navigation
+    const navItems = NAV_ITEMS.map(n => n.id);
+    const currentIndex = navItems.indexOf(id);
+    let nextIndex;
+    if (e.key === "ArrowRight") {
+      nextIndex = (currentIndex + 1) % navItems.length;
+    } else if (e.key === "ArrowLeft") {
+      nextIndex = (currentIndex - 1 + navItems.length) % navItems.length;
+    }
+    if (nextIndex !== undefined) {
+      e.preventDefault();
+      const nextId = navItems[nextIndex];
+      const nextBtn = navRef.current?.querySelector(`[data-tab="${nextId}"]`);
+      nextBtn?.focus();
+    }
+  };
+
+  React.useEffect(() => {
+    prevActiveRef.current = active;
+  }, [active]);
 
   const handleTabIntent = (id) => {
     if (id === active || preloadedTabsRef.current.has(id)) return;
@@ -283,22 +313,41 @@ function BottomNav({ active, onChange, onPreloadTab, th, t, cartCount, ordersCou
         
         
         @keyframes iconProfilePresence {
-          
+
           0%, 45% { transform: perspective(200px) scale(1) translateY(0) rotateY(0deg); }
-          
+
           52% { transform: perspective(200px) scale(0.94) translateY(1px) rotateY(0deg); }
-          
+
           62% { transform: perspective(200px) scale(1.28) translateY(-2px) rotateY(8deg); }
-          
+
           70% { transform: perspective(200px) scale(1.3) translateY(-1px) rotateY(-12deg); }
-          
+
           82% { transform: perspective(200px) scale(1.02) translateY(0) rotateY(2deg); }
-          
+
           100% { transform: perspective(200px) scale(1) translateY(0) rotateY(0deg); }
+        }
+        .rs-nav-btn { transition: transform .1s ease, opacity .15s ease; }
+        .rs-nav-btn:active { transform: scale(0.9) translateY(1px); }
+        @media (prefers-reduced-motion: reduce) {
+          .rs-nav-btn { transition: none; }
+          @keyframes navArcIn,
+                 navIconPop,
+                 navGlowPulse,
+                 iconPulse,
+                 iconBounce,
+                 iconSpin,
+                 iconCoinPulse,
+                 iconFlip,
+                 iconBookLayers,
+                 iconPaletteTilt,
+                 iconProfilePresence { from, to { transform: none; animation-play-state: paused; } }
         }
       `}</style>
       <nav
+        ref={navRef}
         className="rs-bottom-nav"
+        role="tablist"
+        aria-label={t?.navAriaLabel || "Main navigation"}
         style={{
           position: "fixed",
           bottom: 0,
@@ -343,14 +392,21 @@ function BottomNav({ active, onChange, onPreloadTab, th, t, cartCount, ordersCou
         {NAV_ITEMS.map((n) => {
           const isActive = active === n.id;
           const isHome = n.id === "home";
+          const navLabel = t[n.label] || n.label;
 
           return (
             <button
-              key={n.id}
+              className="rs-nav-btn"
+              data-tab={n.id}
+              role="tab"
+              aria-label={navLabel}
+              aria-selected={isActive}
+              tabIndex={isActive ? 0 : -1}
+              onKeyDown={(e) => handleTabKeyDown(e, n.id)}
               onPointerDown={() => handleTabIntent(n.id)}
               onPointerEnter={() => handleTabIntent(n.id)}
               onFocus={() => handleTabIntent(n.id)}
-              onClick={() => handleTabClick(n.id)}
+              onClick={() => handleTabClick(n.id, navLabel)}
               style={{
                 display: "flex",
                 flexDirection: "column",
@@ -435,13 +491,6 @@ function BottomNav({ active, onChange, onPreloadTab, th, t, cartCount, ordersCou
                   alignItems: "center",
                   justifyContent: "center",
                   lineHeight: 0,
-                  animation: (() => {
-                      if (n.id === "home") return "iconBounce 3.5s ease-in-out infinite";
-                      if (n.id === "ai") return "iconSpin 3.5s linear infinite";
-                      if (n.id === "pricing") return "iconCoinPulse 3.5s ease-in-out infinite";
-                      if (n.id === "courses") return "iconBookLayers 3.5s ease-in-out infinite";
-                      return "iconPulse 3.5s ease-in-out infinite";
-                    })(),
                   backfaceVisibility: "hidden",
                   contain: "layout paint style",
                   transformOrigin: "center center",

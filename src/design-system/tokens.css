@@ -49,9 +49,9 @@
 
   /* Text Hierarchy */
   --text-primary: rgba(255, 255, 255, 0.98);
-  --text-secondary: rgba(255, 255, 255, 0.75);
+  --text-secondary: rgba(199, 210, 255, 0.70);
   --text-tertiary: rgba(255, 255, 255, 0.50);
-  --text-disabled: rgba(255, 255, 255, 0.30);
+  --text-disabled: rgba(255, 255, 255, 0.45);
 
   /* Borders */
   --border-subtle: rgba(255, 255, 255, 0.06);
@@ -67,6 +67,9 @@
   --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   --font-text: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   --font-mono: "SF Mono", "Consolas", "Monaco", monospace;
+  --font-micro: "SF Mono", "JetBrains Mono", "Fira Code", monospace;
+  --font-number: "SF Mono", "JetBrains Mono", "Fira Code", monospace;
+  --font-button: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
 
   /* Type Scale (Perfect Fourth — 1.333) */
   --text-xs: 11px;
@@ -119,20 +122,24 @@
      BORDER RADIUS SYSTEM
      ═══════════════════════════════════════════════════════════════ */
 
+  /* Border Radius System */
   --radius-xs: 6px;
   --radius-sm: 8px;
+  --radius-sm-plus: 10px;
   --radius-md: 12px;
+  --radius-md-plus: 14px;
   --radius-lg: 16px;
+  --radius-lg-plus: 18px;
   --radius-xl: 20px;
+  --radius-xl-plus: 22px;
   --radius-2xl: 24px;
+  --radius-2xl-plus: 26px;
   --radius-3xl: 32px;
+  --radius-3xl-plus: 38px;
+  --radius-4xl: 9999px;
   --radius-full: 9999px;
 
-  /* ═══════════════════════════════════════════════════════════════
-     SHADOW SYSTEM (Layered Depth)
-     ═══════════════════════════════════════════════════════════════ */
-
-  /* Elevation Levels */
+  /* Shadow System (Layered Depth) */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
